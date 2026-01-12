@@ -370,10 +370,6 @@ html.mode-high-contrast.is-keyboard-user .tab-menu .tab-list li .tab-btn:focus::
   border-radius: var(--cs-radius);
   z-index: 70;
   cursor: pointer;
-  /* ✅ dropdown wrapper가 absolute */
-  /* ✅ prev/next 컨트롤: 기본은 숨김(저자세에서만 노출) */
-  /* ✅ 스크롤 컨테이너 */
-  /* ✅ ul은 이제 레이아웃만 담당(absolute 아님) */
 }
 .custom-select .select-item {
   position: relative;
@@ -416,33 +412,54 @@ html:lang(en) .custom-select .select-item {
   top: 72px;
   left: 0;
   width: 100%;
-  background: var(--cs-bg);
   border: 1px solid var(--cs-border);
   border-top: none;
   border-radius: var(--cs-active-radius02);
-  z-index: 70;
+  overflow: hidden;
 }
 .custom-select .option-controls {
   display: none;
+}
+.custom-select .option-controls .btn-wrap {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 56px;
   padding: 8px 0;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
+  background: var(--cs-bg);
+  z-index: 2;
+  cursor: default;
+}
+.custom-select .option-controls .btn-wrap.prev {
+  top: 0;
+  border-bottom: 1px solid var(--cs-border);
+}
+.custom-select .option-controls .btn-wrap.next {
+  bottom: 0;
+  border-top: 1px solid var(--cs-border);
+}
+.custom-select .option-controls .btn-wrap.is-disabled button {
+  pointer-events: none;
+}
+.custom-select .option-controls .btn-wrap.is-disabled button .label {
+  color: #B7B7B7;
+}
+.custom-select .option-controls .btn-wrap.is-disabled.prev .icon {
+  background: url(../../../assets/images/icon/arrow_up_gy.svg) no-repeat center/contain;
+}
+.custom-select .option-controls .btn-wrap.is-disabled.next .icon {
+  background: url(../../../assets/images/icon/arrow_down_gy.svg) no-repeat center/contain;
 }
 .custom-select .option-controls button {
+  width: 100%;
+  height: 100%;
   padding: 0;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 7px;
-}
-.custom-select .option-controls button .icon {
-  display: block;
-  width: 20px;
-  height: 20px;
+  background: transparent;
 }
 .custom-select .option-controls button.prev-btn .icon {
   background: url(../../../assets/images/icon/arrow_up_bl.svg) no-repeat center/contain;
@@ -450,37 +467,31 @@ html:lang(en) .custom-select .select-item {
 .custom-select .option-controls button.next-btn .icon {
   background: url(../../../assets/images/icon/arrow_down_bl.svg) no-repeat center/contain;
 }
+.custom-select .option-controls button .icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
 .custom-select .option-controls button .label {
   font-size: 1.25rem;
   font-weight: 700;
   color: #3B4CCF;
 }
-.custom-select .option-controls.is-disabled button {
-  pointer-events: none;
-}
-.custom-select .option-controls.is-disabled button.prev-btn .icon {
-  background: url(../../../assets/images/icon/arrow_up_gy.svg) no-repeat center/contain;
-}
-.custom-select .option-controls.is-disabled button.next-btn .icon {
-  background: url(../../../assets/images/icon/arrow_down_gy.svg) no-repeat center/contain;
-}
-.custom-select .option-controls.is-disabled button .label {
-  color: #B7B7B7;
-}
 .custom-select .option-scroll {
+  left: 0;
+  width: 100%;
   max-height: 720px;
-  overflow-y: auto;
-  touch-action: pan-y;
-  -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  background: var(--cs-bg);
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
 }
 .custom-select .option-scroll::-webkit-scrollbar {
-  display: none;
+  display: none; /* for Chrome, Safari, and Opera */
 }
 .custom-select .option-list {
   width: 100%;
-  background: var(--cs-bg);
+  z-index: 70;
 }
 .custom-select .option-list > li {
   position: relative;
@@ -535,24 +546,37 @@ html.mode-high-contrast.is-keyboard-user .custom-select .option-list > li button
 }
 
 /* 낮은 자세 모드 */
-.mode-low-posture .custom-select {
-  /* ✅ 저자세에서만 controls 노출 */
-}
 .mode-low-posture .custom-select .select-item {
   height: 56px;
   font-size: 1.5rem;
 }
 .mode-low-posture .custom-select .option-list-wrap {
+  padding: 56px 0;
   top: 56px;
 }
 .mode-low-posture .custom-select .option-controls {
-  display: flex;
+  display: block;
 }
 .mode-low-posture .custom-select .option-scroll {
-  max-height: 449px;
+  height: 335px;
+}
+.mode-low-posture .custom-select .option-list {
+  top: 56px;
 }
 .mode-low-posture .custom-select .option-list > li {
   height: 56px;
+}
+.mode-low-posture .custom-select .option-list > li.move-btn-wrap {
+  display: block;
+}
+.mode-low-posture .custom-select .option-list > li.move-btn-wrap.is-disabled button.prev-btn .icon {
+  background: url(../../../assets/images/icon/arrow_up_gy.svg) no-repeat center/contain;
+}
+.mode-low-posture .custom-select .option-list > li.move-btn-wrap.is-disabled button.next-btn .icon {
+  background: url(../../../assets/images/icon/arrow_down_gy.svg);
+}
+.mode-low-posture .custom-select .option-list > li.move-btn-wrap.is-disabled button .label {
+  color: #B7B7B7;
 }
 .mode-low-posture .custom-select .option-list > li button {
   font-size: 1.5rem;
