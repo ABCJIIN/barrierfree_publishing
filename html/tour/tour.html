@@ -62,172 +62,274 @@
 
             <!-- main -->
             <main class="main tour">
-                <!-- ✅ PHP 변수(cat, city_id)를 HTML에서 유지하려면 기본값을 넣고, 필요 시 URL로 바꿔치기 -->
                 <form id="cityForm" action="tour.html" method="get">
-                <!-- cat 기본값: 1 -->
-                <input type="hidden" name="cat" id="catInput" value="1" />
-
-                <div class="tab-menu">
-                    <ul class="tab-list" role="tablist">
-                    <li class="is-active">
-                        <button id="tabMenu01"
-                                type="button"
-                                class="tab-btn"
-                                role="tab"
-                                data-cat="1"
-                                aria-selected="true"
-                                aria-controls="panelMenu01"
-                                aria-label="관광지 탭"
-                                data-tts="관광지 탭으로 이동합니다.">
-                        관광지
-                        </button>
-                    </li>
-
-                    <li>
-                        <button id="tabMenu02"
-                                type="button"
-                                class="tab-btn"
-                                role="tab"
-                                data-cat="2"
-                                aria-selected="false"
-                                aria-controls="panelMenu02"
-                                aria-label="쇼핑지 탭"
-                                data-tts="쇼핑지 탭으로 이동합니다.">
-                        쇼핑지
-                        </button>
-                    </li>
-
-                    <li>
-                        <button id="tabMenu03"
-                                type="button"
-                                class="tab-btn"
-                                role="tab"
-                                data-cat="3"
-                                aria-selected="false"
-                                aria-controls="panelMenu03"
-                                aria-label="전통시장 탭"
-                                data-tts="전통시장 탭으로 이동합니다.">
-                        전통시장
-                        </button>
-                    </li>
-                    </ul>
-
-                    <div class="sort-wrap">
-                        <div class="sort-inner">
-                            <div class="select-wrap">
-                                <div class="custom-select">
-
-                                    <!-- city_id 기본값: 1 -->
-                                    <input type="hidden" name="city_id" id="cityIdInput" value="1" />
-
-                                    <!-- 현재 선택 도시명(샘플: 서울) -->
-                                    <button class="select-item" type="button" aria-haspopup="listbox" aria-expanded="false">
-                                    서울
-                                    </button>
-
-                                    <div class="option-list-wrap">
-                                        <div class="option-controls" role="presentation">
-                                            <div class="btn-wrap prev">
-                                                <button type="button" class="prev-btn">
-                                                    <span class="icon" aria-hidden="true"></span>
-                                                    <span class="label">이전</span>
-                                                </button>
-                                            </div>
-
-                                            <div class="btn-wrap next">
-                                                <button type="button" class="next-btn">
-                                                    <span class="icon" aria-hidden="true"></span>
-                                                    <span class="label">다음</span>
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="option-scroll">
-                                            <ul class="option-list" role="listbox">
-                                            <!-- ✅ PHP foreach → 정적 option 버튼들 -->
-                                            <li><button type="button" role="option" data-city-id="1" aria-selected="true" class="is-active">서울</button></li>
-                                            <li><button type="button" role="option" data-city-id="2" aria-selected="false">인천</button></li>
-                                            <li><button type="button" role="option" data-city-id="31" aria-selected="false">경기도</button></li>
-                                            <li><button type="button" role="option" data-city-id="6" aria-selected="false">부산</button></li>
-                                            <li><button type="button" role="option" data-city-id="4" aria-selected="false">대구</button></li>
-                                            <li><button type="button" role="option" data-city-id="7" aria-selected="false">울산</button></li>
-                                            <li><button type="button" role="option" data-city-id="36" aria-selected="false">경상남도</button></li>
-                                            <li><button type="button" role="option" data-city-id="35" aria-selected="false">경상북도</button></li>
-                                            <li><button type="button" role="option" data-city-id="3" aria-selected="false">대전</button></li>
-                                            <li><button type="button" role="option" data-city-id="34" aria-selected="false">충청남도</button></li>
-                                            <li><button type="button" role="option" data-city-id="33" aria-selected="false">충청북도</button></li>
-                                            <li><button type="button" role="option" data-city-id="5" aria-selected="false">광주</button></li>
-                                            <li><button type="button" role="option" data-city-id="38" aria-selected="false">전라남도</button></li>
-                                            <li><button type="button" role="option" data-city-id="37" aria-selected="false">전라북도</button></li>
-                                            <li><button type="button" role="option" data-city-id="32" aria-selected="false">강원도</button></li>
-                                            <li><button type="button" role="option" data-city-id="39" aria-selected="false">제주도</button></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <p class="info-text">• 현재 위치와 가까운 순으로 표시됩니다.</p>
-                        </div>
-                        <div class="dimmed" aria-hidden="true"></div>
-                    </div>
-
-                    <div class="tab-cont">
-                    <!-- 관광지 -->
-                    <section id="panelMenu01" class="tab-panel is-active" role="tabpanel" aria-labelledby="tabMenu01">
-                        <!-- ✅ PHP 데이터($A_tours) → 샘플 카드 리스트로 대체 -->
-                        <ul class="card-list" aria-label="관광지 목록">
-                        <li class="card">
-                            <a class="card-link" href="./tour_detail.html?id=1" aria-label="샘플 관광지 상세 정보 보기">
-                            <div class="card-thumbnail">
-                                <img src="../../assets/images/sample_thumb.png" alt="샘플 관광지 이미지" />
-                            </div>
-                            <div class="card-info">
-                                <h3 class="card-title">샘플 관광지</h3>
-                                <ul class="card-meta">
-                                <li class="card-meta-item">
-                                    <span class="card-term">주소</span>
-                                    <span class="card-desc">서울특별시 중구 어딘가</span>
-                                </li>
-                                <li class="card-meta-item">
-                                    <span class="card-term">전화</span>
-                                    <span class="card-desc">02-000-0000</span>
-                                </li>
-                                </ul>
-                            </div>
-                            </a>
-                        </li>
+                    <input type="hidden" name="cat" id="catInput" value="1">
+                    <div class="tab-menu">
+                        <ul class="tab-list" role="tablist">
+                            <li class="is-active">
+                                <button id="tabMenu01" type="button" class="tab-btn" role="tab" data-cat="1" aria-selected="true" aria-controls="panelMenu01" aria-label="관광지 탭" data-tts="관광지 탭으로 이동합니다.">
+                                    관광지
+                                </button>
+                            </li>
+                            <li class="">
+                                <button id="tabMenu02" type="button" class="tab-btn" role="tab" data-cat="2" aria-selected="false" aria-controls="panelMenu02" aria-label="쇼핑지 탭" data-tts="쇼핑지 탭으로 이동합니다.">
+                                    쇼핑지
+                                </button>
+                            </li>
+                            <li class="">
+                                <button id="tabMenu03" type="button" class="tab-btn" role="tab" data-cat="3" aria-selected="false" aria-controls="panelMenu03" aria-label="전통시장 탭" data-tts="전통시장 탭으로 이동합니다.">
+                                    전통시장
+                                </button>
+                            </li>
                         </ul>
+                        <div class="sort-wrap">
+                            <div class="sort-inner">
+                                <!-- 251205 1차 수정 : 구조 수정 -->
+                                <div class="select-wrap">
 
-                        <!-- 결과 없을 때 예시 -->
-                        <!--
-                        <div class="empty-screen">
-                        <p class="empty-info">검색결과가 없습니다.</p>
+                                </div>
+                                <!-- //1차 수정 -->
+                                <p class="info-text">• 현재 위치와 가까운 순으로 표시됩니다.</p>
+                            </div>
+                            <div class="dimmed" aria-hidden="true"></div>
                         </div>
-                        -->
-                    </section>
-
-                    <!-- 쇼핑지 -->
-                    <section id="panelMenu02" class="tab-panel" role="tabpanel" aria-labelledby="tabMenu02">
-                        <div class="inner"></div>
-                    </section>
-
-                    <!-- 전통시장 -->
-                    <section id="panelMenu03" class="tab-panel" role="tabpanel" aria-labelledby="tabMenu03">
-                        <div class="inner"></div>
-                    </section>
+                        <div class="tab-cont">
+                            <!-- 관광지 -->
+                            <section id="panelMenu01" class="tab-panel is-active" role="tabpanel" aria-labelledby="tabMenu01">
+                                                                    <ul class="card-list" aria-label="관광지 목록">
+                                                                            <li class="card">
+                                        <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
+                                        <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
+                                        <a class="card-link" href="./tour_detail.html?id=2638475" aria-label="노들섬 상세 정보 보기">
+                                            <div class="card-thumbnail">
+                                                <!-- 251114 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
+                                                <img src="http://tong.visitkorea.or.kr/cms/resource/65/2638965_image2_1.JPG" alt="노들섬 이미지">
+                                            </div>
+                                            <div class="card-info">
+                                                <h3 class="card-title">노들섬</h3>
+                                                <ul class="card-meta">
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">주소</span>
+                                                        <span class="card-desc">서울특별시 용산구 양녕로 445</span>
+                                                    </li>
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">전화</span>
+                                                        <span class="card-desc">02-749-4500</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </a>
+                                    </li>
+                                                                            <li class="card">
+                                        <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
+                                        <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
+                                        <a class="card-link" href="./tour_detail.html?id=1923406" aria-label="중부내륙순환열차(O-트레인) 상세 정보 보기">
+                                            <div class="card-thumbnail">
+                                                <!-- 251114 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
+                                                <img src="http://tong.visitkorea.or.kr/cms/resource/26/1923426_image2_1.jpg" alt="중부내륙순환열차(O-트레인) 이미지">
+                                            </div>
+                                            <div class="card-info">
+                                                <h3 class="card-title">중부내륙순환열차(O-트레인)</h3>
+                                                <ul class="card-meta">
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">주소</span>
+                                                        <span class="card-desc">서울특별시 용산구 한강대로 405</span>
+                                                    </li>
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">전화</span>
+                                                        <span class="card-desc">-</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </a>
+                                    </li>
+                                                                            <li class="card">
+                                        <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
+                                        <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
+                                        <a class="card-link" href="./tour_detail.html?id=250466" aria-label="aT센터(에이티센터) 상세 정보 보기">
+                                            <div class="card-thumbnail">
+                                                <!-- 251114 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
+                                                <img src="http://tong.visitkorea.or.kr/cms/resource/26/621926_image2_1.jpg" alt="aT센터(에이티센터) 이미지">
+                                            </div>
+                                            <div class="card-info">
+                                                <h3 class="card-title">aT센터(에이티센터)</h3>
+                                                <ul class="card-meta">
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">주소</span>
+                                                        <span class="card-desc">서울특별시 서초구 강남대로 27</span>
+                                                    </li>
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">전화</span>
+                                                        <span class="card-desc">-</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </a>
+                                    </li>
+                                                                            <li class="card">
+                                        <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
+                                        <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
+                                        <a class="card-link" href="./tour_detail.html?id=761181" aria-label="SK텔레콤 미래기술체험관 T.um(티움) 상세 정보 보기">
+                                            <div class="card-thumbnail">
+                                                <!-- 251114 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
+                                                <img src="http://tong.visitkorea.or.kr/cms/resource/15/2802615_image2_1.jpg" alt="SK텔레콤 미래기술체험관 T.um(티움) 이미지">
+                                            </div>
+                                            <div class="card-info">
+                                                <h3 class="card-title">SK텔레콤 미래기술체험관 T.um(티움)</h3>
+                                                <ul class="card-meta">
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">주소</span>
+                                                        <span class="card-desc">서울특별시 중구 을지로 65</span>
+                                                    </li>
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">전화</span>
+                                                        <span class="card-desc">-</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </a>
+                                    </li>
+                                                                            <li class="card">
+                                        <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
+                                        <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
+                                        <a class="card-link" href="./tour_detail.html?id=130289" aria-label="LG아트센터 상세 정보 보기">
+                                            <div class="card-thumbnail">
+                                                <!-- 251114 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
+                                                <img src="http://tong.visitkorea.or.kr/cms/resource/48/2024248_image2_1.jpg" alt="LG아트센터 이미지">
+                                            </div>
+                                            <div class="card-info">
+                                                <h3 class="card-title">LG아트센터</h3>
+                                                <ul class="card-meta">
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">주소</span>
+                                                        <span class="card-desc">서울특별시 강남구 논현로 508</span>
+                                                    </li>
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">전화</span>
+                                                        <span class="card-desc">-</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </a>
+                                    </li>
+                                                                            <li class="card">
+                                        <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
+                                        <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
+                                        <a class="card-link" href="./tour_detail.html?id=397572" aria-label="KT&amp;G 상상마당(홍대) 상세 정보 보기">
+                                            <div class="card-thumbnail">
+                                                <!-- 251114 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
+                                                <img src="http://tong.visitkorea.or.kr/cms/resource/07/1954907_image2_1.jpg" alt="KT&amp;G 상상마당(홍대) 이미지">
+                                            </div>
+                                            <div class="card-info">
+                                                <h3 class="card-title">KT&amp;G 상상마당(홍대)</h3>
+                                                <ul class="card-meta">
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">주소</span>
+                                                        <span class="card-desc">서울특별시 마포구 어울마당로 65</span>
+                                                    </li>
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">전화</span>
+                                                        <span class="card-desc">-</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </a>
+                                    </li>
+                                                                            <li class="card">
+                                        <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
+                                        <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
+                                        <a class="card-link" href="./tour_detail.html?id=2469936" aria-label="KT스퀘어 상세 정보 보기">
+                                            <div class="card-thumbnail">
+                                                <!-- 251114 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
+                                                <img src="http://tong.visitkorea.or.kr/cms/resource/70/1334870_image2_1.jpg" alt="KT스퀘어 이미지">
+                                            </div>
+                                            <div class="card-info">
+                                                <h3 class="card-title">KT스퀘어</h3>
+                                                <ul class="card-meta">
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">주소</span>
+                                                        <span class="card-desc">서울특별시 종로구 세종대로 178 KT 광화문 빌딩 West</span>
+                                                    </li>
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">전화</span>
+                                                        <span class="card-desc">-</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </a>
+                                    </li>
+                                                                            <li class="card">
+                                        <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
+                                        <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
+                                        <a class="card-link" href="./tour_detail.html?id=127699" aria-label="63스퀘어 상세 정보 보기">
+                                            <div class="card-thumbnail">
+                                                <!-- 251114 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
+                                                <img src="http://tong.visitkorea.or.kr/cms/resource/86/2526386_image2_1.jpg" alt="63스퀘어 이미지">
+                                            </div>
+                                            <div class="card-info">
+                                                <h3 class="card-title">63스퀘어</h3>
+                                                <ul class="card-meta">
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">주소</span>
+                                                        <span class="card-desc">서울특별시 영등포구 63로 36</span>
+                                                    </li>
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">전화</span>
+                                                        <span class="card-desc">-</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </a>
+                                    </li>
+                                                                            <li class="card">
+                                        <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
+                                        <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
+                                        <a class="card-link" href="./tour_detail.html?id=613775" aria-label="63아트 상세 정보 보기">
+                                            <div class="card-thumbnail">
+                                                <!-- 251114 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
+                                                <img src="http://tong.visitkorea.or.kr/cms/resource/48/773848_image2_1.jpg" alt="63아트 이미지">
+                                            </div>
+                                            <div class="card-info">
+                                                <h3 class="card-title">63아트</h3>
+                                                <ul class="card-meta">
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">주소</span>
+                                                        <span class="card-desc">서울특별시 영등포구 63로 50</span>
+                                                    </li>
+                                                    <li class="card-meta-item">
+                                                        <span class="card-term">전화</span>
+                                                        <span class="card-desc">-</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </a>
+                                    </li>
+                                                                        </ul>
+                                                                </section>
+                            <!-- 쇼핑지 -->
+                            <section id="panelMenu02" class="tab-panel" role="tabpanel" aria-labelledby="tabMenu02">
+                                <div class="inner">
+                                </div>
+                            </section>
+                            <!-- 전통시장 -->
+                            <section id="panelMenu03" class="tab-panel" role="tabpanel" aria-labelledby="tabMenu03">
+                                <div class="inner">
+                                </div>
+                            </section>
+                        </div>
+                        <div class="pagination" role="navigation" aria-label="페이지 이동">
+                        <div class="Zebra_Pagination" data-a11y-applied="true" role="navigation" aria-label="페이지 이동"><ul><li><a href="/html/tour/tour.html" class="navigation first" rel="first" aria-label="첫 페이지로 이동" role="button"></a></li><li><a href="javascript:void(0)" class="navigation previous disabled" rel="prev" aria-label="이전 페이지로 이동" role="button"></a></li><li>
+            <a href="/html/tour/tour.html" aria-current="page" class="current" aria-label="1 페이지로 이동" role="button">1</a>
+        </li><li>
+            <a href="/html/tour/tour.html?page=2" aria-label="2 페이지로 이동" role="button">2</a>
+        </li><li>
+            <a href="/html/tour/tour.html?page=3" aria-label="3 페이지로 이동" role="button">3</a>
+        </li><li>
+            <a href="/html/tour/tour.html?page=4" aria-label="4 페이지로 이동" role="button">4</a>
+        </li><li>
+            <a href="/html/tour/tour.html?page=5" aria-label="5 페이지로 이동" role="button">5</a>
+        </li><li><a href="/html/tour/tour.html?page=2" class="navigation next" rel="next" aria-label="다음 페이지로 이동" role="button"></a></li><li><a href="/html/tour/tour.html?page=12" class="navigation last" rel="last" aria-label="마지막 페이지로 이동" role="button"></a></li></ul></div>                            </div>
                     </div>
-
-                    <!-- ✅ PHP pagination → 정적 마크업(샘플)로 대체 -->
-                    <div class="pagination" role="navigation" aria-label="페이지 이동">
-                    <button type="button" class="page-btn is-disabled" aria-disabled="true">이전</button>
-                    <button type="button" class="page-btn is-active" aria-current="page">1</button>
-                    <button type="button" class="page-btn">2</button>
-                    <button type="button" class="page-btn">3</button>
-                    <button type="button" class="page-btn">다음</button>
-                    </div>
-
-                </div>
                 </form>
             </main>
             <!-- //main -->

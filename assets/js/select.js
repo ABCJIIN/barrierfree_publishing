@@ -163,6 +163,52 @@ function initCustomSelect() {
     }
 
     /* -----------------------------
+    * 현재 스크롤 영역에서 "보이는 옵션 범위" 계산
+    * - firstVisibleIdx: 위쪽에서 처음 보이는 옵션
+    * - lastVisibleIdx : 아래쪽에서 마지막 보이는 옵션
+    * ----------------------------- */
+    function getVisibleRange($select) {
+        var p = getParts($select);
+        var $opts = getOptions($select);
+        if (!p.$scroll.length || !$opts.length) return null;
+
+        var pad = 8;
+        var sRect = p.$scroll[0].getBoundingClientRect();
+
+        var first = -1;
+        var last = -1;
+
+        $opts.each(function (i) {
+            var r = this.getBoundingClientRect();
+
+            // "보인다" 기준: 스크롤 박스와 겹치면(완전 노출 아니어도 OK)
+            var visible = (r.bottom > sRect.top + pad) && (r.top < sRect.bottom - pad);
+            if (!visible) return;
+
+            if (first === -1) first = i;
+            last = i;
+        });
+
+        if (first === -1) return null;
+        return { firstVisibleIdx: first, lastVisibleIdx: last };
+    }
+
+    /* -----------------------------
+    * 스크롤이 완전 top/bottom 인지(여유 오차 포함)
+    * ----------------------------- */
+    function isScrollAtEdge($scroll, where /* "top"|"bottom" */) {
+        if (!$scroll || !$scroll.length) return true;
+
+        var el = $scroll[0];
+        var maxTop = Math.max(0, el.scrollHeight - $scroll.innerHeight());
+        var cur = $scroll.scrollTop();
+        var eps = 2; // 오차 허용
+
+        if (where === "top") return cur <= eps;
+        return cur >= (maxTop - eps);
+    }
+
+    /* -----------------------------
     * 저자세: prev/next 비활성화
     * ----------------------------- */
     function updateMoveBtnState($select) {
@@ -170,24 +216,19 @@ function initCustomSelect() {
 
         var p = getParts($select);
         var $opts = getOptions($select);
-        if (!$opts.length) return;
+        if (!p.$scroll.length || !$opts.length) return;
 
-        var $focused = $(document.activeElement).is('button[role="option"]')
-        ? $(document.activeElement)
-        : $opts.filter('[aria-selected="true"]').first();
+        var range = getVisibleRange($select);
 
-        if (!$focused.length) $focused = $opts.filter(".is-active").first();
-        if (!$focused.length) $focused = $opts.first();
+        // 보이는 범위가 잡히지 않으면, 일단 edge 기준으로 처리
+        var prevDisabled = !range ? isScrollAtEdge(p.$scroll, "top") : (range.firstVisibleIdx <= 0 && isScrollAtEdge(p.$scroll, "top"));
+        var nextDisabled = !range ? isScrollAtEdge(p.$scroll, "bottom") : (range.lastVisibleIdx >= $opts.length - 1 && isScrollAtEdge(p.$scroll, "bottom"));
 
-        var idx = $opts.index($focused);
-        var isFirst = idx === 0;
-        var isLast = idx === $opts.length - 1;
+        if (p.$prevBtn.length) p.$prevBtn.prop("disabled", prevDisabled);
+        if (p.$nextBtn.length) p.$nextBtn.prop("disabled", nextDisabled);
 
-        if (p.$prevBtn.length) p.$prevBtn.prop("disabled", isFirst);
-        if (p.$nextBtn.length) p.$nextBtn.prop("disabled", isLast);
-
-        if (p.$prevWrap.length) p.$prevWrap.toggleClass("is-disabled", isFirst);
-        if (p.$nextWrap.length) p.$nextWrap.toggleClass("is-disabled", isLast);
+        if (p.$prevWrap.length) p.$prevWrap.toggleClass("is-disabled", prevDisabled);
+        if (p.$nextWrap.length) p.$nextWrap.toggleClass("is-disabled", nextDisabled);
     }
 
     /* -----------------------------
@@ -355,31 +396,42 @@ function initCustomSelect() {
 
         var p = getParts($select);
 
+        // 스크롤 중에도 prev/next 상태 동기화
+        if (p.$scroll.length) {
+            p.$scroll.off("scroll.cs").on("scroll.cs", function () {
+                updateMoveBtnState($select);
+            });
+        }
+
         // 저자세 prev/next 클릭 (클릭/터치 전용, wrap 없음)
         if (p.$prevBtn.length) {
             p.$prevBtn.off(".cs").on("click.cs", function (e) {
                 e.preventDefault();
                 if (!isLowPosture) return;
 
+                var p = getParts($select);
                 var $opts = getOptions($select);
-                if (!$opts.length) return;
+                if (!p.$scroll.length || !$opts.length) return;
 
-                var $focused = $(document.activeElement).is('button[role="option"]')
-                ? $(document.activeElement)
-                : $opts.filter('[aria-selected="true"]').first();
+                var range = getVisibleRange($select);
+                if (!range) { updateMoveBtnState($select); return; }
 
-                if (!$focused.length) $focused = $opts.filter(".is-active").first();
-                if (!$focused.length) $focused = $opts.first();
+                // 현재 화면에서 "처음 보이는 옵션"의 이전 옵션이 1개 보이도록
+                var targetIdx = range.firstVisibleIdx - 1;
+                if (targetIdx < 0) { updateMoveBtnState($select); return; }
 
-                var idx = $opts.index($focused);
-                if (idx <= 0) {
-                    updateMoveBtnState($select);
-                    return;
+                var $target = $opts.eq(targetIdx);
+
+                // 한 칸(step) 위로 이동 (요청사항: 한 옵션씩 노출)
+                var step = getStep($select);
+                if (step) {
+                    var cur = p.$scroll.scrollTop();
+                    var next = Math.max(0, cur - step);
+                    p.$scroll.stop(true).animate({ scrollTop: next }, 80);
                 }
 
-                var $t = $opts.eq(idx - 1);
-                focusPreventScroll($t, p.$scroll);
-                revealByOneStep($select, $t, "up");
+                // 포커스도 같이 이동
+                focusPreventScroll($target, p.$scroll);
                 updateMoveBtnState($select);
             });
         }
@@ -389,25 +441,31 @@ function initCustomSelect() {
                 e.preventDefault();
                 if (!isLowPosture) return;
 
+                var p = getParts($select);
                 var $opts = getOptions($select);
-                if (!$opts.length) return;
+                if (!p.$scroll.length || !$opts.length) return;
 
-                var $focused = $(document.activeElement).is('button[role="option"]')
-                ? $(document.activeElement)
-                : $opts.filter('[aria-selected="true"]').first();
+                var range = getVisibleRange($select);
+                if (!range) { updateMoveBtnState($select); return; }
 
-                if (!$focused.length) $focused = $opts.filter(".is-active").first();
-                if (!$focused.length) $focused = $opts.first();
+                // 현재 화면에서 "마지막 보이는 옵션" 다음 옵션이 1개 보이도록
+                var targetIdx = range.lastVisibleIdx + 1;
+                if (targetIdx > $opts.length - 1) { updateMoveBtnState($select); return; }
 
-                var idx = $opts.index($focused);
-                if (idx >= $opts.length - 1) {
-                    updateMoveBtnState($select);
-                return;
+                var $target = $opts.eq(targetIdx);
+
+                // 한 칸(step) 아래로 이동
+                var step = getStep($select);
+                if (step) {
+                    var el = p.$scroll[0];
+                    var maxTop = Math.max(0, el.scrollHeight - p.$scroll.innerHeight());
+                    var cur = p.$scroll.scrollTop();
+                    var next = Math.min(maxTop, cur + step);
+                    p.$scroll.stop(true).animate({ scrollTop: next }, 80);
                 }
 
-                var $t = $opts.eq(idx + 1);
-                focusPreventScroll($t, p.$scroll);
-                revealByOneStep($select, $t, "down");
+                // 포커스도 같이 이동
+                focusPreventScroll($target, p.$scroll);
                 updateMoveBtnState($select);
             });
         }
