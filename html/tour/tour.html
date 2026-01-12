@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" >
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -113,59 +113,63 @@
                     </ul>
 
                     <div class="sort-wrap">
-                    <div class="sort-inner">
-                        <div class="select-wrap">
-                        <div class="custom-select">
+                        <div class="sort-inner">
+                            <div class="select-wrap">
+                                <div class="custom-select">
 
-                            <!-- city_id 기본값: 1 -->
-                            <input type="hidden" name="city_id" id="cityIdInput" value="1" />
+                                    <!-- city_id 기본값: 1 -->
+                                    <input type="hidden" name="city_id" id="cityIdInput" value="1" />
 
-                            <!-- 현재 선택 도시명(샘플: 서울) -->
-                            <button class="select-item" type="button" aria-haspopup="listbox" aria-expanded="false">
-                            서울
-                            </button>
+                                    <!-- 현재 선택 도시명(샘플: 서울) -->
+                                    <button class="select-item" type="button" aria-haspopup="listbox" aria-expanded="false">
+                                    서울
+                                    </button>
 
-                            <div class="option-list-wrap">
-                            <div class="option-controls" role="presentation">
-                                <button type="button" class="prev-btn">
-                                <span class="icon" aria-hidden="true"></span>
-                                <span class="label">이전</span>
-                                </button>
+                                    <div class="option-list-wrap">
+                                        <div class="option-controls" role="presentation">
+                                            <div class="btn-wrap prev">
+                                                <button type="button" class="prev-btn">
+                                                    <span class="icon" aria-hidden="true"></span>
+                                                    <span class="label">이전</span>
+                                                </button>
+                                            </div>
 
-                                <button type="button" class="next-btn">
-                                <span class="icon" aria-hidden="true"></span>
-                                <span class="label">다음</span>
-                                </button>
+                                            <div class="btn-wrap next">
+                                                <button type="button" class="next-btn">
+                                                    <span class="icon" aria-hidden="true"></span>
+                                                    <span class="label">다음</span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="option-scroll">
+                                            <ul class="option-list" role="listbox">
+                                            <!-- ✅ PHP foreach → 정적 option 버튼들 -->
+                                            <li><button type="button" role="option" data-city-id="1" aria-selected="true" class="is-active">서울</button></li>
+                                            <li><button type="button" role="option" data-city-id="2" aria-selected="false">인천</button></li>
+                                            <li><button type="button" role="option" data-city-id="31" aria-selected="false">경기도</button></li>
+                                            <li><button type="button" role="option" data-city-id="6" aria-selected="false">부산</button></li>
+                                            <li><button type="button" role="option" data-city-id="4" aria-selected="false">대구</button></li>
+                                            <li><button type="button" role="option" data-city-id="7" aria-selected="false">울산</button></li>
+                                            <li><button type="button" role="option" data-city-id="36" aria-selected="false">경상남도</button></li>
+                                            <li><button type="button" role="option" data-city-id="35" aria-selected="false">경상북도</button></li>
+                                            <li><button type="button" role="option" data-city-id="3" aria-selected="false">대전</button></li>
+                                            <li><button type="button" role="option" data-city-id="34" aria-selected="false">충청남도</button></li>
+                                            <li><button type="button" role="option" data-city-id="33" aria-selected="false">충청북도</button></li>
+                                            <li><button type="button" role="option" data-city-id="5" aria-selected="false">광주</button></li>
+                                            <li><button type="button" role="option" data-city-id="38" aria-selected="false">전라남도</button></li>
+                                            <li><button type="button" role="option" data-city-id="37" aria-selected="false">전라북도</button></li>
+                                            <li><button type="button" role="option" data-city-id="32" aria-selected="false">강원도</button></li>
+                                            <li><button type="button" role="option" data-city-id="39" aria-selected="false">제주도</button></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="option-scroll">
-                                <ul class="option-list" role="listbox">
-                                <!-- ✅ PHP foreach → 정적 option 버튼들 -->
-                                <li><button type="button" role="option" data-city-id="1" aria-selected="true" class="is-active">서울</button></li>
-                                <li><button type="button" role="option" data-city-id="2" aria-selected="false">인천</button></li>
-                                <li><button type="button" role="option" data-city-id="31" aria-selected="false">경기도</button></li>
-                                <li><button type="button" role="option" data-city-id="6" aria-selected="false">부산</button></li>
-                                <li><button type="button" role="option" data-city-id="4" aria-selected="false">대구</button></li>
-                                <li><button type="button" role="option" data-city-id="7" aria-selected="false">울산</button></li>
-                                <li><button type="button" role="option" data-city-id="36" aria-selected="false">경상남도</button></li>
-                                <li><button type="button" role="option" data-city-id="35" aria-selected="false">경상북도</button></li>
-                                <li><button type="button" role="option" data-city-id="3" aria-selected="false">대전</button></li>
-                                <li><button type="button" role="option" data-city-id="34" aria-selected="false">충청남도</button></li>
-                                <li><button type="button" role="option" data-city-id="33" aria-selected="false">충청북도</button></li>
-                                <li><button type="button" role="option" data-city-id="5" aria-selected="false">광주</button></li>
-                                <li><button type="button" role="option" data-city-id="38" aria-selected="false">전라남도</button></li>
-                                <li><button type="button" role="option" data-city-id="37" aria-selected="false">전라북도</button></li>
-                                <li><button type="button" role="option" data-city-id="32" aria-selected="false">강원도</button></li>
-                                <li><button type="button" role="option" data-city-id="39" aria-selected="false">제주도</button></li>
-                                </ul>
-                            </div>
-                            </div>
+                            <p class="info-text">• 현재 위치와 가까운 순으로 표시됩니다.</p>
                         </div>
-                        </div>
-
-                        <p class="info-text">• 현재 위치와 가까운 순으로 표시됩니다.</p>
-                    </div>
-                    <div class="dimmed" aria-hidden="true"></div>
+                        <div class="dimmed" aria-hidden="true"></div>
                     </div>
 
                     <div class="tab-cont">

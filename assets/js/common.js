@@ -936,3 +936,43 @@ function enhanceZebraPaginationA11y() {
 }
 
 
+// PC 키보드( Tab 포함 )로 이동해도 포커스 아웃라인 보이게
+(function () {
+  const root = document.documentElement;
+
+  // 키보드 입력이면 아웃라인 ON (PC 환경 포함)
+  window.addEventListener(
+    'keydown',
+    function (e) {
+      // Tab, 방향키, Enter 등 "키보드 탐색" 계열이면 ON
+      if (
+        e.key === 'Tab' ||
+        e.key === 'ArrowUp' ||
+        e.key === 'ArrowDown' ||
+        e.key === 'ArrowLeft' ||
+        e.key === 'ArrowRight' ||
+        e.key === 'Enter'
+      ) {
+        root.classList.add('is-keyboard-user');
+      }
+    },
+    true
+  );
+
+  // 마우스/터치 입력 시에는 OFF (클릭 시 아웃라인 숨김 유지)
+  window.addEventListener(
+    'mousedown',
+    function () {
+      root.classList.remove('is-keyboard-user');
+    },
+    true
+  );
+
+  window.addEventListener(
+    'touchstart',
+    function () {
+      root.classList.remove('is-keyboard-user');
+    },
+    true
+  );
+})();
