@@ -1,15 +1,3 @@
-<?php 
-    include_once __DIR__.'/../../config/common.php';
-    $A_dates['date'] 		= date("Y.m.d");
-    $A_dates['week'] 		= date("D");
-    $A_weather 				= getWeather();
-    // $T_week 				= $pageinfo['menu'] == 'www' ? 	strtoupper($A_dates['week']) : 	setLang(['common', 'date', $A_dates['week']]);
-    $weekMap = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-    $yoil = $weekMap[date('w', strtotime($A_dates['date']))];	
-
-    $nowTs = time();
-?>
-
 <div class="hd-inner">
     <h1 class="logo">
         <img src="/assets/images/logo.png" alt="SMART TOURIST INFORMATION">
@@ -18,19 +6,18 @@
     <div class="status">
         <div class="datetime">
             <span class="date">
-                <?= $A_dates['date'] ?>/<span class="weekday"><?=$yoil?></span>
+                2025.10.10/<span class="weekday">월요일</span>
             </span>
 
             <div class="clock">
-                <span class="w_time_h"><?= date('H') ?></span>
+                <span class="w_time_h">13</span>
                 <span class="w_time_bar">:</span>
-                <span class="w_time_m"><?= date('i') ?></span>
+                <span class="w_time_m">13</span>
             </div>
         </div>
 
         <div class="weather" aria-label="날씨">
-            <img src="/assets/images/icon/w_icon_weather_<?= $A_weather['code'] ?>.png"
-                    alt="<?= $A_weather['weather'] ?>">
+            <img src="/assets/images/icon/w_icon_weather_1.png" alt="맑은 날씨">
         </div>
     </div>
 </div>

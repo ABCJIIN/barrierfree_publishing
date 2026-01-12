@@ -1,156 +1,10 @@
-
-<?php 
-include_once __DIR__.'/../../config/common.php';
-include_once __DIR__ . '/../../languages/_lang.accessibletoure.php';
-
-$GLOBALS['lang'] = $GLOBALS['lang'] ?? 'kor';
-$GLOBALS['lang_code'] = $GLOBALS['lang_code'] ?? 0;
-// 관광지 정보
-/*$query = "
-    SELECT *
-    FROM VW_NP_TOUR_KOR_V2
-    WHERE id = {$_GET['id']}
-";*/
-$query = "
-		SELECT nta2.*, 'A' as cat1
-		FROM NP_tour_api_v2 nta2
-		WHERE id = {$_GET['id']}
-	";
-$result = dbaccess($query);
-
-$row = mysqli_fetch_assoc($result);
-
-
-// 인근 지하철, 연락처
-if ($row['cat1'] == 'A' || $row['cat1'] == 'S') {
-    $R_is_station   = getStationsFront('tour_api', $row['master_id'], true);
-
-    $A_aux  = getAuxInfo($row['master_id']);
-
-    if (is_array($A_aux) && !empty($A_aux['phone'])) {
-        $T_phone = replacePhoneNumber($A_aux['phone']);
-    } else {
-        $T_phone = '-';
-    }
-}
-/*if ($row['cat1'] == 'T') {
-    $R_is_station 		= getStationsFront('tour', $row['id'], true);
-    $T_phone = replacePhoneNumber($row['phone']);
-}*/
-
-//무장애 픽토그램 찾기 
-$course_num = 0;
-if ((int)$row['master_id'] > 0){
-    $course_type = 1;
-    $course_seq = (int)$row['master_id'];
-    $course_num = (int)$row['id'];
-} else {
-    $course_type = 2;
-    $course_seq = (int)$row['id'];
-    $course_num = (int)$row['id'];
-}
-
-$rsPictogram = getBarrierfreeData($course_seq ,$row['lang'] , $course_type);
-$categories = [
-    'physical' => [
-        'title' => $language[$GLOBALS['lang']]['accessibletour']['story']['pictotitle']['pictit01'],
-        'start' => 0,
-        'end'   => 10
-    ],
-    'visual' => [
-        'title' => $language[$GLOBALS['lang']]['accessibletour']['story']['pictotitle']['pictit02'],
-        'start' => 11,
-        'end'   => 18
-    ],
-    'hearing' => [
-        'title' => $language[$GLOBALS['lang']]['accessibletour']['story']['pictotitle']['pictit03'],
-        'start' => 19,
-        'end'   => 22
-    ],
-    'family' => [
-        'title' => $language[$GLOBALS['lang']]['accessibletour']['story']['pictotitle']['pictit04'],
-        'start' => 23,
-        'end'   => 99
-    ],
-];
-$grouped = [];
-
-$strPictoGram_text = ''; 
-$strPictoGram = ''; 
-if ($rsPictogram) {
-    $picSeq = 0;
-
-    foreach ($rsPictogram as $field => $sVal) {
-        if (trim($sVal) === '') {
-            $picSeq++;
-            continue;
-        }
-
-        foreach ($categories as $key => $cat) {
-            if ($picSeq >= $cat['start'] && $picSeq <= $cat['end']) {
-                $grouped[$key][] = [
-                    'icon' => $field,
-                    'text' => $sVal
-                ];
-                break;
-            }
-        }
-
-        $picSeq++;
-    }
-}
-foreach ($categories as $key => $cat) {
-    if (empty($grouped[$key])) continue;
-
-    $strPictoGram .= '<div class="access-item">';
-    $strPictoGram .= '<h5 class="access-title">'.$cat['title'].'</h5>';
-    $strPictoGram .= '<ul class="access-list">';
-
-    foreach ($grouped[$key] as $item) {
-        $strPictoGram .= '<li>';
-        $strPictoGram .= '<span class="icon_'.$item['icon'].'"></span>';
-        $strPictoGram .= $item['text'];
-        $strPictoGram .= '</li>';
-        $strPictoGram_text .= $item['text']."."; 
-    }
-
-    $strPictoGram .= '</ul></div>';
-}
-
-$T_station_line = [
-    // 수도권 1~9호선
-    '1'  => '1호선', '2'  => '2호선', '3'  => '3호선', '4'  => '4호선', '5'  => '5호선', '6'  => '6호선', '7'  => '7호선', '8'  => '8호선', '9'  => '9호선',
-
-    // 인천 도시철도
-    'I'  => '인천 1호선', 'I2' => '인천 2호선',
-
-    // 수도권 광역·민자
-    'S'  => '신분당선', 'K'  => '경의·중앙선', 'G'  => '경춘선', 'SU' => '수인·분당선', 'A'  => '공항철도', 'U'  => '의정부 경전철', 'KK' => '경강선', 'UI' => '우이신설선', 'ML' => '김포골드라인', 'WS' => '서해선', 'SUB'=> 'GTX-A',
-
-    // 부산
-    'B1' => '부산 1호선', 'B2' => '부산 2호선', 'B3' => '부산 3호선', 'B4' => '부산 4호선', 'BD' => '부산 동해선', 'BJ' => '부산 김해경전철',
-
-    // 대구
-    'D1' => '대구 1호선', 'D2' => '대구 2호선', 'D3' => '대구 3호선',
-
-    // 대전
-    'DJ1' => '대전 1호선',
-
-    // 광주
-    'GJ1' => '광주 1호선',
-];
-$T_station_text = "";
-$T_station = "";
-
-
-?>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMART TOURIST INFORMATION</title>
-    <script src="<?= asset('/assets/js/idleTimer.js') ?>"></script>
+    <script src="../../assets/js/idleTimer.js"></script>
 
     <script>
         (function () {
@@ -211,22 +65,45 @@ $T_station = "";
         })();
     </script>
 
-    <link rel="stylesheet" href="<?= asset('/assets/scss/vendors/swiper-bundle.min.css') ?>">
-    <link rel="stylesheet" href="<?= asset('/assets/scss/main.css') ?>">
+    <link rel="stylesheet" href="../../assets/scss/vendors/swiper-bundle.min.css">
+    <link rel="stylesheet" href="../../assets/scss/main.css">
     <!-- 픽토그램 이미지 css -->
-    <link rel="stylesheet" href="<?= asset('/assets/scss/barrier_free_pictogram.css') ?>">
+    <link rel="stylesheet" href="../../assets/scss/barrier_free_pictogram.css">
 
-    <script src="<?= asset('/assets/js/vendor/jquery-3.7.1.min.js') ?>"></script>
-    <script src="<?= asset('/assets/js/vendor/swiper-bundle.min.js') ?>"></script>
-    <script src="<?= asset('/assets/js/common.js') ?>"></script>
-    <script src="<?= asset('/assets/js/zoom.js') ?>"></script>
-    <script src="<?= asset('/assets/js/tab.js') ?>"></script>
-    <script src="<?= asset('/assets/js/select.js') ?>"></script>
-    <script src="<?= asset('/assets/js/sectionMove.js') ?>"></script>
-    <script src="<?= asset('/assets/js/modal.js') ?>"></script>
-    <script src="<?= asset('/assets/js/volume.js') ?>"></script>
+    <script src="../../assets/js/vendor/jquery-3.7.1.min.js"></script>
+    <script src="../../assets/js/vendor/swiper-bundle.min.js"></script>
+    <script src="../../assets/js/common.js"></script>
+    <script src="../../assets/js/zoom.js"></script>
+    <script src="../../assets/js/tab.js"></script>
+    <script src="../../assets/js/select.js"></script>
+    <script src="../../assets/js/sectionMove.js"></script>
+    <script src="../../assets/js/modal.js"></script>
+    <script src="../../assets/js/volume.js"></script>
 
     <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=1mizviwsce"></script>
+
+    <!-- ✅ 퍼블(HTML) 전용 include 로더 -->
+    <script>
+        (function () {
+        const INCLUDE = {
+            header: "../../html/include/header.html",
+            footer: "../../html/include/footer.html",
+            bottomNav: "../../html/include/bottom_nav.html",
+            modal: "../../html/include/modal.html",
+            // 원래 PHP에서 "../include/loading.html" 쓰던 부분이랑 경로가 달라서 통일
+            loading: "../../html/include/loading.html"
+        };
+
+        $(function () {
+            $(".header").load(INCLUDE.header);
+            $(".footer").load(INCLUDE.footer);
+            $(".bottom-nav").load(INCLUDE.bottomNav);
+            $(".global-modal-wrap").load(INCLUDE.modal);
+            $(".loading").load(INCLUDE.loading);
+        });
+        })();
+    </script>
+
 </head>
 <body data-tts-summary="관광지 상세입니다. 정보를 확인하세요.">
     <div class="zoom-viewport" aria-label="확대 가능한 화면">
@@ -235,7 +112,7 @@ $T_station = "";
                 <div class="modal-background">
                 <!-- header -->
                 <header class="header">
-                    <?php include __DIR__.'/../../html/include/header.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/header.html'; ?> -->
                 </header>
                 <!-- //header -->
                 
@@ -252,7 +129,7 @@ $T_station = "";
                     <!-- 251205 1차 수정 : 버튼 추가 -->
                     <div class="detail-title">
                         <button type="button" class="nav-btn prev" aria-label="이전 페이지로 이동"></button>
-                        <h3><?= $row['title']; ?></h3>
+                        <h3>노들섬</h3>
                     </div>
                     <!-- //1차 수정 -->
                     <div class="scroll-sec">
@@ -263,61 +140,35 @@ $T_station = "";
                                     <div class="info-wrap" tabindex="1" aria-label="기본정보입니다. 주소, 전화번호, 인근 지하철역을 확인할 수 있습니다.">
                                         <h4 class="section-title sr-only">기본정보</h4>
                                         <ul class="info-list">
-                                            <li class="info-item" tabindex="1" aria-label="주소 : <?= $row['address_1']; ?>">
+                                            <li class="info-item" tabindex="1" aria-label="주소 : 서울특별시 용산구 양녕로 445">
                                                 <span class="info-term">주소</span>
-                                                <span class="info-desc"><?= $row['address_1']; ?></span>
+                                                <span class="info-desc">서울특별시 용산구 양녕로 445</span>
                                             </li>
-                                            <li class="info-item" tabindex="1" aria-label="전화번호 : <?= $T_phone?:'없음'; ?>">
+                                            <li class="info-item" tabindex="1" aria-label="전화번호 : 02-749-4500">
                                                 <span class="info-term">전화</span>
-                                                <span class="info-desc"><?= $T_phone ? $T_phone : '-'; ?></span>
+                                                <span class="info-desc">02-749-4500</span>
                                             </li>
-                                                    <?php
-                                                        if(count($R_is_station) == 0) {
-                                                            $T_station = "-";
-                                                            $T_station_text = "없음";
-                                                        } else {
-                                                            foreach ($R_is_station AS $key=>$value) {
-                                                                if($value['code'] && $value['line']){
-                                                                    $T_station .= "<span class='info-desc subway'>
-
-                                                                    <span class='subway-tag' style='background-color:{$config['cat_station_color'][$value['line']]};'>
-                                                                        {$value['line']}
-                                                                    </span>
-                                                                    <span class='subway-name'>" 
-                                                                    .$value['title_'.$GLOBALS['lang_code']]."
-                                                                    </span>
-                                                                    ".
-                                                                    "</span>";
-                                                                    $T_station_text .= $T_station_line[$value['line']].$value['title_'.$GLOBALS['lang_code']]." ";
-                                                                } else{
-                                                                    $T_station = '-';
-                                                                    $T_station_text = "없음";
-                                                                }
-                                                            }
-                                                        }
-                                                    ?>
-                                            <li class="info-item" tabindex="1" aria-label="인근 지하철역 : <?= $T_station_text?:'없음'; ?>">
+                                                                                                <li class="info-item" tabindex="1" aria-label="인근 지하철역 : 없음">
                                                 <span class="info-term">지하철역</span>
                                                 <div class="subway-wrap">
-                                                    <?= $T_station ?>
-                                                </div>
+                                                    -                                                </div>
                                             </li>
                                         </ul>
                                     </div>
                                     <div class="map-wrap" role="group" tabindex="1" aria-label="지도입니다. 확대와 축소 버튼을 사용할 수 있습니다.">
-                                        <div class="map-area" id="map">
+                                        <div class="map-area" id="map" style="position: relative; overflow: hidden; background: rgb(248, 249, 250);">
                                             <!-- 지도 API 또는 정적 이미지 영역 -->
-                                        </div>
+                                        <div style="position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; overflow: visible; width: 100%; height: 100%; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); z-index: 0; cursor: url(&quot;https://ssl.pstatic.net/static/maps/mantle/2x/openhand.cur&quot;), default;"><div style="position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; overflow: visible; width: 100%; height: 100%; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); z-index: 0;"><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 1;"><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: none; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 0; user-select: none;"></div><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 1; user-select: none;"><div style="position: absolute; top: 0px; left: 0px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; display: block; width: 0px; height: 0px; overflow: visible; box-sizing: content-box !important;"><div draggable="false" unselectable="on" style="position: absolute; top: -382px; left: 225px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27940/12693@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 386px; left: -31px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27939/12696@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -126px; left: 225px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27940/12694@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 130px; left: -31px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27939/12695@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 130px; left: 225px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27940/12695@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -126px; left: -31px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27939/12694@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 386px; left: 225px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27940/12696@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -382px; left: -31px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27939/12693@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -382px; left: 481px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27941/12693@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 386px; left: -287px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27938/12696@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -126px; left: 481px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27941/12694@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 130px; left: -287px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27938/12695@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 130px; left: 481px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27941/12695@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -126px; left: -287px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27938/12694@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 386px; left: 481px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27941/12696@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -382px; left: -287px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27938/12693@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div></div></div><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 100;"><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 101;"></div><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 103;"><div title="" style="position: absolute; overflow: hidden; box-sizing: content-box !important; cursor: inherit; left: 216px; top: 118px; width: 22px; height: 33px;"><map name="nmarker-0A4ED98D-27C0-46AD-A8B4-CBC444D6FE6A"><area href="#" shape="poly" coords="11,0,9,0,6,1,4,2,2,4,0,8,0,12,1,14,2,16,5,19,5,20,6,23,8,26,9,30,9,34,13,34,13,30,14,26,16,23,17,20,17,19,20,16,21,14,22,12,22,12,22,8,20,4,18,2,16,1,13,0" alt="마커의 경위도는 126.9580659298,37.5177234407 입니다." style="display: block; cursor: pointer;"></map><img draggable="false" unselectable="on" src="https://ssl.pstatic.net/static/maps/mantle/2x/marker-default.png" alt="" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; position: absolute; cursor: inherit; width: 22px; height: 33px; left: 0px; top: 0px;"><img src="https://ssl.pstatic.net/static/maps/mantle/2x/dot.gif" alt="" usemap="#nmarker-0A4ED98D-27C0-46AD-A8B4-CBC444D6FE6A" style="position: absolute; border: 0px; left: 0px; top: 0px; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; user-select: none; width: 22px; height: 33px;"></div></div><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 106;"></div></div></div><div style="position: absolute; display: none; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; overflow: visible; width: 100%; height: 100%; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); background-color: rgb(255, 255, 255); z-index: 10000; opacity: 0.5;"></div></div></div><div style="position: absolute; z-index: 100; margin: 0px; padding: 0px; pointer-events: none; bottom: 0px; right: 0px;"><div style="border: 0px none; margin: -3px 0px 0px; padding: 0px; pointer-events: none; float: right; height: 20px;"><div style="position: relative; width: 79px; height: 14px; margin: 0px 12px 6px 2px; overflow: hidden; pointer-events: auto;"><span style="display: block; margin: 0px; padding: 0px 4px; text-align: center; font-size: 10px; line-height: 11px; font-family: Helvetica, AppleSDGothicNeo-Light, nanumgothic, NanumGothic, 나눔고딕, Dotum, 돋움, sans-serif; font-weight: 700; color: rgb(34, 34, 37); text-shadow: rgba(255, 255, 255, 0.8) -1px 0px, rgba(255, 255, 255, 0.8) 0px 1px, rgba(255, 255, 255, 0.8) 1px 0px, rgba(255, 255, 255, 0.8) 0px -1px;">300m</span><img src="https://ssl.pstatic.net/static/maps/mantle/2x/new-scale-normal-b.png" width="73" height="3" alt="" style="position: absolute; left: 3px; bottom: 0px; z-index: 2; display: block; width: 73px; height: 3px; overflow: hidden; margin: 0px; padding: 0px; border: 0px none; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important;"><img src="https://ssl.pstatic.net/static/maps/mantle/2x/new-scale-normal-l.png" width="3" height="8" alt="" style="position:absolute;left:0;bottom:0;z-index:2;display:block;width:3px;height:8px;overflow:hidden;margin:0;padding:0;border:0 none;max-width:none !important;max-height:none !important;min-width:0 !important;min-height:0 !important;"><img src="https://ssl.pstatic.net/static/maps/mantle/2x/new-scale-normal-r.png" width="3" height="8" alt="" style="position:absolute;right:0;bottom:0;z-index:2;display:block;width:3px;height:8px;overflow:hidden;margin:0;padding:0;border:0 none;max-width:none !important;max-height:none !important;min-width:0 !important;min-height:0 !important;"></div></div><div style="border: 0px none; margin: 0px; padding: 0px; pointer-events: none; float: right;"><a href="https://ssl.pstatic.net/static/maps/mantle/notice/legal.html" target="_blank" style="display: block; width: 45px; height: 10px; overflow: hidden; margin: 0px 5px 7px 12px; pointer-events: auto;"><img src="https://ssl.pstatic.net/static/maps/mantle/2x/new-naver-logo-normal.png" width="45" height="10" alt="NAVER" style="display:block;width:45px;height:10px;overflow:hidden;border:0 none;margin:0;padding:0;max-width:none !important;max-height:none !important;min-width:0 !important;min-height:0 !important;"></a></div></div><div style="position: absolute; z-index: 100; margin: 0px; padding: 0px; pointer-events: none; bottom: 0px; left: 0px;"><div style="border: 0px none; margin: 0px; padding: 0px; pointer-events: none; float: left; height: 19px;"><div class="map_copyright" style="margin: 0px; padding: 0px 0px 2px 10px; height: 19px; line-height: 19px; color: rgb(68, 68, 68); font-family: Helvetica, AppleSDGothicNeo-Light, nanumgothic, NanumGothic, 나눔고딕, Dotum, 돋움, sans-serif; font-size: 11px; clear: both; white-space: nowrap; pointer-events: none;"><div style="float: left;"><span style="white-space: pre; color: rgb(68, 68, 68);">© NAVER Corp.</span></div><a href="#" style="font-family: Helvetica, AppleSDGothicNeo-Light, nanumgothic, NanumGothic, 나눔고딕, Dotum, 돋움, sans-serif; font-size: 11px; line-height: 19px; margin: 0px 0px 0px 5px; padding: 0px; color: rgb(68, 68, 68); float: left; pointer-events: auto; text-decoration: underline; display: none;">더보기</a><div style="float: left;"><a target="_blank" href="http://www.openstreetmap.org/copyright" style="pointer-events: auto; white-space: pre; display: none; color: rgb(68, 68, 68);"> /OpenStreetMap</a></div></div></div></div><div style="border: 1px solid rgb(41, 41, 48); background: rgb(255, 255, 255); padding: 15px; color: rgb(51, 51, 51); position: absolute; font-size: 11px; line-height: 1.5; clear: both; display: none; max-width: 350px !important; max-height: 300px !important;"><h5 style="font-size: 12px; margin-top: 0px; margin-bottom: 10px;">지도 데이터</h5><a href="#" style="position: absolute; top: 8px; right: 8px; width: 14px; height: 14px; font-size: 14px; line-height: 14px; display: block; overflow: hidden; color: rgb(68, 68, 68); text-decoration: none; font-weight: bold; text-align: center;">x</a><div><span style="white-space: pre; color: rgb(68, 68, 68); float: left;">© NAVER Corp.</span><a target="_blank" href="http://www.openstreetmap.org/copyright" style="pointer-events: auto; white-space: pre; color: rgb(68, 68, 68); float: left; display: none;"> /OpenStreetMap</a></div></div></div>
                                         <!-- 251205 1차 수정 : 구조 변경 -->
                                         <div class="map-control">
                                             <div class="btn-wrap">
-                                                <button type="button" class="map-zoom-in-btn"  aria-label="지도 확대 버튼">
+                                                <button type="button" class="map-zoom-in-btn" aria-label="지도 확대 버튼">
                                                     <span class="icon" aria-hidden="true"></span>
                                                     <span>확대</span>
                                                 </button>
                                             </div>
                                             <div class="btn-wrap">
-                                                <button type="button" class="map-zoom-out-btn"  aria-label="지도 축소 버튼">
+                                                <button type="button" class="map-zoom-out-btn" aria-label="지도 축소 버튼">
                                                     <span class="icon" aria-hidden="true"></span>
                                                     <span>축소</span>
                                                 </button>
@@ -350,13 +201,13 @@ $T_station = "";
                                         <ul class="qr-list">
                                             <li class="qr-item">
                                                 <span class="qr-logo google" aria-hidden="true"></span>
-                                                <div class="qr-code"  tabindex="1" aria-label="구글 지도 QR코드입니다.">
+                                                <div class="qr-code" tabindex="1" aria-label="구글 지도 QR코드입니다.">
                                                     <img src="../../assets/images/dummy/google_maps_qr.png" alt="구글 지도 위치 정보 QR코드">
                                                 </div>
                                             </li>
                                             <li class="qr-item">
                                                 <span class="qr-logo naver" aria-hidden="true"></span>
-                                                <div class="qr-code"  tabindex="1" aria-label="네이버 지도 QR코드입니다.">
+                                                <div class="qr-code" tabindex="1" aria-label="네이버 지도 QR코드입니다.">
                                                     <img src="../../assets/images/dummy/naver_map_qr.png" alt="네이버 지도 위치 정보 QR코드">
                                                 </div>
                                             </li>
@@ -367,29 +218,23 @@ $T_station = "";
                         </div>
     
                         <!-- 상세 정보 & 무장애 편의정보 -->
-                        <?php if($strPictoGram !='' || $row['story'] != '') { ?>
-                        <div class="sec-wrap"  tabindex="1" aria-label="상세정보입니다. 상세정보 <?= $row['story']; ?> . 무장애 편의정보 : <?= $strPictoGram_text ? $strPictoGram_text : '-'; ?> ">
+                                                <div class="sec-wrap" tabindex="1" aria-label="상세정보입니다. 상세정보 1950년대까지 중지도로 불리며 백사장과 스케이트장으로 활용되었던 노들섬은 6-70년대 한강개발계획으로 중지도의 모래를 사용하면서 한강중앙에 떠있는 섬이 되었다. 이와 함께 약 50여년간 제대로 활용되지 못하다가 2005년 서울시가 섬을 매입하고 시민들의문화 휴식 공간으로 만들기위한 준비를 시작하면서 다양한 시도 끝에 2019년 9월 최대한 원형을 그대로 간직한 채로 시민들을 위한 복합문화공간으로 돌아왔다.노들섬의 대표적 문화시설로는 라이브하우스, 노들서가, 앤테이블, 뮤직라운지류, 식물도, 스페이스445, 다목적홀숲 등이 있으며 각 시설들을 중심으로 다양한 문화 프로그램이 진행된다. . 무장애 편의정보 : 장애인 주차장 있음(8대)_무장애 편의시설.출입구까지 턱이 없어 휠체어 접근 가능함.주출입구는 턱이 없어 휠체어 접근 가능함.엘리베이터 있음.장애인 화장실 있음.장애인 전용 관람석 있음(4석).점자블록 있음(주요시설 앞)_시각장애인 편의시설.음성안내기 있음.점자안내판 있음.수유실 있음(1층 중정 화장실 옆). ">
                             <section class="detail-sec">
                                 <div class="sec-inner">
                                     <h4 class="section-title">상세정보</h4>
                                     <p class="detail-text">
-                                        <?= $row['story']; ?>
-                                    </p>
+                                        1950년대까지 중지도로 불리며 백사장과 스케이트장으로 활용되었던 노들섬은 6-70년대 한강개발계획으로 중지도의 모래를 사용하면서 한강중앙에 떠있는 섬이 되었다. 이와 함께 약 50여년간 제대로 활용되지 못하다가 2005년 서울시가 섬을 매입하고 시민들의문화 휴식 공간으로 만들기위한 준비를 시작하면서 다양한 시도 끝에 2019년 9월 최대한 원형을 그대로 간직한 채로 시민들을 위한 복합문화공간으로 돌아왔다.노들섬의 대표적 문화시설로는 라이브하우스, 노들서가, 앤테이블, 뮤직라운지류, 식물도, 스페이스445, 다목적홀숲 등이 있으며 각 시설들을 중심으로 다양한 문화 프로그램이 진행된다.                                    </p>
                                 </div>
                             </section>
-                            <?php if($strPictoGram){ ?>
-                            <section class="access-sec">
+                                                        <section class="access-sec">
                                 <div class="sec-inner">
                                     <h4 class="section-title">무장애 편의정보</h4>
                                     <div class="access-wrap">
-                                        <?= $strPictoGram; ?>
-                                    </div>
+                                        <div class="access-item"><h5 class="access-title">지체장애</h5><ul class="access-list"><li><span class="icon_parking"></span>장애인 주차장 있음(8대)_무장애 편의시설</li><li><span class="icon_publictransport"></span>출입구까지 턱이 없어 휠체어 접근 가능함</li><li><span class="icon_exit"></span>주출입구는 턱이 없어 휠체어 접근 가능함</li><li><span class="icon_elevator"></span>엘리베이터 있음</li><li><span class="icon_restroom"></span>장애인 화장실 있음</li><li><span class="icon_auditorium"></span>장애인 전용 관람석 있음(4석)</li></ul></div><div class="access-item"><h5 class="access-title">시각장애</h5><ul class="access-list"><li><span class="icon_braileblock"></span>점자블록 있음(주요시설 앞)_시각장애인 편의시설</li><li><span class="icon_audioguide"></span>음성안내기 있음</li><li><span class="icon_brailepromotion"></span>점자안내판 있음</li></ul></div><div class="access-item"><h5 class="access-title">영유아가족</h5><ul class="access-list"><li><span class="icon_lactationroom"></span>수유실 있음(1층 중정 화장실 옆)</li></ul></div>                                    </div>
                                 </div>
                             </section>
-                            <?php } ?>
-                        </div>
-                        <?php } ?>
-                    </div>
+                                                    </div>
+                                            </div>
                 </main>
                 <!-- //main -->
     
@@ -414,21 +259,21 @@ $T_station = "";
     
                 <!-- bottom nav -->
                 <nav class="bottom-nav" aria-label="하단 주요 메뉴">
-                    <?php include __DIR__.'/../../html/include/bottom_nav.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/bottom_nav.html'; ?> -->
                 </nav>
                 <!-- bottom nav -->
-                 
+
                 </div>
 
                 <!-- 공통 모달 -->
                 <div class="global-modal-wrap">
-                    <?php include __DIR__.'/../../html/include/modal.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/modal.html'; ?> -->
                 </div>
                 <!-- //공통 모달 -->
                 
                 <!-- footer -->
                 <footer class="footer">
-                    <?php include __DIR__.'/../../html/include/footer.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/footer.html'; ?> -->
                 </footer>
                 <!-- //footer -->
             </div>
@@ -436,7 +281,7 @@ $T_station = "";
             <!-- 251215 로딩화면 추가 -->
             <!-- 로딩화면 -->
             <div class="loading is-hidden" role="status" aria-live="polite" aria-atomic="true">
-                <?php include __DIR__.'/../include/loading.html'; ?>
+                <!-- <?php include __DIR__.'/../include/loading.html'; ?> -->
             </div>
 
             <!-- 상하좌우 이동 버튼 -->
@@ -475,7 +320,7 @@ $T_station = "";
             <!-- //상하좌우 이동 버튼 -->
         </div>
     </div>
-    <script>
+    <!-- <script>
         var map = new naver.maps.Map('map', {
             center: new naver.maps.LatLng(<?= $row['coordinate_y'] ?>, <?= $row['coordinate_x'] ?>),
             zoom: 15,
@@ -503,6 +348,6 @@ $T_station = "";
         document.querySelector('.map-zoom-out-btn')?.addEventListener('click', function () {
             map.setZoom(map.getZoom() - 1, true); // true = 애니메이션
         });
-    </script>
+    </script> -->
 </body>
 </html>
