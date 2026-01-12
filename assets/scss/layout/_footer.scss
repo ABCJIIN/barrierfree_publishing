@@ -1,0 +1,65 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.footer {
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1080px;
+    background: #242C33;
+    z-index: 50;
+    .ft-inner {
+        width: calc(100% - 64px);
+        height: 68px;
+        margin: 0 auto;
+        @include mi.flexbox(row, space-between, center);
+    }
+    .copyright {
+        font-size: va.$font-24;
+        color: #B6B6B6;
+        letter-spacing: -0.02em;
+    }
+    .btn-wrap {
+        @include mi.flexbox(row, flex-end, center);
+        gap: 16px;
+        > button {
+            height: 48px;
+            padding: 0 24px;
+            @include mi.flexbox(row, center, center);
+            gap: 8px;
+            border: 1px solid #fff;
+            border-radius: 100px;
+            background: transparent;
+            .btn-label {
+                font-size: va.$font-20;
+                color: #fff;
+                font-weight: 500;
+            }
+        }
+    }
+    .volume-control-btn {
+        .volume-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: url(../../../assets/images/icon/volume.svg) no-repeat center/contain;
+        }
+    }
+    .zoom-btn {
+        &.close {
+            .zoom-icon {
+                background: url(../../../assets/images/icon/close.svg) no-repeat center/contain;
+            }
+        }
+        .zoom-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: url(../../../assets/images/icon/search.svg) no-repeat center/contain;
+        }
+    }
+}
+
+/* 낮은 자세 모드 */

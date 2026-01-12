@@ -1,0 +1,12 @@
+@use '../abstracts/mixins' as mi;
+
+/* Pretendard Font Faces */
+@include mi.font-face('Pretendard', 'Pretendard-Black', 900);
+@include mi.font-face('Pretendard', 'Pretendard-ExtraBold', 800);
+@include mi.font-face('Pretendard', 'Pretendard-Bold', 700);
+@include mi.font-face('Pretendard', 'Pretendard-SemiBold', 600);
+@include mi.font-face('Pretendard', 'Pretendard-Medium', 500);
+@include mi.font-face('Pretendard', 'Pretendard-Regular', 400);
+@include mi.font-face('Pretendard', 'Pretendard-Light', 300);
+@include mi.font-face('Pretendard', 'Pretendard-ExtraLight', 200);
+@include mi.font-face('Pretendard', 'Pretendard-Thin', 100);

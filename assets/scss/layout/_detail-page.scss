@@ -1,0 +1,424 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+/* 관광, 음식점 상세페이지 레이아웃 */
+.detail-page {
+    /* 서브페이지 전용 로컬 컬러 토큰 */
+    --sp-panel-radius: 24px;
+    --sp-panel-border: transparent;
+    --sp-panel-bg: #ffffff;
+    --sp-border: #888888;
+    
+    --sp-heading-color: #000000;
+    --sp-body-color: #555555;
+    
+    --sp-subway-tag-bg: #6594C2;
+    --sp-subway-tag-color: #ffffff;
+    
+    --sp-map-radius: 8px;
+    --sp-map-btn-bg: #ffffff;
+    --sp-map-btn-color: #000000;
+
+    --sp-qr-bg: #ffffff;
+    --sp-qr-radius: 4px;
+    --sp-qr-bullet-color: #555555;
+    --sp-access-title-color: #2191FD;
+
+    --sp-access-icon-bg: transparent;
+
+    /* 아이콘/이미지 토큰 */
+    --sp-icon-map-zoom-in: url(../../../assets/images/icon/plus.svg);
+    --sp-icon-map-zoom-out: url(../../../assets/images/icon/minus.svg);
+
+    --sp-icon-qr-google: url(../../../assets/images/common/google_maps_logo.png);
+    --sp-icon-qr-naver: url(../../../assets/images/common/naver_map_logo.png);
+
+    --sp-icon-disability: url(../../../assets/images/icon/disability.svg);
+    --sp-icon-disability-visual: url(../../../assets/images/icon/visual_disability.svg);
+
+    .scroll-sec {
+        width: calc(100% - 64px);
+        height: calc(100vh - 509px);
+        margin: 0 auto;
+        padding: 32px 0;
+        @include mi.flexbox(column, flex-start, flex-start);
+        gap: 32px;
+        overflow-y: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    .sec-wrap {
+        width: 100%;
+        padding: 0 40px;
+        border-radius: var(--sp-panel-radius);
+        border: 1px solid var(--sp-panel-border);
+        background: var(--sp-panel-bg);
+        section {
+            padding: 40px 0;
+        }
+    }
+
+    .section-title {
+        font-size: va.$font-24;
+        font-weight: 700;
+        color: var(--sp-heading-color);
+    }
+
+    /* 기본 정보 & 지도 */
+    .base-info-sec {
+        .sec-inner {
+            width: 100%;
+            @include mi.flexbox(row, center, stretch);
+            gap: 24px;
+
+            > div {
+                width: calc(50% - 12px);
+            }
+        }
+
+        .info-list {
+            height: 360px;
+            border-top: 1px solid var(--sp-border);
+            border-bottom: 1px solid var(--sp-border);
+
+            .info-item {
+                width: 100%;
+                height: 120px;
+                @include mi.flexbox(row, flex-start, center);
+                gap: 8px;
+                border-bottom: 1px solid var(--sp-border);
+
+                &:last-child {
+                    border-bottom: 0;
+                }
+
+                .info-term {
+                    display: block;
+                    width: 96px;
+                    font-size: va.$font-24;
+                    font-weight: 700;
+                    color: var(--sp-heading-color);
+                    white-space: nowrap;
+                }
+
+                .subway-wrap {
+                    width: calc(100% - 104px);
+                    @include mi.flexbox(row, flex-start, center);
+                    flex-wrap: wrap;
+                    gap: 8px;
+                }
+
+                .info-desc {
+                    width: calc(100% - 120px);
+                    // 한국어: 24px, 영어: 24px의 90% = 21.6px
+                    @include mi.font-i18n(
+                        va.$font-24,
+                        va.$font-24 * 0.9
+                    );
+                    font-weight: 500;
+                    line-height: 132%;
+                    color: var(--sp-body-color);
+                    word-break: keep-all;
+
+                    &.subway {
+                        width: auto;
+                        @include mi.flexbox(row, flex-start, center);
+                        gap: 8px;
+                    }
+
+                    .subway-tag {
+                        display: inline-block;
+                        height: 34px;
+                        @include mi.flexbox(row, center, center);
+                        padding: 0 10px;
+                        font-size: va.$font-24;
+                        font-weight: 500;
+                        color: var(--sp-subway-tag-color);
+                        letter-spacing: -0.02em;
+                        border-radius: 100px;
+                        background: var(--sp-subway-tag-bg);
+                    }
+                }
+            }
+
+            &.row04 {
+                .info-item {
+                    height: 90px;
+                }
+            }
+        }
+
+        .map-wrap {
+            border-radius: var(--sp-map-radius);
+            border: 1px solid var(--sp-border);
+            overflow: hidden;
+
+            .map-area {
+                width: 100%;
+                height: calc(100% - 56px);
+            }
+
+            .map-control {
+                position: relative;
+                width: 100%;
+                height: 56px;
+                border-top: 1px solid var(--sp-border);
+                @include mi.flexbox(row, center, center);
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 1px;
+                    height: 100%;
+                    background: var(--sp-border);
+                }
+
+                .btn-wrap {
+                    position: relative;
+                    width: 50%;
+                    height: 100%;
+                    @include mi.flexbox(row, center, center);
+                }
+
+                button {
+                    width: calc(100% - 32px);
+                    height: 100%;
+                    margin: 0 16px;
+                    font-size: va.$font-20;
+                    font-weight: 500;
+                    color: var(--sp-map-btn-color);
+                    background: var(--sp-map-btn-bg);
+                    @include mi.flexbox(row, center, center);
+                    gap: 8px;
+
+                    &:focus,
+                    &:focus-visible {
+                        box-shadow: none;
+                        outline: none;
+                        @include mi.focus-ring(0, after, 5px);
+                    }
+
+                    .icon {
+                        display: inline-block;
+                        width: 24px;
+                        height: 24px;
+                    }
+
+                    &.map-zoom-in-btn {
+                        .icon {
+                            background: var(--sp-icon-map-zoom-in) no-repeat center/contain;
+                        }
+                    }
+                    &.map-zoom-out-btn {
+                        .icon {
+                            background: var(--sp-icon-map-zoom-out) no-repeat center/contain;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /* QR 안내 */
+    .qr-sec {
+        .sec-inner {
+            width: 100%;
+            @include mi.flexbox(row, center, center);
+            gap: 24px;
+        }
+
+        .qr-info-wrap {
+            width: calc(100% - 252px);            
+        }
+
+        .qr-guide-list {
+            padding-top: 16px;
+            @include mi.flexbox(column, flex-start, flex-start);
+            gap: 8px;
+        }
+        
+        .qr-guide-item {
+            position: relative;
+            @include mi.flexbox(row, flex-start, flex-start);
+            gap: 8px;
+            font-size: va.$font-24;
+            font-weight: 500;
+            line-height: 35px;
+            color: var(--sp-body-color);
+            word-break: keep-all;
+
+            &::before {
+                content: "";
+                display: block;
+                position: relative;
+                width: 5px;
+                height: 5px;
+                margin: 15px 6.5px;
+                border-radius: 50%;
+                background: var(--sp-qr-bullet-color);
+            }
+        }
+
+        .qr-list {
+            @include mi.flexbox(row, center, flex-start);
+            gap: 32px;
+        }
+
+        .qr-item {
+            @include mi.flexbox(column, flex-start, center);
+            gap: 10px;
+
+            .qr-logo {
+                display: block;
+                width: 60px;
+                height: 54px;
+                &.google {
+                    background: var(--sp-icon-qr-google) no-repeat center/contain;
+                }
+                &.naver {
+                    background: var(--sp-icon-qr-naver) no-repeat center/contain;
+                }
+            }
+
+            .qr-code {
+                width: 98px;
+                padding: 5px;
+                height: 99px;
+                border: 1px solid var(--sp-border);
+                border-radius: var(--sp-qr-radius);
+                background: var(--sp-qr-bg);
+
+                img {
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+            }
+        }
+    }
+
+    /* 상세 정보 */
+    .detail-sec {
+        .detail-text {
+            padding-top: 24px;
+            font-size: va.$font-24;
+            font-weight: 500;
+            line-height: 35px;
+            color: var(--sp-body-color);
+        }
+
+        & + .detail-sec {
+            border-top: 1px solid var(--sp-border);
+        }
+    }
+
+    /* 무장애 편의정보 */
+    .access-sec {
+        border-top: 1px solid var(--sp-border);
+
+        .access-title {
+            padding-top: 24px;
+            padding-bottom: 12px;
+            font-size: va.$font-20;
+            color: var(--sp-access-title-color);
+            font-weight: 700;
+        }
+
+        .access-list {
+            @include mi.flexbox(column, flex-start, flex-start);
+            gap: 12px;
+
+            li {
+                position: relative;
+                font-size: va.$font-24;
+                font-weight: 500;
+                line-height: 35px;
+                color: var(--sp-body-color);
+                @include mi.flexbox(row, flex-start, center);
+                gap: 12px;
+
+                [class^="icon_"] {
+                    display: block;
+                    width: 32px;
+                    height: 32px;
+                    flex-shrink: 0;
+                    border-radius: 7px;
+                    background-color: var(--sp-access-icon-bg);
+                }
+            }
+
+            &.visual {
+                li {
+                    &::before {
+                        background: var(--sp-icon-disability-visual) no-repeat center/contain;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .detail-page {
+        .scroll-sec {
+            width: calc(100% - 48px);
+            height: 499px;
+            padding: 16px 0;
+            overflow-y: hidden;
+        }
+
+        .sec-wrap {
+            &.is-hidden {
+                display: none;
+            }
+            &.is-active {
+                display: block;
+            }
+        }
+    }
+}
+
+/* 고대비 모드 - detail-page */
+.mode-high-contrast {
+    .detail-page {
+        --sp-panel-radius: 0;
+        --sp-panel-border: #B6B6B6;
+        --sp-panel-bg: #1B1F23;
+        --sp-border: #B6B6B6;
+
+        --sp-heading-color: #ffffff;
+        --sp-body-color: #C1C1C1;
+
+        --sp-subway-tag-bg: #6594C2;
+        --sp-subway-tag-color: #ffffff;
+
+        --sp-map-radius: 0;
+        --sp-map-btn-bg: #1B1F23;
+        --sp-map-btn-color: #ffffff;
+
+        --sp-qr-bg: #ffffff;
+        --sp-qr-radius: 0;
+        --sp-qr-bullet-color: #C1C1C1;
+        --sp-access-title-color: #1AEBFF;
+
+        --sp-access-icon-bg: #FFFF2E;
+
+        --sp-icon-map-zoom-in: url(../../../assets/images/icon/high-contrast/plus.svg);
+        --sp-icon-map-zoom-out: url(../../../assets/images/icon/high-contrast/minus.svg);
+
+        --sp-icon-qr-google: url(../../../assets/images/common/high-contrast/google_maps_logo.png);
+        --sp-icon-qr-naver: url(../../../assets/images/common/high-contrast/naver_map_logo.png);
+
+        --sp-icon-disability: url(../../../assets/images/icon/high-contrast/disability.svg);
+        --sp-icon-disability-visual: url(../../../assets/images/icon/high-contrast/visual_disability.svg);
+    }
+}

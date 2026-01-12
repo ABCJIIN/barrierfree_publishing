@@ -1,0 +1,67 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.main.tour {
+    /* 관광 페이지 토큰 */
+    --tu-empty-info-color: #000;
+
+    .dimmed {
+        top: 418px;
+        height: calc(100vh - 486px);
+    }
+
+    .tab-menu {
+        height: calc(100vh - 395px);
+    }
+
+    /* 관광 - empty */
+    .empty-screen {
+        width: 100%;
+        height: calc(100vh - 629px);
+        @include mi.flexbox(row, center, center);
+        .empty-info {
+            color: var(--tu-empty-info-color);
+            text-align: center;
+            font-size: va.$font-40;
+            font-weight: 700;
+            letter-spacing: -0.8px;
+        }
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .main.tour {
+        .tab-menu {
+            height: 579px;
+        }
+
+        .dimmed {
+            position: absolute;
+            top: 80px;
+            height: 505px;
+        }
+        
+        .sort-wrap {
+            .sort-inner {
+                padding: 12px 0;
+            }
+        }
+
+        /* 관광 - empty */
+        .empty-screen {
+            height: 419px; 
+            .empty-info {
+                font-size: va.$font-32;
+            }
+        }
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast {
+    .main.tour {
+        /* 관광 페이지 토큰 */
+        --tu-empty-info-color: #fff;
+    }
+}

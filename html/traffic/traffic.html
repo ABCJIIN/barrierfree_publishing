@@ -1,0 +1,362 @@
+<?php 
+include_once __DIR__.'/../../config/common.php';
+date_default_timezone_set('Asia/Seoul');
+
+// GET 파라미터 받기 (없으면 기본값)
+$lang     = $_GET['lang']     ?? 'K';     // K: 국문, E: 영문 이런 식
+$io_type  = $_GET['io_type']  ?? 'I';     // O: 출발, I: 도착
+$fromTime = $_GET['from_time'] ?? date("Hi");
+$toTime   = $_GET['to_time']   ?? '2400';
+$pageNo   = isset($_GET['page_no']) ? (int)$_GET['page_no'] : 1;
+$airline  = $_GET['airline']  ?? null;
+$io_text = $io_type=='O' ? '출발' : '도착';
+
+$A_var = getAiportIch($lang, $fromTime, $io_type, $toTime, $pageNo, $airline);
+
+
+// get 파라미터
+$type = $_GET['type'] ?? '0'; // 0 : 항공 1 : 열차
+$code = $_GET['code'] ?? 'ICN1';
+$code_text = $code=='ICN1' ? '인천 T1' : '인천 T2';
+
+$pageinfo['cpage']	= !empty($_REQUEST['page']) && $_REQUEST['page'] > 0 ? trim($_REQUEST['page']) : 1;
+
+// 요일
+$date = date('Y-m-d');
+$weekMap = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+$yoil_t = $weekMap[date('w')];
+
+
+if($code == 'ICN1' || $code == 'ICN2'){
+
+    $itemNode = $A_var['body']['items']['item'] ?? null;
+
+    if ($itemNode){
+        $A_items = $A_var['body']['items']['item'];
+    }
+    else {
+        $A_items = $A_var['body']['items'];
+    }
+
+    $A_result = [];
+
+
+    foreach($A_items as $key=> $value){
+        if ($code == 'ICN1' && $value['terminalId'] == 'P01') {
+            $A_result[] = $value;
+        }
+        else if ($code == 'ICN2' && $value['terminalId'] == 'P03') {
+            $A_result[] = $value;
+        }
+    }
+
+    $totals = count($A_result);
+
+    // ===== Zebra Pagination 설정 =====
+    $pagination = new Zebra_Pagination();
+
+    // 전체 레코드 개수 (배열 길이)
+    $pagination->records($totals);
+
+    // 한 페이지에 보여줄 행 개수
+    // $perPage = 10;
+    $lowMode = $_COOKIE['lowMode'] ?? '0';
+    $perPage = ($lowMode === '1') ? 5 : 15;
+    $pagination->records_per_page($perPage);
+
+    // 현재 페이지 가져오기 (GET ?page= 에서 읽어옴)
+    $currentPage = $pagination->get_page();
+
+    $pageinfo['cpage'] = $currentPage;
+
+}
+?>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART TOURIST INFORMATION</title>
+    <script src="<?= asset('/assets/js/idleTimer.js') ?>"></script>
+
+    <script>
+        (function () {
+            try {
+                var contrast = localStorage.getItem('contrastMode'); // '1' | '0' | null
+                var low      = localStorage.getItem('lowMode');      // '1' | '0' | null
+                var voice      = localStorage.getItem('voiceMode');      // '1' | '0' | null
+                var last     = localStorage.getItem('lastMode');     // 'contrast' | 'low' | 'none' | null
+                var html     = document.documentElement;
+
+                function applyContrast() {
+                    html.classList.add('mode-high-contrast');
+                    html.classList.remove('mode-low-posture');
+                    html.classList.remove('mode-voice');
+                }
+
+                function applyLow() {
+                    html.classList.add('mode-low-posture');
+                    html.classList.remove('mode-high-contrast');
+                    html.classList.remove('mode-voice');
+                }
+
+                function applyVoice() {
+                    html.classList.add('mode-voice');
+                    html.classList.remove('mode-low-posture');
+                    html.classList.remove('mode-high-contrast');
+                }
+
+                // 1) lastMode 기준으로 우선 적용
+                if (last === 'contrast' && contrast === '1') {
+                    applyContrast();
+                } else if (last === 'low' && low === '1') {
+                    applyLow();
+                } else if (last === 'voice' && voice === '1') {
+                    applyVoice();
+                } else {
+                    // 2) lastMode 정보가 없거나 꼬였을 때, storage 값으로 복구
+                    if (contrast === '1' && low !== '1' && voice !== '1') {
+                        applyContrast();
+                        localStorage.setItem('lastMode', 'contrast');
+                    } else if (low === '1' && contrast !== '1' && voice !== '1') {
+                        applyLow();
+                        localStorage.setItem('lastMode', 'low');
+                    } else if (voice === '1' && contrast !== '1' && low !== '1') {
+                        applyVoice();
+                        localStorage.setItem('lastMode', 'voice');
+                    } else {
+                        // 둘 다 1이거나 둘 다 0/없음 → 안전하게 일반 모드
+                        html.classList.remove('mode-low-posture');
+                        html.classList.remove('mode-high-contrast');
+                        html.classList.remove('mode-voice');
+                        localStorage.setItem('lastMode', 'none');
+                    }
+                }
+            } catch (e) {
+                // localStorage 사용 불가 시 그냥 무시
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="<?= asset('/assets/scss/vendors/swiper-bundle.min.css') ?>">
+    <link rel="stylesheet" href="<?= asset('/assets/scss/main.css') ?>">
+
+    <script src="<?= asset('/assets/js/vendor/jquery-3.7.1.min.js') ?>"></script>
+    <script src="<?= asset('/assets/js/vendor/swiper-bundle.min.js') ?>"></script>
+    <script src="<?= asset('/assets/js/common.js') ?>"></script>
+    <script src="<?= asset('/assets/js/zoom.js') ?>"></script>
+    <script src="<?= asset('/assets/js/tab.js') ?>"></script>
+    <script src="<?= asset('/assets/js/select.js') ?>"></script>
+    <script src="<?= asset('/assets/js/modal.js') ?>"></script>
+    <!-- <script src="<?= asset('/assets/js/filter.js') ?>"></script> -->
+    <script src="<?= asset('/assets/js/volume.js') ?>"></script>
+</head>
+<body data-tts-summary="교통 안내 화면입니다. 항공편 실시간 목록을 확인할 수 있습니다. 상단 교통검색에서 출발·도착과 터미널을 변경할 수 있습니다. 현재 선택된 옵션은 항공, <?= $io_text; ?>, <?= $code_text; ?> 입니다.">
+    <div class="zoom-viewport" aria-label="확대 가능한 화면">
+        <div class="zoom-move-wrap h917">
+            <div class="zoom-canvas">
+                <div class="modal-background">
+                <!-- header -->
+                <header class="header">
+                    <?php include __DIR__.'/../../html/include/header.html'; ?>
+                </header>
+                <!-- //header -->
+                
+                <!-- sub header -->
+                <div class="sub-header">
+                    <div class="sub-hd-inner">
+                        <h2 class="page-title">교통</h2>
+                    </div>
+                </div>
+                <!-- //sub header -->
+                
+                <!-- main -->
+                <main class="main traffic">
+                    <!-- 상단 필터 + 제목 영역 -->
+                    <div class="detail-title">
+                        <!-- 251205 1차 수정 : 버튼명 변경, label명 변경 -->
+                        <button type="button" class="traffic-search-btn" aria-haspopup="true" aria-label="교통 검색 옵션을 선택합니다.">
+                            <span class="icon" aria-hidden="true"></span>
+                            <span class="label">교통검색</span>
+                        </button>
+                        <!-- //1차 수정 -->
+                        <h3>
+                            <span class="traffic-type">항공</span>
+                            <span class="traffic-direction"><?= $io_text; ?></span>
+                            <span class="traffic-location"><?= $code_text; ?></span>
+                        </h3>
+                    </div>
+                    <!-- //상단 필터 + 제목 영역 -->
+
+                    <!-- 날짜/새로고침 + 테이블 영역 -->
+                    <!-- 251205 1차 수정 : div => section으로 수정 -->
+                    <section class="traffic-content" tabindex="1" aria-label=" <?= date('Y년m월d일'); ?> 항공편 목록입니다. 당일 자정 내에 운행되는 항공편만 표시됩니다.">
+                        <div class="traffic-toolbar">
+                            <div class="left-wrap">
+                                <div class="date-wrap">
+                                    <time datetime="<?= date('Y-m-d'); ?>"><?= date('Y-m-d'); ?></time>
+                                    <span class="weekday"><?= $yoil_t; ?></span>
+                                </div>
+                                <p class="info-text">당일 자정 내에 운행되는 항공편만 표시됩니다.</p>
+                            </div>
+                            <button type="button" class="refresh-btn" aria-label="항공편 새로 고침">
+                                <span class="icon" aria-hidden="true"></span>
+                                <span class="label">새로고침</span>
+                            </button>
+                        </div>
+
+                        <div class="tb-wrap" tabindex="1" aria-label="">
+                            <table class="traffic-table">
+                                <caption class="sr-only">실시간 교통 정보</caption>
+                                <!-- 251205 1차 수정 : width값 변경 -->
+                                <colgroup>
+                                    <col style="width:140px;">
+                                    <col style="width:auto;">
+                                    <col style="width:auto;">
+                                    <col style="width:140px;">
+                                    <col style="width:auto;">
+                                    <col style="width:120px;">
+                                </colgroup>
+                                <!-- //1차 수정 -->
+                                <thead>
+                                    <tr>
+                                        <th scope="col">항공사</th>
+                                        <th scope="col">운항 편명</th>
+                                        <th scope="col">시간</th>
+                                        <th scope="col">구분</th>
+                                        <th scope="col"><?= $io_type == 'O' ? '도착' : '출발' ?></th>
+                                        <th scope="col">상태</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php  
+
+                                    if ($totals  == 0) {
+                                        echo "
+                                            <tr>
+                                                <td colspan=6 class='transportation__table-noresult' style='height:500px; font-size:30px; text-align:center;'>정보 없음</td>
+                                            </tr>
+                                        ";
+                                    } else {
+                                        // $limit_start = ($pageinfo['cpage'] - 1) * 10;
+                                        $limit_start = ($pageinfo['cpage'] - 1) * $perPage;
+                                        // 마지막 페이지에서 배열 범위 넘어가지 않게 끝 위치 계산
+                                        $limit_end   = min($limit_start + $perPage, $totals);
+                                        for($i =$limit_start; $i <$limit_end; $i++){
+                                            $value = $A_result[$i];
+                                            if (is_array($value)) {
+                                                $T_code = substr($value['flightId'], 0, 2);
+                                                $T_time2 = '';
+
+                                                if ($value['scheduleDateTime'] != $value['estimatedDateTime']) {
+                                                    $T_time2 = 	"<s class='text-muted'>".substr($value['scheduleDateTime'], 0, 2).":".substr($value['scheduleDateTime'], 2, 2)."</s>";
+                                                }
+
+                                                $is_file_exist = file_exists($_SERVER['DOCUMENT_ROOT'] . "/images/airport/{$T_code}.png");
+                                                $T_logo = $is_file_exist ? "<img src='/images/airport/{$T_code}.png' alt='{$value['airline']}' style='max-height:28px;'>" : "{$value['airline']}";
+
+                                                if ($value['airport'] == '') {
+                                                    $airport_code = $value['airportCode'];
+                                                    $sql_airport_title = "SELECT title_1 FROM NP_airport_code WHERE code = '$airport_code'";
+                                                    $result_airport_title = dbaccess($sql_airport_title);
+                                                    $T_airport_title = $result_airport_title['title_1'] ?? '';
+                                                }
+                                                else {
+                                                    $T_airport_title = $value['airport'];
+                                                }
+
+                                                echo "
+                                                    <tr>
+                                                    <td><div class='inner'><em class='airline_logo'>{$T_logo}</em></div></td>
+                                                    <td><div class='inner'>{$value['flightId']}</div></td>
+                                                    <td><div class='inner'>".substr($value['estimatedDateTime'], 0, 2).":".substr($value['estimatedDateTime'], 2, 2)." {$T_time2}</div></td>
+                                                    <td><div class='inner'>"."국제선"."</div></td>
+                                                    <td><div class='inner'>{$T_airport_title}</div></td>
+                                                    <td><div class='inner'>".strtoupper($value['remark'] ?? '-')."</div></td>
+                                                    </tr>
+                                                ";
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="info-text">당일 자정 내에 운행되는 항공편만 표시됩니다.</p>
+                    </section>
+                    <!-- //날짜/새로고침 + 테이블 영역 -->
+                    
+                    <div class="pagination" role="navigation" aria-label="페이지 이동">
+                        <?php
+                           $pagination->render();
+                        ?>
+                    </div>
+                </main>
+                <!-- //main -->
+
+                <!-- bottom nav -->
+                <nav class="bottom-nav" aria-label="하단 주요 메뉴">
+                    <?php include __DIR__.'/../../html/include/bottom_nav.html'; ?>
+                </nav>
+                <!-- bottom nav -->
+                 
+                </div>
+
+                <!-- 공통 모달 -->
+                <div class="global-modal-wrap">
+                    <?php include __DIR__.'/../../html/include/modal.html'; ?>
+                </div>
+                <!-- //공통 모달 -->
+                
+                <!-- footer -->
+                <footer class="footer">
+                    <?php include __DIR__.'/../../html/include/footer.html'; ?>
+                </footer>
+                <!-- //footer -->
+            </div>
+
+            <!-- 251215 로딩화면 추가 -->
+            <!-- 로딩화면 -->
+            <div class="loading is-hidden" role="status" aria-live="polite" aria-atomic="true">
+                <?php include __DIR__.'/../include/loading.html'; ?>
+            </div>
+
+            <!-- 상하좌우 이동 버튼 -->
+            <div class="viewport-controller">
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control move-up" aria-label="위로 이동">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">위로</span>
+                    </button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control move-left" aria-label="좌측으로 이동">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">좌측으로</span>
+                    </button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control move-right" aria-label="우측으로 이동">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">우측으로</span>
+                    </button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control move-down" aria-label="아래로 이동">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">아래로</span>
+                    </button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control zoom-exit-btn">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">돋보기 종료</span>
+                    </button>
+                </div>
+            </div>
+            <!-- //상하좌우 이동 버튼 -->
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,157 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.tab-menu {
+    /* 기본 탭 메뉴 토큰 */
+    --tm-list-bg: #ffffff;
+    --tm-btn-bg: #ffffff;
+    --tm-btn-active-bg: #3B4CCF;
+    --tm-btn-color: #000000;
+    --tm-btn-active-color: #ffffff;
+    --tm-btn-active-color02: #3B4CCF;
+    --tm-btn-border: #888888;
+
+    /* line 스타일 전용 토큰 */
+    --tm-line-border-color: #888888;
+    --tm-line-active-border: #3B4CCF;
+    --tm-line-color: #555555;
+    --tm-line-active-color: #3B4CCF;
+
+    width: 100%;
+
+    .tab-list {
+        position: relative;
+        width: 100%;
+        @include mi.flexbox(row, space-between, center);
+        background: var(--tm-list-bg);
+
+        li {
+            position: relative;
+            width: calc(100% / 3);
+            padding: 0 24px;
+            height: 114px;
+            border-right: 1px solid var(--tm-btn-border);
+            border-bottom: 1px solid var(--tm-btn-border);
+            background: var(--tm-btn-bg);
+
+            &:last-child {
+                border-right: 0;
+            }
+
+            &.is-active {
+                border-right: 1px solid var(--tm-btn-active-bg);
+                border-bottom: 1px solid var(--tm-btn-active-bg);
+                background: var(--tm-btn-active-bg);
+
+                .tab-btn {
+                    color: var(--tm-btn-active-color);
+                    font-weight: 800;
+                }
+            }
+
+            .tab-btn {
+                width: 100%;
+                height: 100%;
+                font-size: va.$font-32;
+                font-weight: 500;
+                color: var(--tm-btn-color);
+                letter-spacing: -0.02em;
+                background: transparent;
+
+                &:focus,
+                &:focus-visible {
+                    box-shadow: none;
+                    outline: none;
+                    @include mi.focus-ring(0, after, 5px);
+                }
+            }
+        }
+    }
+
+    .tab-cont {
+        border-top: 1px solid var(--tm-btn-border);
+
+        .tab-panel {
+            width: 100%;
+            height: 100%;
+            @include mi.flexbox(row, flex-start, stretch);
+            display: none;
+
+            &.is-active {
+                display: flex;
+            }
+        }
+    }
+
+    /* 항목 2개인 탭 메뉴 */
+    &.tab02 {
+        .tab-list {
+            li {
+                width: 100%;
+                height: 80px;
+            }
+        }
+    }
+
+    /* 언더라인 스타일 탭 메뉴 */
+    &.line {
+        .tab-list {
+            border-bottom: 1px solid var(--tm-line-border-color);
+
+            li {
+                width: 50%;
+                padding: 0 36px;
+                height: 86px;
+                border: 0;
+
+                &.is-active {
+                    border-bottom: 4px solid var(--tm-line-active-border);
+                    background: var(--tm-btn-bg);
+
+                    .tab-btn {
+                        color: var(--tm-line-active-color);
+                        font-weight: 700;
+                    }
+                }
+
+                .tab-btn {
+                    color: var(--tm-line-color);
+                    letter-spacing: 0;
+                }
+            }
+        }
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .tab-menu {
+        .tab-list {
+            li {
+                height: 80px;
+                .tab-btn {
+                    font-size: va.$font-28;
+                }
+            }
+        }
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast {
+    .tab-menu {
+        /* 기본 탭 토큰 교체 */
+        --tm-list-bg: #1B1F23;
+        --tm-btn-bg: #1B1F23;
+        --tm-btn-active-bg: #1AEBFF;
+        --tm-btn-color: #ffffff;
+        --tm-btn-active-color: #000000;
+        --tm-btn-border: #B6B6B6;
+
+        /* line 전용 토큰 교체 */
+        --tm-line-border-color: #B6B6B6;
+        --tm-line-active-border: #1AEBFF;
+        --tm-line-color: #ffffff;
+        --tm-line-active-color: #1AEBFF;
+    }
+}

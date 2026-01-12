@@ -1,0 +1,138 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.tb-wrap {
+    /* === traffic table color tokens === */
+    --tb-th-bg: #0B162F;
+    --tb-th-text: #FFFFFF;
+    --tb-th-border-right: #FFFFFF;
+
+    --tb-td-bg: #FFFFFF;
+    --tb-first-td-bg: #FFFFFF;
+    --tb-td-text: #000000;
+    --tb-td-border: #888888;
+
+    width: 100%;
+    padding-bottom: 24px;
+
+    .traffic-table {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    thead {
+        tr {
+            th {
+                height: 60px;
+                // 한국어: 20px, 영어: 20px의 80% = 16px
+                @include mi.font-i18n(
+                    va.$font-20,
+                    va.$font-20 * 0.8
+                );
+                color: var(--tb-th-text);
+                font-weight: 700;
+                text-align: center;
+                vertical-align: middle;
+                border-right: 1px solid var(--tb-th-border-right);
+                background: var(--tb-th-bg);
+
+                &:last-child {
+                    border-right: none;
+                }
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            td {
+                height: 64px;
+                // 한국어: 20px, 영어: 20px의 80% = 16px
+                @include mi.font-i18n(
+                    va.$font-20,
+                    va.$font-20 * 0.8
+                );
+                line-height: 119%;
+                color: var(--tb-td-text);
+                font-weight: 500;
+                vertical-align: middle;
+                text-align: center;
+                border: 1px solid var(--tb-td-border);
+                background: var(--tb-td-bg);
+
+                &:nth-child(2),
+                &:nth-child(3) {
+                    // 한국어: 24px, 영어: 24px의 90% = 21.6px
+                    @include mi.font-i18n(
+                        va.$font-24,
+                        va.$font-24 * 0.9
+                    );
+                }
+
+                &:first-child {
+                    border-left: none;
+                    background: var(--tb-first-td-bg);
+                }
+
+                &:last-child {
+                    border-right: none;
+                }
+            }
+        }
+    }
+
+    .logo-wrap {
+        width: 100%;
+        height: 100%;
+        @include mi.flexbox(row, center, center);
+
+        .inner {
+            width: 120px;
+            height: 40px;
+        }
+
+        img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .tb-wrap {
+        padding-bottom: 0;
+
+        thead {
+            tr {
+                th {
+                    height: 44px;
+                }
+            }
+        }
+
+        tbody {
+            tr {
+                td {
+                    height: 48px;
+                }
+            }
+        }
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast {
+    .tb-wrap {
+        --tb-th-bg: #1AEBFF;
+        --tb-th-text: #000000;
+        --tb-th-border-right: #000000;
+
+        --tb-td-bg: #1B1F23;
+        --tb-first-td-bg: #FFFFFF;
+        --tb-td-text: #FFFFFF;
+        --tb-td-border: #B6B6B6;
+    }
+}

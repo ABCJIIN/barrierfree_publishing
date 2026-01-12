@@ -1,0 +1,139 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.filter-menu {
+    /* Filter 전용 로컬 디자인 토큰 */
+    --fm-bg: #fff;
+    --fm-border: #888;
+    --fm-btn-text: #333;
+    --fm-btn-bg: #fff;
+    --fm-btn-border: #888;
+
+    --fm-move-btn-bg: #fff;
+    --fm-move-btn-border: #888;
+
+    --fm-btn-active-text: #fff;
+    --fm-btn-active-bg: #3B4CCF;
+    --fm-btn-active-border: #3B4CCF;
+
+    /* 아이콘/이미지 토큰 */
+    --fm-prev-btn-icon: url(../../../assets/images/icon/arrow_left_bk.svg);
+    --fm-next-btn-icon: url(../../../assets/images/icon/arrow_right_bk.svg);
+
+    width: 100%;
+
+    /* 좌우 이동 버튼이 있는 필터 리스트 */
+    .filter-list-wrap {
+        position: relative;
+        width: 100%;
+        padding: 0 32px 24px;
+        @include mi.flexbox(row, space-between, center);
+        border-bottom: 1px solid var(--fm-border);
+        background: var(--fm-bg);
+        .filter-list {
+            width: calc(100% - 146px);
+            padding-bottom: 0;
+            @include mi.flexbox(row, flex-start, center);
+            border-bottom: 0;
+            background: transparent;
+        }
+    }
+
+    /* 필터 리스트 좌우 이동 버튼 */
+    .filter-move-btn  {
+        width: 57px;
+        height: 57px;
+        border-radius: 50%;
+        border: 1px solid var(--fm-move-btn-border);
+        &.prev {
+            background: var(--fm-prev-btn-icon) no-repeat center/24px var(--fm-move-btn-bg);
+        }
+        &.next {
+            background: var(--fm-next-btn-icon) no-repeat center/24px var(--fm-move-btn-bg);
+        }
+    }
+
+    /* 기본 필터 리스트 */
+    .filter-list {
+        width: 100%;
+        padding-bottom: 24px;
+        @include mi.flexbox(row, center, center);
+        gap: 16px;
+        border-bottom: 1px solid var(--fm-border);
+        background: var(--fm-bg);
+        li {
+            .filter-btn {
+                height: 57px;
+                padding: 0 24px;
+                font-size: va.$font-24;
+                font-weight: 500;
+                color: var(--fm-btn-text);
+                text-align: center;
+                letter-spacing: -0.02em;
+                border-radius: 100px;
+                border: 1px solid var(--fm-btn-border);
+                background: var(--fm-btn-bg);
+                white-space: nowrap;
+            }
+            &.is-active {
+                .filter-btn {
+                    font-weight: 800;
+                    color: var(--fm-btn-active-text);
+                    border: 2px solid var(--fm-btn-active-border);
+                    background: var(--fm-btn-active-bg);
+                }
+            }
+        }
+    }
+
+    .filter-panel {
+        width: 100%;
+        height: 100%;
+        @include mi.flexbox(row, flex-start, flex-start);
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .filter-menu {
+        .filter-list-wrap {
+            padding: 0 24px 16px;
+        }
+        
+        .filter-move-btn {
+            width: 53px;
+            height: 53px;
+            background-size: 20px;
+        }
+
+        .filter-list {
+            li {
+                .filter-btn {
+                    height: 53px;
+                }
+            }
+        }
+    }
+}
+
+/* 고대비 모드 — 컬러만 변경 */
+.mode-high-contrast {
+    .filter-menu {
+        --fm-bg: #1B1F23;
+        --fm-border: #B6B6B6;
+        --fm-btn-text: #fff;
+        --fm-btn-bg: #1B1F23;
+        --fm-btn-border: #C8C8C8;
+
+        --fm-move-btn-bg: #1B1F23;
+        --fm-move-btn-border: #fff;
+
+        --fm-btn-active-text: #000;
+        --fm-btn-active-bg: #1AEBFF;
+        --fm-btn-active-border: #1AEBFF;
+
+        /* 아이콘/이미지 토큰 */
+        --fm-prev-btn-icon: url(../../../assets/images/icon/high-contrast/arrow_left_wh.svg);
+        --fm-next-btn-icon: url(../../../assets/images/icon/high-contrast/arrow_right_wh.svg);
+    }
+}

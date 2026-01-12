@@ -1,0 +1,45 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.loading {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1080px;
+    height: 100%;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.80);
+    @include mi.flexbox(row, center, center);
+    pointer-events: auto;
+
+    &.is-hidden {
+        display: none;
+    }
+
+    .loading-content {
+        width: calc(100% - 120px);
+        margin: 0 auto;
+        padding: 40px;
+        border-radius: 20px;
+        background: #fff;
+        @include mi.flexbox(column, center, center);
+        gap: 12px;
+    }
+    
+    .loading-title {
+        font-size: va.$font-40;
+        color: #000;
+        text-align: center;
+        font-weight: 700;
+        line-height: 124%;
+    }
+
+    .loading-desc {
+        font-size: va.$font-32;
+        color: #555;
+        text-align: center;
+        font-weight: 500;
+    }
+}

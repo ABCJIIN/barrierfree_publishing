@@ -1,0 +1,83 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+/* 페이지 상세 타이틀 */
+.detail-title {
+    --dt-title-bg: #ffffff;
+    --dt-title-border: #888888;
+    --dt-title-color: #000000;
+    --dt-nav-btn-border: #000000;
+    --dt-nav-btn-bg: #ffffff;
+
+    /* 아이콘/이미지 토큰 */
+    --dt-arrow-left: url(../../../assets/images/icon/arrow_left_bk.svg);
+
+    position: fixed;
+    top: 184px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1080px;
+    height: 114px;
+    border-bottom: 1px solid var(--dt-title-border);
+    background: var(--dt-title-bg);
+    @include mi.flexbox(row, center, center);
+    z-index: 10;
+    h3 {
+        font-size: va.$font-40;
+        font-weight: 700;
+        color: var(--dt-title-color);
+        text-align: center;
+    }
+    .nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        border: 1px solid var(--dt-nav-btn-border);
+        &.prev {
+            left: 32px;
+            background: var(--dt-arrow-left) no-repeat center/24px var(--dt-nav-btn-bg);
+        }
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .detail-title {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: translateX(0);
+        height: 80px;
+
+        h3 {
+            font-size: va.$font-32;
+        }
+
+        .nav-btn {
+            width: 48px;
+            height: 48px;
+            &.prev {
+                left: 24px;
+                background: var(--dt-arrow-left) no-repeat center/19px var(--dt-nav-btn-bg);
+            }
+        }
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast { 
+    .detail-title {
+        --dt-title-bg: #1B1F23;
+        --dt-title-border: #B6B6B6;
+        --dt-title-color: #ffffff;
+        --dt-nav-btn-border: #ffffff;
+        --dt-nav-btn-bg: transparent;
+
+        /* 아이콘/이미지 토큰 */
+        --dt-arrow-left: url(../../../assets/images/icon/high-contrast/arrow_left_wh.svg);
+    }
+}

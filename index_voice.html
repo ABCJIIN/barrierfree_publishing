@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<!-- 251215 mode-voice class 추가 -->
+<html lang="ko" class="mode-voice">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART TOURIST INFORMATION</title>
+
+    <!-- <script>
+        (function () {
+            try {
+                var contrast = localStorage.getItem('contrastMode'); // '1' | '0' | null
+                var low      = localStorage.getItem('lowMode');      // '1' | '0' | null
+                var voice      = localStorage.getItem('voiceMode');      // '1' | '0' | null
+                var last     = localStorage.getItem('lastMode');     // 'contrast' | 'low' | 'none' | null
+                var html     = document.documentElement;
+
+                function applyContrast() {
+                    html.classList.add('mode-high-contrast');
+                    html.classList.remove('mode-low-posture');
+                    html.classList.remove('mode-voice');
+                }
+
+                function applyLow() {
+                    html.classList.add('mode-low-posture');
+                    html.classList.remove('mode-high-contrast');
+                    html.classList.remove('mode-voice');
+                }
+
+                function applyVoice() {
+                    html.classList.add('mode-voice');
+                    html.classList.remove('mode-low-posture');
+                    html.classList.remove('mode-high-contrast');
+                }
+
+                // 1) lastMode 기준으로 우선 적용
+                if (last === 'contrast' && contrast === '1') {
+                    applyContrast();
+                } else if (last === 'low' && low === '1') {
+                    applyLow();
+                } else if (last === 'voice' && voice === '1') {
+                    applyVoice();
+                } else {
+                    // 2) lastMode 정보가 없거나 꼬였을 때, storage 값으로 복구
+                    if (contrast === '1' && low !== '1' && voice !== '1') {
+                        applyContrast();
+                        localStorage.setItem('lastMode', 'contrast');
+                    } else if (low === '1' && contrast !== '1' && voice !== '1') {
+                        applyLow();
+                        localStorage.setItem('lastMode', 'low');
+                    } else if (voice === '1' && contrast !== '1' && low !== '1') {
+                        applyVoice();
+                        localStorage.setItem('lastMode', 'voice');
+                    } else {
+                        // 둘 다 1이거나 둘 다 0/없음 → 안전하게 일반 모드
+                        html.classList.remove('mode-low-posture');
+                        html.classList.remove('mode-high-contrast');
+                        html.classList.remove('mode-voice');
+                        localStorage.setItem('lastMode', 'none');
+                    }
+                }
+            } catch (e) {
+                // localStorage 사용 불가 시 그냥 무시
+            }
+        })();
+    </script> -->
+
+    <!-- 퍼블 전용 -->
+    <script>
+        (function () {
+            // include 파일 경로 (현재 파일 기준)
+            var INCLUDE = {
+            header:  "./html/include/header.html",
+            footer:  "./html/include/footer.html",
+            modal:   "./html/include/modal.html",
+            loading: "./html/include/loading.html",
+            // 필요하면 bottomNav도 추가해서 사용
+            bottomNav: "./html/include/bottom_nav.html"
+            };
+
+            // jQuery 로드 이후 실행 보장
+            function onReady(fn) {
+            if (window.jQuery) {
+                jQuery(fn);
+            } else {
+                document.addEventListener("DOMContentLoaded", fn);
+            }
+            }
+
+            onReady(function () {
+            // 1) header / footer / modal / loading
+            $(".header").load(INCLUDE.header);
+            $(".footer").load(INCLUDE.footer);
+            $(".global-modal-wrap").load(INCLUDE.modal);
+            $(".loading").load(INCLUDE.loading);
+
+            // 2) bottom-nav 같이 "특정 nav 안에 include"가 필요하면 이렇게
+            //    (페이지마다 bottom-nav가 있을 때만 동작)
+            $(".bottom-nav").each(function () {
+                $(this).load(INCLUDE.bottomNav);
+            });
+
+            // 3) load 실패 디버깅 (경로/서버 문제 확인용)
+            //    필요 없으면 지워도 됨
+            $(".header, .footer, .global-modal-wrap, .loading, .bottom-nav").each(function () {
+                var $el = $(this);
+                // load는 콜백을 element별로 붙이는게 안전
+                // (이미 위에서 load를 호출했으니, 실패 확인이 필요하면 아래처럼 각각 콜백형으로 바꾸는 걸 권장)
+            });
+            });
+        })();
+    </script>
+
+    <link rel="stylesheet" href="./assets/js/vendor/swiper-bundle.min.js">
+    <link rel="stylesheet" href="./assets/scss/main.css">
+
+    <script src="./assets/js/vendor/jquery-3.7.1.min.js"></script>
+    <script src="./assets/js/vendor/swiper-bundle.min.js"></script>
+    <script src="./assets/js/common.js"></script>
+    <script src="./assets/js/zoom.js"></script>
+    <script src="./assets/js/modal.js"></script>
+    <script src="./assets/js/volume.js"></script>
+    <script src="./assets/js/introSlide.js"></script>
+</head>
+<body data-tts-summary="스마트 관광 안내 메인 화면입니다. 인트로 슬라이드, 언어 선택, 시스템 메뉴가 있습니다. 원하는 항목을 터치해 선택해 주세요. 하단에는 음량 조절과 돋보기 버튼이 있습니다.">
+    <div class="zoom-viewport" aria-label="확대 가능한 화면">
+        <div class="zoom-move-wrap h1100">
+            <div class="zoom-canvas">
+                <div class="modal-background">
+                <!-- header -->
+                <header class="header">
+                    <!-- <?php include __DIR__.'/html/include/header.html'; ?> -->
+                </header>
+                <!-- //header -->
+                
+                <!-- main -->
+                <main class="main intro">
+                    <section class="visual-sec" aria-labelledby="introCarouselHeading">
+                        <h2 id="introCarouselHeading" class="sr-only">관광 안내 인트로 슬라이드</h2>
+                        <div class="slide-wrap">
+                            <div class="swiper intro-slide" aria-roledescription="carousel">
+                                <div class="swiper-wrapper">
+                                    <!-- 1번 슬라이드 : 영상 -->
+                                    <!-- <div class="swiper-slide">
+                                        <div class="video-wrap">
+                                            <video muted playsinline>
+                                                <source src="./assets/intro_slide/UA_Intro01.mp4" type="video/mp4">
+                                            </video>
+                                            <div class="video-control" role="group" aria-label="첫 번째 영상 재생 제어">
+                                                <button type="button" class="video-btn video-play is-hidden" aria-label="영상 재생">
+                                                    <span class="icon" aria-hidden="true"></span>
+                                                    <span class="label">영상 재생</span>
+                                                </button>
+                                                <button type="button" class="video-btn video-pause" aria-label="영상 일시정지">
+                                                    <span class="icon" aria-hidden="true"></span>
+                                                    <span class="label">영상 일시정지</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div> -->
+
+                                    <!-- 1번 슬라이드 : 이미지 -->
+                                    <div class="swiper-slide">
+                                        <img src="./assets/intro_slide/UA_Intro01.png" tabindex="1" aria-label="서울 중구 투어패스 이미지 안내 포스터입니다." alt="서울 중구 투어패스 이미지">
+                                    </div>
+
+                                    <!-- 2번 슬라이드 : 이미지 -->
+                                    <div class="swiper-slide">
+                                        <img src="./assets/intro_slide/UA_Intro02.png" tabindex="1" aria-label="오픈포트 크리스마스 이미지 포스터입니다." alt="오픈포트 크리스마스 이미지">
+                                    </div>
+
+                                    <!-- 3번 슬라이드 : 이미지 -->
+                                    <div class="swiper-slide">
+                                        <img src="./assets/intro_slide/UA_Intro03.png" tabindex="1" aria-label="코리아 썸머 뷰티세일 이미지 포스터입니다." alt="코리아 썸머 뷰티세일 이미지">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 슬라이드 컨트롤 영역 (우측 하단) -->
+                            <div class="intro-controls" role="group" aria-label="인트로 슬라이드 이동 및 자동 넘김 제어">
+                                <div class="intro-control-group">
+                                    <button type="button" class="intro-btn slide-prev" aria-label="이전 슬라이드">
+                                        <span class="sr-only">이전 슬라이드</span>
+                                    </button>
+    
+                                    <span class="intro-pagination" aria-live="polite" aria-atomic="true">
+                                        <span class="current">1</span>
+                                        <span class="slash"> / </span>
+                                        <span class="total">3</span>
+                                    </span>
+    
+                                    <button type="button" class="intro-btn slide-next" aria-label="다음 슬라이드">
+                                        <span class="sr-only">다음 슬라이드</span>
+                                    </button>
+                                </div>
+
+                                <!-- 슬라이드 자동재생(슬라이드 흐름) 제어 버튼 -->
+                                <button type="button" class="slide-toggle" aria-pressed="false" aria-label="슬라이드 자동 넘김 일시정지">
+                                    <span class="label-pause sr-only">정지</span>
+                                    <span class="label-play sr-only" hidden>재생</span>
+                                </button>
+                            </div>
+                        </div>
+                        <h2 class="intro-title"
+                            data-line1="즐거운 여행을"
+                            data-line2="이곳에서 시작해보세요.">
+                            즐거운 여행을<br>이곳에서 시작해보세요.
+                        </h2>
+                    </section>
+
+                    <section class="lang-sec">
+                        <div class="inner">
+                            <h3 class="lang-title"><span>언어</span>를 선택하세요.</h3>
+                            <p class="lang-guide">Please select a language</p>
+                            <nav class="lang-select" aria-label="언어 선택">
+                                <!-- 한국어 -->
+                                <button type="button" class="lang-btn lang-kr" lang="ko" aria-label="한국어 선택">
+                                    <span class="lang-symbol" aria-hidden="true">가</span>
+                                    <span class="lang-name">한국어</span>
+                                </button>
+
+                                <!-- 영어 -->
+                                <!-- <button type="button" class="lang-btn lang-en" lang="en">
+                                    <span class="lang-symbol" aria-hidden="true">Aa</span>
+                                    <span class="lang-name">ENGLISH</span>
+                                </button> -->
+                            </nav>
+                        </div>
+                    </section>
+                    
+                    <section class="system-menu-sec">
+                        <div class="grid-wrap">
+                            <!-- 251126 페이지 이동인 경우 a 태그, 상태 변경인 경우 button 태그 사용 -->
+                            
+                            <!-- 251126 개발 시 전체메뉴 페이지 경로로 href 교체 필요 -->
+                            <a href="javascript:void(0)" class="card-btn all-menu" id="menuBtn" aria-label="전체 메뉴 열기">
+                                <span class="title-primary">전체메뉴</span>
+                                <span class="title-secondary">All Menu</span>
+                                <span class="icon" aria-hidden="true"></span>
+                            </a>
+                            
+                            <!-- 251126 개발 시 유의 사항
+                                ▸ 기본 모드에서는 .card-btn.reset에 display:none 처리
+                                ▸ mode-low-posture(저자세 모드)일 때만 버튼 노출
+                                ▸ 저자세 모드 해제 시, 이 버튼에 포커스가 있었다면
+                                다른 적절한 버튼(예: 낮은 화면 버튼)으로 포커스 이동 처리 필요 -->
+                            <button type="button" class="card-btn reset" id="resetBtn" aria-label="접근성 모드 초기화">
+                                <span class="title-primary">모드 초기화</span>
+                                <span class="title-secondary">Mode Reset</span>
+                                <span class="icon" aria-hidden="true"></span>
+                            </button>
+
+                            <!-- 상태 변경: button + aria-pressed -->
+                            <!-- 251126 개발 시 음성 모드 on/off에 따라 aria-pressed 값 동기화 필요 -->
+                            <button type="button" class="card-btn voice" aria-pressed="false" id="voiceBtn">
+                                <span class="title-primary">음성 모드</span>
+                                <span class="title-secondary">Voice Mode</span>
+                                <span class="icon" aria-hidden="true"></span>
+                            </button>
+                            <!-- 251126 개발 시 고대비 전체메뉴 페이지 경로로 href 교체 필요 -->
+                            <a href="javascript:void(0)" class="card-btn high-contrast" id="highContrastBtn" aria-label="고대비 모드 설정">
+                                <span class="title-primary">고대비</span>
+                                <span class="title-secondary">High Contrast</span>
+                                <span class="icon" aria-hidden="true"></span>
+                            </a>
+                            <!-- 251126 개발 시 낮은 화면 모드 on/off에 따라
+                                mode-low-posture 클래스 토글 및 aria-pressed 동기화 필요 -->
+                            <button type="button" class="card-btn low-screen" aria-pressed="false" id="lowScreenBtn">
+                                <span class="title-primary">낮은 화면</span>
+                                <span class="title-secondary">Low Screen</span>
+                                <span class="icon" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="card-btn inquiry" aria-label="문의 정보 보기">
+                                <span class="title-primary">문의</span>
+                                <span class="title-secondary">Inquiry Number</span>
+                                <span class="icon" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </section>
+                </main>
+                <!-- //main -->
+
+                </div>
+
+                <!-- 공통 모달 -->
+                <div class="global-modal-wrap">
+                    <!-- <?php include __DIR__.'/html/include/modal.html'; ?> -->
+
+                    <!-- modal -->
+                    <div class="modal inquiry" aria-hidden="true">
+                        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="inquiryModalTitle">
+                            <div id="inquiryModalTitle" class="modal-title">
+                                <strong>문의</strong>
+                                <span>Inquiry Number</span>
+                            </div>
+                            <div class="inquiry-info" tabindex="1">
+                                <ul>
+                                    <li class="phone-number">
+                                        <span class="icon" aria-hidden="true"></span>
+                                        <span class="label">032-466-7282</span>
+                                    </li>
+                                    <li class="email-address">
+                                        <span class="icon" aria-hidden="true"></span>
+                                        <span class="label">Helpme@smart.tourist</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="modal-btn-wrap">
+                                <button type="button" class="close-btn">닫기</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- //modal -->
+                </div>
+                <!-- //공통 모달 -->
+                
+                <!-- footer -->
+                <footer class="footer">
+                    <!-- <?php include __DIR__.'/html/include/footer.html'; ?> -->
+                </footer>
+                <!-- //footer -->
+            </div>
+
+            <!-- 251215 로딩화면 추가 -->
+            <!-- 로딩화면 -->
+            <div class="loading is-hidden" role="status" aria-live="polite" aria-atomic="true">
+                <!-- <?php include __DIR__.'/html/include/loading.html'; ?> -->
+            </div>
+
+            <!-- 상하좌우 이동 버튼 -->
+            <div class="viewport-controller">
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control move-up" aria-label="위로 이동">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">위로</span>
+                    </button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control move-left" aria-label="좌측으로 이동">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">좌측으로</span>
+                    </button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control move-right" aria-label="우측으로 이동">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">우측으로</span>
+                    </button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control move-down" aria-label="아래로 이동">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">아래로</span>
+                    </button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control zoom-exit-btn">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">돋보기 종료</span>
+                    </button>
+                </div>
+            </div>
+            <!-- //상하좌우 이동 버튼 -->
+        </div>
+    </div>
+    <script>
+        
+        /*document.addEventListener('keydown', function (e) {
+            console.log('keydown:', {
+                key: e.key,
+                code: e.code,
+                keyCode: e.keyCode, // (deprecated지만 HID 키 확인용으로 아직 유용)
+            });
+        });*/
+    </script>
+</body>
+</html>

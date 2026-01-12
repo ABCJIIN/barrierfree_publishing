@@ -1,0 +1,67 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.main.restaurant {
+    /* 음식점 페이지 토큰 */
+    --rs-empty-info-color: #000;
+
+    .dimmed {
+        top: 304px;
+        height: calc(100vh - 372px);
+    }
+
+    .filter-menu {
+        height: calc(100vh - 395px);
+    }
+
+    /* 음식점 - empty */
+    .empty-screen {
+        width: 100%;
+        height: calc(100vh - 597px);
+        @include mi.flexbox(row, center, center);
+        .empty-info {
+            color: var(--rs-empty-info-color);
+            text-align: center;
+            font-size: va.$font-40;
+            font-weight: 700;
+            letter-spacing: -0.8px;
+        }
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .main.restaurant {
+        .filter-menu {
+            height: 595px;
+        }
+
+        .dimmed {
+            position: absolute;
+            top: 88px;
+            height: 593px;
+        }
+
+        .sort-wrap {
+            .sort-inner {
+                padding: 16px 0;
+            }
+        }
+
+        /* 관광 - empty */
+        .empty-screen {
+            height: 437px; 
+            .empty-info {
+                font-size: va.$font-32;
+            }
+        }
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast {
+    .main.restaurant {
+        /* 관광 페이지 토큰 */
+        --rs-empty-info-color: #fff;
+    }
+}

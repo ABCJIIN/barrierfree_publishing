@@ -1,0 +1,609 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.modal {
+    /* modal 공통 전용 로컬 컬러 토큰 */
+    --md-overlay-bg: rgba(0, 0, 0, 0.80);
+
+    --md-bg: #FFFFFF;
+    --md-radius: 24px;
+    --md-border: transparent;
+
+    --md-title-color: #000000;
+
+    --md-btn-radius: 8px;
+    --md-btn-close-border: #888888;
+    --md-btn-close-text: #000000;
+
+    --md-btn-apply-border: #3B4CCF;
+    --md-btn-apply-text: #3B4CCF;
+
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1080px;
+    height: calc(100vh - 68px);
+    z-index: 80;
+    background: var(--md-overlay-bg);
+    
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: calc(100% - 64px);
+
+        border: 1px solid var(--md-border);
+        border-radius: var(--md-radius);
+        background: var(--md-bg);
+    }
+
+    .modal-title {
+        width: 100%;
+
+        strong {
+            font-size: va.$font-40;
+            font-weight: 700;
+            color: var(--md-title-color);
+            line-height: 48px;
+        }
+    }
+
+    .modal-btn-wrap {
+        width: 100%;
+
+        button {
+            height: 64px;
+            padding: 0 18px;
+            border-radius: var(--md-btn-radius);
+            font-size: va.$font-24;
+            background: transparent;
+
+            &.close-btn {
+                border: 1px solid var(--md-btn-close-border);
+                font-weight: 500;
+                color: var(--md-btn-close-text);
+            }
+
+            &.apply-btn {
+                border: 2px solid var(--md-btn-apply-border);
+                font-weight: 700;
+                color: var(--md-btn-apply-text);
+            }
+
+            &.return-home-btn {
+                width: 100%;
+                border-radius: 8px;
+                border: 1px solid #888;
+                color: #000;
+            }
+        }
+    }
+
+    /* 교통 모달 */
+    &.traffic {
+
+        .modal-content {
+            padding: 40px;
+        }
+
+        .modal-title {
+            @include mi.flexbox(row, center, center);
+            padding-bottom: 48px;
+
+            strong {
+                text-align: center;
+            }
+        }
+
+        .tab-menu {
+            &.tab02 {
+                .tab-list {
+                    margin-bottom: 32px;
+                }
+                .tab-cont {
+                    border-top: 0;
+                }
+            }
+        }
+
+        .filter-menu {
+            .filter-list {
+                padding-bottom: 0;
+                border-bottom: 0;
+            }
+        }
+
+        .modal-btn-wrap {
+            padding-top: 48px;
+            @include mi.flexbox(row, center, center);
+            gap: 16px;
+
+            button {
+                width: calc(50% - 8px);
+            }
+        }
+    }
+
+    /* 디지털 관광지도 모달 */
+    &.digital-map {
+        /* 디지털 관광지도 전용 로컬 컬러 토큰 */
+        --mdm-qr-desc-color: #555;
+        --mdm-qr-desc-border: #888;
+
+        --mdm-qr-info-title-color: #000;
+        --mdm-qr-guide-color: #555;
+
+        --mdm-qr-radius: 4px;
+        --mdm-qr-border: #3B4CCF;
+        --mdm-qr-bg: transparent;
+
+        .modal-content {
+            padding: 32px 40px;
+        }
+
+        .modal-title {
+            @include mi.flexbox(row, flex-start, center);
+            padding-bottom: 16px;
+
+            strong {
+                text-align: left;
+            }
+        }
+
+        .modal-btn-wrap {
+            padding-top: 32px;
+
+            button {
+                width: 100%;
+            }
+        }
+
+        .qr-desc {
+            width: 100%;
+            padding-bottom: 32px;
+            font-size: va.$font-24;
+            color: var(--mdm-qr-desc-color);
+            font-weight: 500;
+            line-height: 32px;
+            border-bottom: 1px solid var(--mdm-qr-desc-border);
+        }
+
+        .qr-area {
+            padding-top: 32px;
+            @include mi.flexbox(row, space-between, flex-start);
+            gap: 32px;
+
+            .qr-info-wrap {
+                width: calc(100% - 194px);
+            }
+
+            .qr-info-title {
+                font-size: va.$font-24;
+                font-weight: 700;
+                color: var(--mdm-qr-info-title-color);
+            }
+
+            .qr-guide-list {
+                padding-top: 16px;
+                @include mi.flexbox(column, flex-start, flex-start);
+                gap: 8px;
+            }
+            
+            .qr-guide-item {
+                position: relative;
+                @include mi.flexbox(row, flex-start, flex-start);
+                gap: 8px;
+                font-size: va.$font-24;
+                font-weight: 500;
+                line-height: 35px;
+                color: var(--mdm-qr-guide-color);
+                word-break: keep-all;
+
+                &::before {
+                    content: "";
+                    display: block;
+                    position: relative;
+                    width: 5px;
+                    height: 5px;
+                    margin: 15px 6.5px;
+                    border-radius: 50%;
+                    background: var(--mdm-qr-guide-color);
+                }
+            }
+
+            .qr-wrap {
+                width: 162px;
+                height: 162px;
+                border-radius: var(--mdm-qr-radius);
+                border: 4px solid var(--mdm-qr-border);
+                background: var(--mdm-qr-bg);
+                @include mi.flexbox(row, center, center);
+                .qr-code {
+                    width: 146px;
+                    height: 146px;
+                    img {
+                        display: block;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: contain;
+                    }
+                }
+            }
+        }
+    }
+
+    /* 음량조절 모달 */
+    &.volume-control {
+
+        .modal-content {
+            top: auto;
+            bottom: 255px;
+            transform: translate(-50%, 0);
+            width: calc(100% - 120px);
+            padding: 40px;
+            border: 1px solid transparent;
+            border-radius: 20px;
+            background: #fff;
+        }
+
+        .modal-title {
+            @include mi.flexbox(column, center, center);
+            gap: 12px;
+
+            strong {
+                color: #000;
+            }
+
+            span {
+                color: #555;
+                font-size: va.$font-32;
+                font-weight: 500;
+                line-height: 38px;
+            }
+        }
+
+        .volume-control-wrap {
+            width: 100%;
+            margin: 32px 0;
+            padding: 24px 0 69px;
+            @include mi.flexbox(row, center, center);
+            gap: 32px;
+        }
+
+        .volume-btn-wrap {
+            position: relative;
+        }
+
+        .volume-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            &.down {
+                background: url(../../../assets/images/icon/volume_down.svg) no-repeat center/24px #3B4CCF;
+            }
+            &.up {
+                background: url(../../../assets/images/icon/volume_up.svg) no-repeat center/24px #3B4CCF;
+            }
+        }
+
+        .volume-btn-label {
+            position: absolute;
+            left: 50%;
+            bottom: -45px;
+            transform: translateX(-50%);
+            display: block;
+            height: 29px;
+            color: #555;
+            font-size: va.$font-24;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .volume-range {
+            position: relative;
+            flex: 1;
+            height: 40px;
+            padding: 0 13px;
+        }
+
+        .volume-input {
+            --volume-percent: 50%; // JS에서 값 바꿀 예정 (1~5 기준)
+
+            width: 100%;
+            height: 40px;
+            margin: 0;
+            background: none;
+            outline: none;
+            cursor: pointer;
+
+            // 기본 모양 제거
+            -webkit-appearance: none;
+            appearance: none;
+
+            // 트랙
+            &::-webkit-slider-runnable-track {
+                height: 6px;
+                border-radius: 999px;
+                background: linear-gradient(
+                    to right,
+                    #3B4CCF 0 var(--volume-percent),
+                    #888 var(--volume-percent) 100%
+                );
+            }
+
+            &::-moz-range-track {
+                height: 6px;
+                border-radius: 999px;
+                background: linear-gradient(
+                    to right,
+                    #3B4CCF 0 var(--volume-percent),
+                    #888 var(--volume-percent) 100%
+                );
+            }
+
+            // thumb (현재 위치 동그라미)
+            &::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: #3B4CCF;
+                margin-top: -17px; // (thumb 40 - 트랙 6) / 2 = 17
+            }
+
+            &::-moz-range-thumb {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: #3B4CCF;
+            }
+        }
+
+        .volume-marks {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            left: 0;
+            transform: translateY(-50%);
+            width: 100%;
+            pointer-events: none;
+            @include mi.flexbox(row, space-between, center);
+            padding: 0 13px;
+        }
+
+        .volume-marks .mark {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #888;
+            opacity: 1;
+
+            &.is-past {
+                opacity: 0; // 현재 값보다 낮은 단계는 안 보이게
+            }
+        }
+
+        .modal-btn-wrap {
+            button {
+                width: 100%;
+                border-radius: 8px;
+                border: 1px solid #888;
+                color: #000;
+            }
+        }
+    }
+
+    /* 문의 모달 */
+    &.inquiry {
+
+        .modal-content {
+            top: auto;
+            bottom: 243px;
+            transform: translate(-50%, 0);
+            width: calc(100% - 120px);
+            padding: 40px;
+            border: 1px solid transparent;
+            border-radius: 20px;
+            background: #fff;
+        }
+
+        .modal-title {
+            @include mi.flexbox(column, center, center);
+            gap: 12px;
+
+            strong {
+                color: #000;
+            }
+
+            span {
+                color: #555;
+                font-size: va.$font-32;
+                font-weight: 500;
+                line-height: 38px;
+            }
+        }
+
+        .inquiry-info {
+            padding: 32px 0;
+            @include mi.flexbox(column, center, center);
+            ul {
+                padding: 24px 0;
+                @include mi.flexbox(column, flex-start, flex-start);
+                gap: 32px;
+                li {
+                    font-size: va.$font-28;
+                    font-weight: 500;
+                    line-height: 37px;
+                    color: #000;
+                    @include mi.flexbox(row, flex-start, center);
+                    gap: 24px;
+                    .icon {
+                        width: 36px;
+                        height: 36px;
+                    }
+                }
+                .phone-number {
+                    .icon {
+                        background: url(../../../assets/images/intro/phone.svg) no-repeat center/contain;
+                    }
+                }
+                .email-address {
+                    .icon {
+                        background: url(../../../assets/images/intro/email.svg) no-repeat center/contain;
+                    }
+                }
+            }
+        }
+
+        .modal-btn-wrap {
+            button {
+                width: 100%;
+                border-radius: 8px;
+                border: 1px solid #888;
+                color: #000;
+            }
+        }
+    }
+
+    /* 무동작 초기화면 복귀 모달 */
+    &.idle-reset {
+        .modal-content {
+            width: calc(100% - 120px);
+            padding: 40px;
+            border: 1px solid transparent;
+            border-radius: 20px;
+            background: #fff;
+        }
+
+        .modal-title {
+            @include mi.flexbox(column, center, center);
+            gap: 16px;
+
+            strong {
+                color: #000;
+            }
+
+            p {
+                color: #555;
+                font-size: va.$font-32;
+                font-weight: 500;
+                line-height: 38px;
+            }
+        }
+
+        .countdown-wrap {
+            padding: 48px 0;
+            @include mi.flexbox(row, center, center);
+            .countdown-num {
+                color: #3B4CCF;
+                font-size: va.$font-80;
+                font-weight: 800;
+                line-height: 95px;
+                letter-spacing: -0.02em;
+            }
+        }
+    }
+
+    &.is-active {
+        display: block;
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .modal {
+        /* 교통 모달 */
+        &.traffic {
+            .modal-content {
+                top: auto;
+                bottom: 0;
+                transform: translate(-50%, 0);
+                width: calc(100% - 48px);
+                border-radius: 24px 24px 0 0;
+            }
+
+            .modal-title {
+                padding-bottom: 56px;
+            }
+
+            .tab-menu.line {
+                .tab-list {
+                    li {
+                        height: 60px;
+                    }
+                }
+            }
+
+            .modal-btn-wrap {
+                padding-top: 56px;
+            }
+        }
+
+        /* 디지털 관광지도 모달 */
+        &.digital-map {
+            .modal-content {
+                top: auto;
+                bottom: 0;
+                transform: translate(-50%, 0);
+                width: calc(100% - 48px);
+                border-radius: 24px 24px 0 0;
+            }
+        }
+
+        /* 무동작 초기화면 복귀 모달 */
+        &.idle-reset {
+            .modal-content {
+                top: auto;
+                bottom: 208px;
+                transform: translate(-50%, 0);
+            }
+        }
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast {
+    .modal {
+        --md-overlay-bg: rgba(0, 0, 0, 0.80);
+        --md-bg: #1B1F23;
+        --md-radius: 0;
+        --md-border: #FFFFFF;
+
+        --md-title-color: #FFFFFF;
+
+        --md-btn-radius: 0;
+        --md-btn-close-border: #C8C8C8;
+        --md-btn-close-text: #FFFFFF;
+
+        --md-btn-apply-border: #1AEBFF;
+        --md-btn-apply-text: #1AEBFF;
+
+        &.digital-map {
+            --mdm-qr-desc-color: #C1C1C1;
+            --mdm-qr-desc-border: #888;
+
+            --mdm-qr-info-title-color: #fff;
+            --mdm-qr-guide-color: #C1C1C1;
+
+            --mdm-qr-radius: 0;
+            --mdm-qr-border: transparent;
+            --mdm-qr-bg: #fff;
+        }
+
+        &.volume-control {
+            /* 모달 안의 모든 포커스 가능한 요소 */
+            :focus,
+            :focus-visible {
+                box-shadow:
+                    0 0 0 2px #FFFFFF,
+                    0 0 0 5px #3B4CCF;
+                    outline: none;
+            }
+        }
+    }
+}

@@ -1,0 +1,237 @@
+<?php
+    include_once __DIR__.'/../../config/common.php';
+?>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART TOURIST INFORMATION</title>
+    <script src="<?= asset('/assets/js/idleTimer.js') ?>"></script>
+
+    <script>
+        (function () {
+            try {
+                var contrast = localStorage.getItem('contrastMode'); // '1' | '0' | null
+                var low      = localStorage.getItem('lowMode');      // '1' | '0' | null
+                var voice      = localStorage.getItem('voiceMode');      // '1' | '0' | null
+                var last     = localStorage.getItem('lastMode');     // 'contrast' | 'low' | 'none' | null
+                var html     = document.documentElement;
+
+                function applyContrast() {
+                    html.classList.add('mode-high-contrast');
+                    html.classList.remove('mode-low-posture');
+                    html.classList.remove('mode-voice');
+                }
+
+                function applyLow() {
+                    html.classList.add('mode-low-posture');
+                    html.classList.remove('mode-high-contrast');
+                    html.classList.remove('mode-voice');
+                }
+
+                function applyVoice() {
+                    html.classList.add('mode-voice');
+                    html.classList.remove('mode-low-posture');
+                    html.classList.remove('mode-high-contrast');
+                }
+
+                // 1) lastMode 기준으로 우선 적용
+                if (last === 'contrast' && contrast === '1') {
+                    applyContrast();
+                } else if (last === 'low' && low === '1') {
+                    applyLow();
+                } else if (last === 'voice' && voice === '1') {
+                    applyVoice();
+                } else {
+                    // 2) lastMode 정보가 없거나 꼬였을 때, storage 값으로 복구
+                    if (contrast === '1' && low !== '1' && voice !== '1') {
+                        applyContrast();
+                        localStorage.setItem('lastMode', 'contrast');
+                    } else if (low === '1' && contrast !== '1' && voice !== '1') {
+                        applyLow();
+                        localStorage.setItem('lastMode', 'low');
+                    } else if (voice === '1' && contrast !== '1' && low !== '1') {
+                        applyVoice();
+                        localStorage.setItem('lastMode', 'voice');
+                    } else {
+                        // 둘 다 1이거나 둘 다 0/없음 → 안전하게 일반 모드
+                        html.classList.remove('mode-low-posture');
+                        html.classList.remove('mode-high-contrast');
+                        html.classList.remove('mode-voice');
+                        localStorage.setItem('lastMode', 'none');
+                    }
+                }
+            } catch (e) {
+                // localStorage 사용 불가 시 그냥 무시
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="<?= asset('/assets/scss/vendors/swiper-bundle.min.css') ?>">
+    <link rel="stylesheet" href="<?= asset('/assets/scss/main.css') ?>">
+
+    <script src="<?= asset('/assets/js/vendor/jquery-3.7.1.min.js') ?>"></script>
+    <script src="<?= asset('/assets/js/vendor/swiper-bundle.min.js') ?>"></script>
+
+    <script src="<?= asset('/assets/js/common.js') ?>"></script>
+    <script src="<?= asset('/assets/js/zoom.js') ?>"></script>
+    <script src="<?= asset('/assets/js/tab.js') ?>"></script>
+    <script src="<?= asset('/assets/js/select.js') ?>"></script>
+    <script src="<?= asset('/assets/js/modal.js') ?>"></script>
+    <script src="<?= asset('/assets/js/volume.js') ?>"></script>
+</head>
+<body data-tts-summary="메인 메뉴 화면입니다. 관광, 지도, 교통, 음식점 메뉴가 있습니다. 원하는 메뉴를 선택해 주세요. 처음 화면으로 이동 버튼이 있습니다.">
+    <div class="zoom-viewport" aria-label="확대 가능한 화면">
+        <div class="zoom-move-wrap h1011">
+            <div class="zoom-canvas">
+                <div class="modal-background">
+                <!-- header -->
+                <header class="header">
+                    <?php include __DIR__.'/../../html/include/header.html'; ?>
+                </header>
+                <!-- //header -->
+                
+                <!-- main -->
+                <main class="main category">
+                    <section class="category-menu-sec">
+                        <h2 class="category-title">여행을 시작할 준비가 되셨나요?</h2>
+                        <p class="category-desc">여행에 필요한 다양한 관광정보들을 확인할 수 있어요.</p>
+                            <!-- 251126 개발 시 각 메뉴 카드의 href를
+                                실제 서브 페이지(관광/지도/교통/음식점) 경로로 교체 필요 -->
+                        <ul class="card-btn-list">
+                            <li class="card-btn tour">
+                                <a href="/html/tour/tour.html" class="card-btn-link" aria-label="관광 메뉴로 이동" data-tts="관광 메뉴로 이동합니다">
+                                    <h3 class="card-btn-title">관광</h3>
+                                    <p class="card-btn-desc">전국의 주요 관광지, 쇼핑지,<br>전통시장 정보를 확인해보세요.</p>
+                                    <span class="arrow-icon" aria-hidden="true"></span>
+                                    <span class="category-img" aria-hidden="true"></span>
+                                </a>
+                            </li>
+                            <li class="card-btn map">
+                                <a href="/html/map/digital_map.html" class="card-btn-link" aria-label="지도 메뉴로 이동" data-tts="지도 메뉴로 이동합니다">
+                                    <h3 class="card-btn-title">지도</h3>
+                                    <p class="card-btn-desc">전국 주요 장소를 QR코드로<br>모바일에서 간편하게 확인해보세요.</p>
+                                    <span class="arrow-icon" aria-hidden="true"></span>
+                                    <span class="category-img" aria-hidden="true"></span>
+                                </a>
+                            </li>
+                            <li class="card-btn traffic">
+                                <!-- 251205 1차 수정 : class 추가 -->
+                                <a href="/html/traffic/traffic.html" class="card-btn-link traffic-btn" aria-label="교통 메뉴로 이동" data-tts="교통 메뉴로 이동합니다">
+                                <!-- //1차 수정 -->
+                                    <h3 class="card-btn-title">교통</h3>
+                                    <p class="card-btn-desc">실시간 항공 운행 스케줄<br>정보를 확인해보세요.</p>
+                                    <span class="arrow-icon" aria-hidden="true"></span>
+                                    <span class="category-img" aria-hidden="true"></span>
+                                </a>
+                            </li>
+                            <li class="card-btn restaurant">
+                                <a href="/html/restaurant/restaurant.html" class="card-btn-link" aria-label="음식점 메뉴로 이동" data-tts="음식점 메뉴로 이동합니다">
+                                    <h3 class="card-btn-title">음식점</h3>
+                                    <p class="card-btn-desc">현재 위치 기반의 전국의 지역별<br>추천 음식점 정보를 확인해보세요.</p>
+                                    <span class="arrow-icon" aria-hidden="true"></span>
+                                    <span class="category-img" aria-hidden="true"></span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="category-menu-bottom">
+                            <!-- 251126 개발 시 인트로(첫 화면) 페이지 경로로 href 교체 필요 -->
+                            <!-- 251126 개발 시 JS로 인트로 화면으로 이동 처리할 경우 a 대신 button 사용 필요 -->
+                            <a href="/" class="home-btn"  id="homeBtn" aria-label="처음으로 이동" data-tts="처음 화면으로 돌아갑니다.">
+                                <span class="icon" aria-hidden="true"></span>
+                                <span class="label">처음으로</span>
+                            </a>
+                        </div>
+                    </section>
+                </main>
+                <!-- //main -->
+                 
+                </div>
+
+                <!-- 공통 모달 -->
+                <div class="global-modal-wrap">
+                    <?php include __DIR__.'/../../html/include/modal.html'; ?>
+                </div>
+                <!-- //공통 모달 -->
+                
+                <!-- footer -->
+                <footer class="footer">
+                    <?php include __DIR__.'/../../html/include/footer.html'; ?>
+                </footer>
+                <!-- //footer -->
+            </div>
+
+            <!-- 251215 로딩화면 추가 -->
+            <!-- 로딩화면 -->
+            <div class="loading is-hidden" role="status" aria-live="polite" aria-atomic="true">
+                <?php include __DIR__.'/../include/loading.html'; ?>
+            </div>
+
+            <!-- 상하좌우 이동 버튼 -->
+            <div class="viewport-controller">
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control move-up" aria-label="위로 이동">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">위로</span>
+                    </button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control move-left" aria-label="좌측으로 이동">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">좌측으로</span>
+                    </button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control move-right" aria-label="우측으로 이동">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">우측으로</span>
+                    </button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control move-down" aria-label="아래로 이동">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">아래로</span>
+                    </button>
+                </div>
+                <div class="btn-wrap">
+                    <button type="button" class="zoom-control zoom-exit-btn">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="label">돋보기 종료</span>
+                    </button>
+                </div>
+            </div>
+            <!-- //상하좌우 이동 버튼 -->
+        </div>
+    </div>
+    <script>
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('a[data-tts]');
+        if (!link) return;
+
+        const isVoice = document.documentElement.classList.contains('mode-voice');
+        if (!isVoice) return;
+
+        e.preventDefault(); // 바로 이동 막기
+
+        const text = link.dataset.tts;
+        const href = link.getAttribute('href');
+
+        if (!text || !href) {
+            location.href = href;
+            return;
+        }
+
+        // TTS 먼저
+        TTS.speak(text);
+
+        // ⏱ 음성 길이에 따라 이동 (대략 계산)
+        const delay = Math.max(1200, text.length * 120);
+
+        setTimeout(() => {
+            location.href = href;
+        }, delay);
+    }, true);
+    </script>
+</body>
+</html>

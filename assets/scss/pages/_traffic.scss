@@ -1,0 +1,305 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+/* 교통 페이지 레이아웃 */
+main.traffic {
+    /* traffic 전용 로컬 컬러 토큰 */
+    --tf-filter-border-color: #3B4CCF;
+    --tf-filter-label-color: #3B4CCF;
+
+    --tf-title-color: #000000;
+    --tf-title-divider-color: #666666;
+
+    --tf-card-radius: 24px; 
+    --tf-card-border-color: transparent;
+    --tf-card-bg: #FFFFFF;
+
+    --tf-date-color: #000000;
+
+    --tf-refresh-radius: 8px;
+    --tf-refresh-border-color: #888888;
+    --tf-refresh-label-color: #000000;
+
+    --tf-info-text-color: #555555;
+    --tf-info-bullet-color: #555555;
+
+    --tf-empty-info-color: #000000;
+
+    /* 아이콘/이미지 토큰 */
+    --tf-filter-icon : url(../../../assets/images/icon/filter.svg);
+    --tf-refresh-icon : url(../../../assets/images/icon/refresh.svg);
+
+    .detail-title {
+        .traffic-search-btn {
+            position: absolute;
+            top: 50%;
+            left: 32px;
+            transform: translateY(-50%);
+            height: 58px;
+            padding: 0 24px;
+            @include mi.flexbox(row, center, center);
+            gap: 8px;
+            border: 1px solid var(--tf-filter-border-color);
+            border-radius: 100px;
+            background: transparent;
+
+            .icon {
+                display: inline-block;
+                width: 24px;
+                height: 24px;
+                background: var(--tf-filter-icon) no-repeat center/contain;
+            }
+            .label {
+                // 한국어: 28px, 영어: 28px의 80% = 22.4px
+                @include mi.font-i18n(
+                    va.$font-28,
+                    va.$font-28 * 0.8
+                );
+                color: var(--tf-filter-label-color);
+                font-weight: 700;
+            }
+        }
+        h3 {
+            @include mi.flexbox(row, center, center);
+            gap: 64px;
+            span {
+                position: relative;
+                // 한국어: 40px, 영어: 40px의 70% = 28px
+                @include mi.font-i18n(
+                    va.$font-40,
+                    va.$font-40 * 0.7
+                );
+                color: var(--tf-title-color);
+                font-weight: 700;
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    top: 50%;
+                    right: -32px;
+                    transform: translateY(-50%);
+                    width: 1px;
+                    height: 24px;
+                    background: var(--tf-title-divider-color);
+                }
+
+                &:last-child {
+                    &::after {
+                        content: none;
+                    }
+                }
+            }
+        }
+    }
+
+    .traffic-content {
+        position: relative;
+        width: calc(100% - 64px);
+        margin: 32px auto 24px;
+        padding: 40px;
+        border-radius: var(--tf-card-radius);
+        border: 1px solid var(--tf-card-border-color);
+        background: var(--tf-card-bg);
+
+        &.empty {
+            background: transparent;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            height: calc(100vh - 509px);
+            @include mi.flexbox(row, center, center);
+            .empty-info {
+                color: var(--tf-empty-info-color);
+                text-align: center;
+                font-size: va.$font-40;
+                font-weight: 700;
+                letter-spacing: -0.8px;
+            }
+        }
+
+        .traffic-toolbar {
+            @include mi.flexbox(row, space-between, center);
+            padding-bottom: 24px;
+        }
+
+        .left-wrap {
+            @include mi.flexbox(row, flex-start, center);
+            gap: 16px;
+
+            .info-text {
+                display: none;
+            }
+        }
+
+        .date-wrap {
+            time,
+            .weekday {
+                font-size: va.$font-28;
+                color: var(--tf-date-color);
+                font-weight: 700;
+            }
+        }
+
+        .refresh-btn {
+            height: 56px;
+            padding: 0 24px;
+            @include mi.flexbox(row, center, center);
+            gap: 8px;
+            border: 1px solid var(--tf-refresh-border-color);
+            border-radius: var(--tf-refresh-radius);
+            background: transparent;
+
+            .icon {
+                display: inline-block;
+                width: 24px;
+                height: 24px;
+                background: var(--tf-refresh-icon) no-repeat center/contain;
+            }
+            .label {
+                font-size: va.$font-24;
+                color: var(--tf-refresh-label-color);
+                font-weight: 500;
+            }
+        }
+
+        .info-text {
+            position: relative;
+            font-size: va.$font-24;
+            color: var(--tf-info-text-color);
+            font-weight: 500;
+            @include mi.flexbox(row, flex-start, center);
+            gap: 8px;
+
+            &::before {
+                content: "";
+                display: block;
+                width: 5px;
+                height: 5px;
+                margin: 12px 6.5px;
+                border-radius: 50%;
+                background: var(--tf-info-bullet-color);
+            }
+        }
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    main.traffic {
+        .detail-title {
+            .traffic-search-btn {
+                height: 48px;
+                padding: 0 18px 0 16px;
+
+                .label {
+                    font-size: va.$font-20;
+                }
+            }
+
+            h3 {
+                gap: 48px;
+
+                span {
+                    font-size: va.$font-32;
+                    &::after {
+                        right: -24px;
+                        height: 22px;
+                    }
+                }
+            }
+        }
+
+        .traffic-content {
+            width: calc(100% - 48px);
+            margin: 16px auto 12px;
+            padding: 24px 32px;
+
+            &.empty {
+                height: 500px;
+                .empty-info {
+                    font-size: va.$font-32;
+                }
+            }
+
+            .traffic-toolbar {
+                padding-bottom: 16px;
+            }
+
+            .left-wrap {
+                .info-text {
+                    font-size: va.$font-20;
+                    display: flex; // 색상은 상위 변수 그대로 사용
+                }
+            }
+
+            .date-wrap {
+                time,
+                .weekday {
+                    font-size: va.$font-24;
+                }
+            }
+
+            .refresh-btn {
+                height: 48px;
+                padding: 0 18px 0 16px;
+
+                .label {
+                    font-size: va.$font-20;
+                }
+            }
+        }
+
+        .tb-wrap + .info-text {
+            display: none;
+        }
+    }
+}
+
+/* 낮은 자세 모드 + 영문 */
+html:lang(en).mode-low-posture {
+    main.traffic {
+        .detail-title {
+            .traffic-search-btn {
+                .label {
+                    font-size: va.$font-20;
+                }
+            }
+
+            h3 {
+                span {
+                    font-size: va.$font-32 * 0.8;
+                }
+            }
+        }
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast {
+    main.traffic {
+        --tf-filter-border-color: #1AEBFF;
+        --tf-filter-label-color: #1AEBFF;
+
+        --tf-title-color: #FFFFFF;
+        --tf-title-divider-color: #B6B6B6;
+
+        --tf-card-radius: 0;
+        --tf-card-border-color: #fff;
+        --tf-card-bg: #1B1F23;
+
+        --tf-date-color: #FFFFFF;
+
+        --tf-refresh-radius: 0;
+        --tf-refresh-border-color: #B6B6B6;
+        --tf-refresh-label-color: #FFFFFF;
+
+        --tf-info-text-color: #C1C1C1;
+        --tf-info-bullet-color: #C1C1C1;
+
+        --tf-empty-info-color: #ffffff;
+
+        /* 아이콘/이미지 토큰 */
+        --tf-filter-icon : url(../../../assets/images/icon/high-contrast/filter.svg);
+        --tf-refresh-icon : url(../../../assets/images/icon/high-contrast/refresh.svg);
+    }
+}

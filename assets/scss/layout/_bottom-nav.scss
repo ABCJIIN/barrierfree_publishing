@@ -1,0 +1,232 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.bottom-nav {
+    /* Bottom Nav 전용 로컬 컬러 토큰 */
+    --bn-bg: #ffffff;
+    --bn-border-top: #888888;
+    --bn-outer-circle-border: #888888;
+    --bn-mask-bg: #ffffff;
+
+    --bn-nav-label-color: #000000;
+    --bn-nav-label-active-color: #3B4CCF;
+
+    --bn-home-border: #ffffff;
+    --bn-home-gradient: linear-gradient(135deg, #4A72D0 0%, #5234E6 100%);
+
+    /* 아이콘/이미지 토큰 */
+    --bn-icon-tour: url(../../../assets/images/icon/tour.svg);
+    --bn-icon-tour-active: url(../../../assets/images/icon/tour_active.svg);
+
+    --bn-icon-map: url(../../../assets/images/icon/map.svg);
+    --bn-icon-map-active: url(../../../assets/images/icon/map_active.svg);
+
+    --bn-icon-traffic: url(../../../assets/images/icon/traffic.svg);
+    --bn-icon-traffic-active: url(../../../assets/images/icon/traffic_active.svg);
+
+    --bn-icon-restaurant: url(../../../assets/images/icon/restaurant.svg);
+    --bn-icon-restaurant-active: url(../../../assets/images/icon/restaurant_active.svg);
+
+    --bn-icon-home: url(../../../assets/images/icon/home.svg);
+
+    position: fixed;
+    left: 50%;
+    bottom: 68px;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1080px;
+    height: 143px;
+    padding: 24px 26px 32px;
+    border-radius: 32px 32px 0 0;
+    border-top: 1px solid var(--bn-border-top);
+    border-bottom: 0;
+    background: var(--bn-bg);
+    @include mi.flexbox(row, center, center);
+    gap: 32px;
+    z-index: 50;
+
+    /* 홈 버튼 외곽 원형 라인 */
+    &::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 23px;
+        transform: translateX(-50%);
+        width: 145px;
+        height: 145px;
+        border-radius: 50%;
+        border: 1px solid var(--bn-outer-circle-border);
+        background: transparent;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    /* 홈 버튼 외곽 원형 라인의 overflow를 숨기기 위한 요소 */
+    &::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 180px;
+        height: 100%;
+        background: var(--bn-mask-bg);
+    }
+
+    .nav-btn {
+        display: block;
+        width: 180px;
+        height: 87px;
+        background: transparent;
+        z-index: 10;
+        @include mi.flexbox(column, center, center);
+        gap: 12px;
+        .icon {
+            display: block;
+            width: 40px;
+            height: 40px;
+        }
+        .label {
+            // 한국어: 28px, 영어: 28px의 90% = 25.2px
+            @include mi.font-i18n(
+                va.$font-28,
+                va.$font-28 * 0.9
+            );
+            font-weight: 500;
+            line-height: 124%;
+            text-align: center;
+            color: var(--bn-nav-label-color);
+        }
+        &.is-active {
+            .label {
+                font-weight: 800;
+                color: var(--bn-nav-label-active-color);
+            }
+            &.tour-btn .icon {
+                background: var(--bn-icon-tour-active) no-repeat center/contain;
+            }
+            &.map-btn .icon {
+                background: var(--bn-icon-map-active) no-repeat center/contain;
+            }
+            &.traffic-btn .icon {
+                background: var(--bn-icon-traffic-active) no-repeat center/contain;
+            }
+            &.restaurant-btn .icon {
+                background: var(--bn-icon-restaurant-active) no-repeat center/contain;
+            }
+        }
+        &.tour-btn .icon {
+            background: var(--bn-icon-tour) no-repeat center/contain;
+        }
+        &.map-btn .icon {
+            background: var(--bn-icon-map) no-repeat center/contain;
+        }
+        &.traffic-btn .icon {
+            background: var(--bn-icon-traffic) no-repeat center/contain;
+        }
+        &.restaurant-btn .icon {
+            background: var(--bn-icon-restaurant) no-repeat center/contain;
+        }
+    }
+    .home-btn-wrap {
+        position: relative;
+        width: 180px;
+        height: 100%;
+        background: var(--bn-mask-bg);
+    }
+    .home-btn {
+        position: absolute;
+        left: 50%;
+        bottom: -8px;
+        transform: translateX(-50%);
+        display: block;
+        box-sizing: content-box;
+        width: 119px;
+        height: 119px;
+        border-radius: 50%;
+        border: 12px solid var(--bn-home-border);
+        background: var(--bn-icon-home) no-repeat center/58px, var(--bn-home-gradient);
+        z-index: 20;
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .bottom-nav {
+        height: 86px;
+        padding: 8px 24px 8px;
+        gap: 48px;
+        /* 홈 버튼 외곽 원형 라인 */
+        &::before {
+            bottom: 9px;
+            width: 92px;
+            height: 92px;
+        }
+        /* 홈 버튼 외곽 원형 라인의 overflow를 숨기기 위한 요소 */
+        &::after {
+            width: 100px;
+        }
+        .nav-btn {
+            width: 170px;
+            height: 70px;
+            @include mi.flexbox(row, center, center);
+            gap: 8px;
+        }
+        .home-btn-wrap {
+            width: 90px;
+        }
+        .home-btn {
+            bottom: 2px;
+            width: 74px;
+            height: 74px;
+            border: 8px solid var(--bn-home-border);
+            background: url(../../../assets/images/icon/home.svg) no-repeat center/35px, var(--bn-home-gradient);
+        }
+        .prev-btn,
+        .next-btn {
+            display: flex;
+        }
+    }
+}
+
+/* 낮은 자세 모드 + 영문 */
+html:lang(en).mode-low-posture {
+    .bottom-nav {
+        .nav-btn {
+            .label {
+                font-size: va.$font-28 * 0.8;
+            }
+        }
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast {
+    .bottom-nav {
+        --bn-bg: #1B1F23;
+        --bn-border-top: #FFF;
+        --bn-outer-circle-border: #FFF;
+        --bn-mask-bg: #1B1F23;
+
+        --bn-nav-label-color: #ffffff;
+        --bn-nav-label-active-color: #1AEBFF;
+
+        --bn-home-border: #1B1F23;
+        --bn-home-gradient: linear-gradient(135deg, #1AEBFF 0%, #98FF93 100%);
+
+        /* 아이콘/이미지 토큰 */
+        --bn-icon-tour: url(../../../assets/images/icon/high-contrast/tour.svg);
+        --bn-icon-tour-active: url(../../../assets/images/icon/high-contrast/tour_active.svg);
+
+        --bn-icon-map: url(../../../assets/images/icon/high-contrast/map.svg);
+        --bn-icon-map-active: url(../../../assets/images/icon/high-contrast/map_active.svg);
+
+        --bn-icon-traffic: url(../../../assets/images/icon/high-contrast/traffic.svg);
+        --bn-icon-traffic-active: url(../../../assets/images/icon/high-contrast/traffic_active.svg);
+
+        --bn-icon-restaurant: url(../../../assets/images/icon/high-contrast/restaurant.svg);
+        --bn-icon-restaurant-active: url(../../../assets/images/icon/high-contrast/restaurant_active.svg);
+
+        --bn-icon-home: url(../../../assets/images/icon/high-contrast/home.svg);
+    }
+}

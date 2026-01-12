@@ -1,0 +1,56 @@
+<!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
+<!-- 251114 개발 시 현재 활성 메뉴에 aria-current="page" 추가 필요 -->
+<a href="/html/tour/tour.html" class="nav-btn tour-btn" data-nav="tour" aria-label="관광 화면으로 이동합니다." data-tts="관광 메뉴로 이동합니다.">
+    <span class="icon" aria-hidden="true"></span>
+    <span class="label">관광</span>
+</a>
+<a href="/html/map/digital_map.html" class="nav-btn map-btn" data-nav="map" aria-label="지도 화면으로 이동합니다." data-tts="지도 메뉴로 이동합니다.">
+    <span class="icon" aria-hidden="true"></span>
+    <span class="label">지도</span>
+</a>
+<div class="home-btn-wrap">
+    <a href="/index.html" class="home-btn" aria-label="홈 화면으로 이동합니다." data-tts="처음 화면으로 이동합니다.">
+        <span class="icon" aria-hidden="true"></span>
+    </a>
+</div>
+<!--<a href="javascript:void(0)" class="nav-btn traffic-btn is-active" aria-current="page">-->
+    <a href="javascript:void(0)" class="nav-btn traffic-btn" data-nav="traffic" aria-label="교통 화면으로 이동합니다." data-tts="교통편 검색을 위한 팝업입니다.">
+    <span class="icon" aria-hidden="true"></span>
+    <span class="label">교통</span>
+</a>
+<a href="/html/restaurant/restaurant.html" class="nav-btn restaurant-btn" data-nav="restaurant" aria-label="음식점 화면으로 이동합니다." data-tts="음식점 메뉴로 이동합니다.">
+    <span class="icon" aria-hidden="true"></span>
+    <span class="label">음식점</span>
+</a>
+<script>
+    document.addEventListener('click', function (e) {
+    const link = e.target.closest('a[data-tts]');
+        if (!link) return;
+
+        const isVoice = document.documentElement.classList.contains('mode-voice');
+        if (!isVoice) return;
+
+        // 이동할 주소를 먼저 확정
+        let href = link.getAttribute('href');
+
+        if (link.classList.contains('home-btn')) {
+            href = isVoice ? '/index_voice.html' : '/index.html';
+        }
+
+        if (!href) return;
+
+        e.preventDefault(); // 여기서만 막기
+
+        const text = link.dataset.tts;
+        if (text) {
+            TTS.speak(text);
+        }
+
+        const delay = Math.max(1200, (text || '').length * 120);
+
+        setTimeout(() => {
+            location.href = href;
+        }, delay);
+
+    }, true);
+</script>

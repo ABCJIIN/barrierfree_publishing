@@ -1,0 +1,265 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.main.category {
+    /* category 전용 로컬 컬러 토큰 */
+    --cg-title-color: #000;
+    --cg-desc-color: #555;
+
+    --cg-card-border: #B393FF;
+    --cg-card-bg: #fff;
+    --cg-card-title-color: #000;
+    --cg-card-desc-color: #555;
+
+    --cg-card-icon-gradient01: #4A72D0;
+    --cg-card-icon-gradient02: #5234E6;
+
+    --cg-home-btn-border: transparent;
+    --cg-home-btn-color: #3B4CCF;
+    --cg-home-btn-bg: #fff;
+
+    /* 아이콘/이미지 토큰 */
+    --cg-arrow-icon: url(../../../assets/images/icon/high-contrast/arrow_right_wh.svg);
+
+    --cg-tour-img: url(../../../assets/images/main/tour.png);
+    --cg-map-img: url(../../../assets/images/main/map.png);
+    --cg-traffic-img: url(../../../assets/images/main/traffic.png);
+    --cg-restaurant-img: url(../../../assets/images/main/restaurant.png);
+
+    --cg-home-icon: url(../../../assets/images/icon/home_bl.svg);
+
+    .category-menu-sec {
+        width: calc(100% - 64px);
+        margin: 0 auto;
+        padding: 92px 0;
+    }
+
+    .category-title {
+        margin-bottom: 16px;
+        font-size: va.$font-48;
+        font-weight: 700;
+        color: var(--cg-title-color);
+        text-align: center;
+        line-height: 57px;
+    }
+
+    .category-desc {
+        margin-bottom: 56px;
+        font-size: va.$font-32;
+        font-weight: 500;
+        color: var(--cg-desc-color);
+        text-align: center;
+        line-height: 46px;
+    }
+
+    .card-btn-list {
+        margin-bottom: 40px;
+        width: 100%;
+        @include mi.flexbox(row, flex-start, flex-start);
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .card-btn {
+        width: calc(50% - 8px);
+        height: 612px;
+        @include mi.flexbox(column, flex-start, flex-start);
+        border-radius: 20px;
+        border: 3px solid var(--cg-card-border);
+        background: var(--cg-card-bg);
+    }
+
+    .card-btn-link {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 100%;
+        padding: 48px;
+        border-radius: 20px;
+    }
+
+    .card-btn-title {
+        font-size: va.$font-48;
+        font-weight: 700;
+        color: var(--cg-card-title-color);
+        line-height: 57px;
+    }
+
+    .card-btn-desc {
+        padding: 16px 0 48px;
+        font-size: va.$font-24;
+        font-weight: 500;
+        color: var(--cg-card-desc-color);
+        line-height: 35px;
+    }
+
+    .arrow-icon {
+        display: inline-block;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--cg-arrow-icon) no-repeat center/24px, linear-gradient(135deg, var(--cg-card-icon-gradient01) 0%, var(--cg-card-icon-gradient02) 100%);
+    }
+
+    .category-img {
+        position: absolute;
+        right: 48px;
+        bottom: 48px;
+        display: inline-block;
+    }
+
+    .card-btn.tour {
+        .category-img {
+            width: 166px;
+            height: 153px;
+            background: var(--cg-tour-img) no-repeat center/contain;
+        }
+    }
+
+    .card-btn.map {
+        .category-img {
+            width: 156px;
+            height: 136px;
+            background: var(--cg-map-img) no-repeat center/contain;
+        }
+    }
+
+    .card-btn.traffic {
+        .category-img {
+            width: 162px;
+            height: 153px;
+            background: var(--cg-traffic-img) no-repeat center/contain;
+        }
+    }
+
+    .card-btn.restaurant {
+        .category-img {
+            width: 164px;
+            height: 153px;
+            background: var(--cg-restaurant-img) no-repeat center/contain;
+        }
+    }
+
+    .category-menu-bottom {
+        .home-btn {
+            display: block;
+            width: 100%;
+            height: 124px;
+            border-radius: 20px;
+            border: 1px solid var(--cg-home-btn-border);
+            background: var(--cg-home-btn-bg);
+            @include mi.flexbox(row, center, center);
+            gap: 12px;
+        }
+        .icon {
+            display: inline-block;
+            width: 48px;
+            height: 48px;
+            background: var(--cg-home-icon) no-repeat center/contain;
+        }
+        .label {
+            font-size: va.$font-40;
+            font-weight: 700;
+            color: var(--cg-home-btn-color);
+        }
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .main.category {
+        .category-menu-sec {
+            width: calc(100% - 48px);
+            padding: 56px 0;
+        }
+
+        .category-title {
+            margin-bottom: 8px;
+            font-size: va.$font-40;
+            line-height: 48px;
+        }
+
+        .category-desc {
+            margin-bottom: 48px;
+            font-size: va.$font-24;
+            line-height: 35px;
+        }
+
+        .card-btn-list {
+            margin-bottom: 32px;
+        }
+
+        .card-btn {
+            height: 222px;
+        }
+
+        .card-btn-link {
+            padding: 40px 38px 40px 40px;
+        }
+
+        .card-btn-title {
+            font-size: va.$font-40;
+            line-height: 48px;
+        }
+
+        .card-btn-desc {
+            padding: 24px 0 0;
+        }
+
+        .arrow-icon {
+            position: absolute;
+            top: 40px;
+            right: 38px;
+            width: 44px;
+            height: 44px;
+            background: url(../../../assets/images/icon/high-contrast/arrow_right_wh.svg) no-repeat center/19px, linear-gradient(135deg, #4A72D0 0%, #5234E6 100%);
+        }
+
+        .category-img {
+            display: none;
+        }
+
+        .category-menu-bottom {
+            .home-btn {
+                height: 110px;
+            }
+            .icon {
+                width: 40px;
+                height: 40px;
+            }
+            .label {
+                font-size: va.$font-32;
+            }
+        }
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast {
+    .main.category {
+        --cg-title-color: #fff;
+        --cg-desc-color: #C1C1C1;
+
+        --cg-card-border: #1AEBFF;
+        --cg-card-bg: transparent;
+        --cg-card-title-color: #fff;
+        --cg-card-desc-color: #C1C1C1;
+
+        --cg-card-icon-gradient01: #1AEBFF ;
+        --cg-card-icon-gradient02: #98FF93 ;
+
+        --cg-home-btn-border: #B6B6B6;
+        --cg-home-btn-color: #fff;
+        --cg-home-btn-bg: transparent;
+
+        /* 아이콘/이미지 토큰 */
+        --cg-arrow-icon: url(../../../assets/images/icon/arrow_right_bk.svg);
+
+        --cg-tour-img: url(../../../assets/images/main/high-contrast/tour.png);
+        --cg-map-img: url(../../../assets/images/main/high-contrast/map.png);
+        --cg-traffic-img: url(../../../assets/images/main/high-contrast/traffic.png);
+        --cg-restaurant-img: url(../../../assets/images/main/high-contrast/restaurant.png);
+
+        --cg-home-icon: url(../../../assets/images/icon/home_small.svg);
+    }
+}

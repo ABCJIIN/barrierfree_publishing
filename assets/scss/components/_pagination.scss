@@ -1,0 +1,114 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.pagination {
+    /* Pagination 전용 로컬 디자인 토큰 */
+    --pg-btn-color: #555;
+    --pg-btn-active-color: #ffffff;
+    --pg-btn-active-bg: #3B4CCF;
+
+    /* 아이콘/이미지 토큰 */
+    --pg-arrow-first: url(../../../assets/images/icon/arrow_first.svg);
+    --pg-arrow-prev: url(../../../assets/images/icon/arrow_left.svg);
+    --pg-arrow-next: url(../../../assets/images/icon/arrow_right.svg);
+    --pg-arrow-last: url(../../../assets/images/icon/arrow_last.svg);
+
+    width: 100%;
+    padding-bottom: 61px;
+    // @include mi.flexbox(row, center, center);
+    // gap: 12px;
+
+    &.is-hidden {
+        display: none;
+    }
+
+    .Zebra_Pagination {
+        width: 100%;
+
+        ul {
+            width: 100%;
+            @include mi.flexbox(row, center, center);
+            gap: 12px;
+        }
+
+        a {
+            display: block;
+            min-width: 48px;
+            height: 48px;
+            padding: 0 12px;
+            font-size: va.$font-24;
+            font-weight: 500;
+            color: var(--pg-btn-color);
+            letter-spacing: -0.02em;
+            text-align: center;
+            border-radius: 48px;
+            background: transparent;
+            @include mi.flexbox(row, center, center);
+
+            &.current {
+                color: var(--pg-btn-active-color);
+                background: var(--pg-btn-active-bg);
+            }
+
+            &.navigation {
+                margin: 0;
+                padding: 0;
+            }
+
+            &.first  {
+                background: var(--pg-arrow-first) no-repeat center/24px;
+            }
+
+            &.previous {
+                background: var(--pg-arrow-prev) no-repeat center/24px;
+            }
+
+            &.next {
+                background: var(--pg-arrow-next) no-repeat center/24px;
+            }
+
+            &.last {
+                background: var(--pg-arrow-last) no-repeat center/24px;
+            }
+        }
+
+        span {
+            font-size: va.$font-24;
+            font-weight: 500;
+            color: var(--pg-btn-color);
+            letter-spacing: -0.02em;
+            text-align: center;
+        }
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .pagination {
+        padding-bottom: 26px;
+        .Zebra_Pagination {
+
+            a {
+                min-width: 40px;
+                height: 40px;
+                border-radius: 40px;
+            }
+        }
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast {
+    .pagination {
+        /* 로컬 토큰 오버라이드 */
+        --pg-btn-color: #BCBCBC;
+        --pg-btn-active-color: #1B1F23;
+        --pg-btn-active-bg: #1AEBFF;
+
+        /* 아이콘/이미지 토큰 */
+        --pg-arrow-first: url(../../../assets/images/icon/high-contrast/arrow_first.svg);
+        --pg-arrow-prev: url(../../../assets/images/icon/high-contrast/arrow_left.svg);
+        --pg-arrow-next: url(../../../assets/images/icon/high-contrast/arrow_right.svg);
+        --pg-arrow-last: url(../../../assets/images/icon/high-contrast/arrow_last.svg);
+    }
+}

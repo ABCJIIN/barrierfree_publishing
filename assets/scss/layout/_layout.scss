@@ -1,0 +1,399 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+/* 페이지 내 공통 레이아웃 요소들 */
+.zoom-viewport {
+    /* zoom viewport 전용 로컬 컬러 토큰 */
+    --zv-bg: #EEE;
+
+    position: relative;
+    width: 100%;
+    max-width: 1080px;
+    height: 100vh;
+    margin: 0 auto;
+    background: var(--zv-bg);
+
+    &.is-active {
+        min-height: auto;
+        height: 100vh;
+        overflow: hidden;
+        // touch-action: none;
+        .zoom-canvas { 
+            will-change: transform;
+        }
+
+        .bottom-nav {
+            bottom: 168px;
+        }
+
+        .footer {
+            bottom: 100px;
+        }
+
+        /* 관광/음식점 상세페이지 - 낮은 화면 모드 - 우측 하단 */
+        .floating-btn {
+            bottom: 219px;
+        }
+    }
+
+    .zoom-move-wrap {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        // height: 100vh;
+        overflow: hidden;
+    }
+
+    .zoom-canvas {
+        width: 100%;
+        min-height: 100%;
+        transform: none;
+        transform-origin: 0 0; 
+        background: var(--zv-bg);
+        overflow: hidden;
+    }
+
+    .main {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        padding-top: 184px;
+        padding-bottom: 211px;
+
+        &.intro {
+            padding-top: 90px;
+            padding-bottom: 68px;
+            background: linear-gradient(180deg, #1A1E28 50.94%, #060C18 70.56%);
+        }
+
+        &.category {
+            padding-top: 90px;
+            padding-bottom: 68px;
+        }
+
+        &.detail-page {
+            min-height: 100vh;
+            padding-top: 298px;
+        }
+
+        &.traffic {
+            padding-top: 298px;
+        }
+
+        &.map {
+            padding-top: 298px;
+        }
+    }
+
+    /* 상/하/좌/우 이동 버튼 */
+    .viewport-controller {
+        /* 상/하/좌/우 이동 버튼 컬러 토큰 */
+        --vc-border: #000;
+
+        --vc-btn-border: #000;
+        --vc-btn-bg: #fff;
+        --vc-btn-color: #3B4CCF;
+    
+        /* 아이콘/이미지 토큰 */
+        --vc-move-up-icon: url(../../../assets/images/zoom/zoom_up.svg);
+        --vc-move-left-icon: url(../../../assets/images/zoom/zoom_left.svg);
+        --vc-move-right-icon: url(../../../assets/images/zoom/zoom_right.svg);
+        --vc-move-down-icon: url(../../../assets/images/zoom/zoom_down.svg);
+        --vc-zoom-exit-icon: url(../../../assets/images/zoom/zoom_close.svg);
+
+        position: fixed;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 1080px;
+        height: 200px;
+        border-top: 2px solid var(--vc-border);
+        @include mi.flexbox(row, flex-start, center);
+        z-index: 999;
+        display: none;
+        &.is-active {
+            display: flex;
+        }
+
+        .btn-wrap {
+            position: relative;
+            width: 20%;
+            height: 100%;
+            padding: 0 16px;
+            border-right: 2px solid var(--vc-btn-border);
+            background: var(--vc-btn-bg);
+
+            &:last-child {
+                border-right: 0;
+            }
+        }
+
+        .zoom-control {
+            width: 100%;
+            height: 100%;
+            @include mi.flexbox(column, center, center);
+            gap: 16px;
+            background: var(--vc-btn-bg);
+
+            &:focus,
+            &:focus-visible {
+                box-shadow: none;
+                outline: none;
+                @include mi.focus-ring(0, after, 5px);
+            }
+
+            .icon {
+                display: inline-block;
+                width: 56px;
+                height: 56px;
+            }
+
+            .label {
+            // 한국어: 32px, 영어: 32px의 90% = 28.8px
+            @include mi.font-i18n(
+                va.$font-32,
+                va.$font-32 * 0.9
+            );
+                font-weight: 700;
+                line-height: 120%;
+                color: var(--vc-btn-color);
+            }
+
+            &.is-disable {
+                .label {
+                    color: #B7B7B7;
+                }
+            }
+
+            &.move-up {
+                .icon {
+                    background: var(--vc-move-up-icon) no-repeat center/contain;
+                }
+                &.is-disable {
+                    .icon {
+                        background: url(../../../assets/images/zoom/zoom_up_gy.svg) no-repeat center/contain;
+                    }
+                }
+            }
+            &.move-left {
+                .icon {
+                    background: var(--vc-move-left-icon) no-repeat center/contain;
+                }
+                &.is-disable {
+                    .icon {
+                        background: url(../../../assets/images/zoom/zoom_left_gy.svg) no-repeat center/contain;
+                    }
+                }
+            }
+            &.move-right {
+                .icon {
+                    background: var(--vc-move-right-icon) no-repeat center/contain;
+                }
+                &.is-disable {
+                    .icon {
+                        background: url(../../../assets/images/zoom/zoom_right_gy.svg) no-repeat center/contain;
+                    }
+                }
+            }
+            &.move-down {
+                .icon {
+                    background: var(--vc-move-down-icon) no-repeat center/contain;
+                }
+                &.is-disable {
+                    .icon {
+                        background: url(../../../assets/images/zoom/zoom_down_gy.svg) no-repeat center/contain;
+                    }
+                }
+            }
+            &.zoom-exit-btn {
+                .icon {
+                    background: var(--vc-zoom-exit-icon) no-repeat center/contain;
+                }
+                &.is-active {
+                    display: flex;
+                }
+            }
+        }
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .zoom-viewport {
+        @include mi.flexbox(column, flex-end, flex-end);
+        background: linear-gradient(180deg, #1A1E28 68.11%, #060C18 100%);
+
+        &.is-active {
+
+            .bottom-nav {
+                bottom: 118px;
+            }
+
+            .footer {
+                bottom: 50px;
+            }
+
+            .modal {
+                height: calc(var(--lp-page-height, 916px) - 68px);
+
+                &.volume-control {
+                    .modal-content {
+                        bottom: 68px;
+                    }
+                }
+            }
+        }
+
+        .zoom-move-wrap {
+            width: 100%;
+            margin-top: auto;
+
+            // 낮은 자세 모드에서 페이지 높이 고정을 위한 class
+            // 인트로
+            &.h1100 {height: 1100px;}
+            // 전체메뉴
+            &.h1011 {height: 1011px;}
+            // 음식점
+            &.h933 {height: 933px;}
+            // 관광, 관광 상세, 음식점 상세, 교통, 지도
+            &.h917 {height: 917px;}
+        }
+
+        .main {
+            min-height: auto;
+            padding-top: 0;
+            padding-bottom: 154px;
+
+            &.intro {
+                padding-top: 0;
+                padding-bottom: 68px;
+            }
+
+            &.category {
+                padding-top: 0;
+                padding-bottom: 68px;
+            }
+
+            &.detail-page {
+                min-height: auto;
+                padding-top: 0;
+            }
+
+            &.traffic {
+                padding-top: 0;
+            }
+
+            &.map {
+                padding-top: 0;
+            }
+        }
+
+        /* 상/하/좌/우 이동 버튼 */
+        .viewport-controller {
+            height: 100px;
+
+            .zoom-control {
+                @include mi.flexbox(row, center, center);
+                gap: 8px;
+
+                .icon {
+                    display: inline-block;
+                    width: 32px;
+                    height: 32px;
+                }
+
+                .label {
+                    font-size: va.$font-24;
+                    line-height: 29px;
+                }
+
+                &.move-up {
+                    .icon {
+                        background: url(../../../assets/images/zoom/low-posture/zoom_up.svg) no-repeat center/contain;
+                    }
+                    &.is-disable {
+                        .icon {
+                            background: url(../../../assets/images/zoom/low-posture/zoom_up_gy.svg) no-repeat center/contain;
+                        }
+                    }
+                }
+                &.move-left {
+                    .icon {
+                        background: url(../../../assets/images/zoom/low-posture/zoom_left.svg) no-repeat center/contain;
+                    }
+                    &.is-disable {
+                        .icon {
+                            background: url(../../../assets/images/zoom/low-posture/zoom_left_gy.svg) no-repeat center/contain;
+                        }
+                    }
+                }
+                &.move-right {
+                    .icon {
+                        background: url(../../../assets/images/zoom/low-posture/zoom_right.svg) no-repeat center/contain;
+                    }
+                    &.is-disable {
+                        .icon {
+                            background: url(../../../assets/images/zoom/low-posture/zoom_right_gy.svg) no-repeat center/contain;
+                        }
+                    }
+                }
+                &.move-down {
+                    .icon {
+                        background: url(../../../assets/images/zoom/low-posture/zoom_down.svg) no-repeat center/contain;
+                    }
+                    &.is-disable {
+                        .icon {
+                            background: url(../../../assets/images/zoom/low-posture/zoom_down_gy.svg) no-repeat center/contain;
+                        }
+                    }
+                }
+                &.zoom-exit-btn {
+                    .icon {
+                        background: url(../../../assets/images/zoom/low-posture/zoom_close.svg) no-repeat center/contain;
+                    }
+                    &.is-active {
+                        display: flex;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* 낮은 자세 모드 + 영문 */
+html:lang(en).mode-low-posture {
+    .zoom-viewport {
+        /* 상/하/좌/우 이동 버튼 */
+        .viewport-controller {
+            .zoom-control {
+                .label {
+                    font-size: va.$font-24;
+                }
+            }
+        }
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast {
+    .zoom-viewport {
+        --zv-bg: #1B1F23;
+
+        .viewport-controller {
+            /* 상/하/좌/우 이동 버튼 컬러 토큰 */
+            --vc-border: #000;
+
+            --vc-btn-border: #000;
+            --vc-btn-bg: #fff;
+            --vc-btn-color: #000;
+        
+            /* 아이콘/이미지 토큰 */
+            --vc-move-up-icon: url(../../../assets/images/zoom/zoom_up_bk.svg);
+            --vc-move-left-icon: url(../../../assets/images/zoom/zoom_left_bk.svg);
+            --vc-move-right-icon: url(../../../assets/images/zoom//zoom_right_bk.svg);
+            --vc-move-down-icon: url(../../../assets/images/zoom/zoom_down_bk.svg);
+            --vc-zoom-exit-icon: url(../../../assets/images/zoom/zoom_close_bk.svg);
+        }
+    }
+}

@@ -1,0 +1,358 @@
+
+/*무장애 픽토그램 아이콘*/
+.icon_parking {
+    background-image: url('/images/pictogram/icon_parking.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_restroom {
+    background-image: url('/images/pictogram/icon_restroom.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_route {
+    background-image: url('/images/pictogram/icon_route.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_publictransport {
+    background-image: url('/images/pictogram/icon_publictransport.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_ticketoffice {
+    background-image: url('/images/pictogram/icon_ticketoffice.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_promotion {
+    background-image: url('/images/pictogram/icon_promotion.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_wheelchair {
+    background-image: url('/images/pictogram/icon_wheelchair.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_exit {
+    background-image: url('/images/pictogram/icon_exit.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_elevator {
+    background-image: url('/images/pictogram/icon_elevator.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_auditorium {
+    background-image: url('/images/pictogram/icon_auditorium.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_room {
+    background-image: url('/images/pictogram/icon_room.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_handicapetc {
+    background-image: url('/images/pictogram/icon_handicapetc.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_braileblock {
+    background-image: url('/images/pictogram/icon_braileblock.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_helpdog {
+    background-image: url('/images/pictogram/icon_helpdog.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_guidehuman {
+    background-image: url('/images/pictogram/icon_guidehuman.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_audioguide {
+    background-image: url('/images/pictogram/icon_audioguide.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_bigprint {
+    background-image: url('/images/pictogram/icon_bigprint.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_brailepromotion {
+    background-image: url('/images/pictogram/icon_brailepromotion.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_guidesystem {
+    background-image: url('/images/pictogram/icon_guidesystem.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_blindhandicapetc {
+    background-image: url('/images/pictogram/icon_blindhandicapetc.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_signguide {
+    background-image: url('/images/pictogram/icon_signguide.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_rvideoguide {
+    background-image: url('/images/pictogram/icon_rvideoguide.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_hearingroom {
+    background-image: url('/images/pictogram/icon_hearingroom.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_hearinghandicapetc {
+    background-image: url('/images/pictogram/icon_hearinghandicapetc.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_lactationroom {
+    background-image: url('/images/pictogram/icon_lactationroom.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_babysparechair {
+    background-image: url('/images/pictogram/icon_babysparechair.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_infantsfamilyetc {
+    background-image: url('/images/pictogram/icon_infantsfamilyetc.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.icon_stroller {
+    background-image: url('/images/pictogram/icon_stroller.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+
+/*무장애 픽토그램 아이콘 화이트*/
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_parking {
+    background-image: url('/images/pictogramW/icon_parking.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_restroom {
+    background-image: url('/images/pictogramW/icon_restroom.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_route {
+    background-image: url('/images/pictogramW/icon_route.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_publictransport {
+    background-image: url('/images/pictogramW/icon_publictransport.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_ticketoffice {
+    background-image: url('/images/pictogramW/icon_ticketoffice.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_promotion {
+    background-image: url('/images/pictogramW/icon_promotion.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_wheelchair {
+    background-image: url('/images/pictogramW/icon_wheelchair.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_exit {
+    background-image: url('/images/pictogramW/icon_exit.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_elevator {
+    background-image: url('/images/pictogramW/icon_elevator.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_auditorium {
+    background-image: url('/images/pictogramW/icon_auditorium.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_room {
+    background-image: url('/images/pictogramW/icon_room.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_handicapetc {
+    background-image: url('/images/pictogramW/icon_handicapetc.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_braileblock {
+    background-image: url('/images/pictogramW/icon_braileblock.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_helpdog {
+    background-image: url('/images/pictogramW/icon_helpdog.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_guidehuman {
+    background-image: url('/images/pictogramW/icon_guidehuman.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_audioguide {
+    background-image: url('/images/pictogramW/icon_audioguide.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_bigprint {
+    background-image: url('/images/pictogramW/icon_bigprint.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_brailepromotion {
+    background-image: url('/images/pictogramW/icon_brailepromotion.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_guidesystem {
+    background-image: url('/images/pictogramW/icon_guidesystem.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_blindhandicapetc {
+    background-image: url('/images/pictogramW/icon_blindhandicapetc.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_signguide {
+    background-image: url('/images/pictogramW/icon_signguide.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_rvideoguide {
+    background-image: url('/images/pictogramW/icon_rvideoguide.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_hearingroom {
+    background-image: url('/images/pictogramW/icon_hearingroom.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_hearinghandicapetc {
+    background-image: url('/images/pictogramW/icon_hearinghandicapetc.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_lactationroom {
+    background-image: url('/images/pictogramW/icon_lactationroom.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_babysparechair {
+    background-image: url('/images/pictogramW/icon_babysparechair.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_infantsfamilyetc {
+    background-image: url('/images/pictogramW/icon_infantsfamilyetc.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.sub_accessibleTour_view .course_guide .course_view .course_cont .cont_icon .icon_stroller {
+    background-image: url('/images/pictogramW/icon_stroller.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.btnOpenTour {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 36px;
+  padding: 0 40px 0 20px;
+  border-radius: 10px;
+  border: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  background-color: #FF257C;
+  background-image: url('../images/icon_play.svg');
+  background-size: 16px 16px;
+  background-position: right 20px center;
+  background-repeat: no-repeat;
+}

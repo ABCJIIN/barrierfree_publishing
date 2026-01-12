@@ -1,0 +1,48 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+/* 소팅 영역 (관광, 음식점) */
+.sort-wrap {
+    /* Sorting 전용 로컬 컬러 토큰 */
+    --sw-bg: #ffffff;
+    --sw-info-color: #555;
+    --sw-dimmed-bg: rgba(0, 0, 0, 0.80);
+
+    position: relative;
+    width: 100%;
+    background: var(--sw-bg);
+    .sort-inner {
+        width: calc(100% - 64px);
+        margin: 0 auto;
+        padding: 24px 0;
+        @include mi.flexbox(row, space-between, center);
+    }
+    .info-text {
+        font-size: va.$font-24;
+        font-weight: 500;
+        color: var(--sw-info-color);
+    }
+    .dimmed {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 1080px;
+        // height: 100vh;
+        background: var(--sw-dimmed-bg);
+        z-index: 60;
+        display: none;
+        &.is-active {
+            display: block;
+        }
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast {
+    .sort-wrap {
+        --sw-bg: #1B1F23;
+        --sw-info-color: #C1C1C1;
+        --sw-dimmed-bg: rgba(0, 0, 0, 0.80);
+    }
+}

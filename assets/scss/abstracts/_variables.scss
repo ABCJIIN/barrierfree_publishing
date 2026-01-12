@@ -1,0 +1,23 @@
+@use './mixins' as mi;
+
+/* px → rem 변수, 언어별 폰트 사이즈 지정을 위해 폰트에서 해당 변수 사용 */
+$font-14: mi.px(14);   // 0.875rem  - 접근성 최소 기준
+$font-15: mi.px(15);   // 0.9375rem
+$font-16: mi.px(16);   // 1rem
+$font-17: mi.px(17);   // 1.0625rem - 영문 보정
+$font-18: mi.px(18);   // 1.125rem
+$font-20: mi.px(20);   // 1.25rem
+$font-22: mi.px(22);   // 1.375rem
+$font-24: mi.px(24);   // 1.5rem
+$font-26: mi.px(26);   // 1.625rem
+$font-28: mi.px(28);   // 1.75rem
+$font-30: mi.px(30);   // 1.875rem
+$font-32: mi.px(32);   // 2rem
+$font-36: mi.px(36);   // 2.25rem
+$font-40: mi.px(40);   // 2.5rem
+$font-42: mi.px(42);   // 2.625rem
+$font-44: mi.px(44);   // 2.75rem
+$font-48: mi.px(48);   // 3rem
+$font-50: mi.px(50);   // 3.125rem
+$font-56: mi.px(56);   // 3.5rem
+$font-80: mi.px(80);   // 5rem

@@ -1,0 +1,46 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.sub-header {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1080px;
+    background: #0B162F;
+    z-index: 80;
+    .sub-hd-inner {
+        width: calc(100% - 64px);
+        height: 94px;
+        padding: 10px 0 27px;
+        margin: 0 auto;
+        @include mi.flexbox(row, space-between, center);
+    }
+    .page-title {
+        position: absolute;
+        bottom: 27px;
+        left: 50%;
+        transform: translateX(-50%);
+        line-height: 57px;
+        font-size: va.$font-48;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        text-align: center;
+        color: #fff;
+    }
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .sub-header {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: translateX(0);
+        .sub-hd-inner {
+            height: 94px;
+            padding: 10px 0 26px;
+        }
+    }
+}

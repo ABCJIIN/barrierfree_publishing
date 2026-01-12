@@ -1,0 +1,17 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.card-list {
+    width: 100%;
+    padding: 32px 32px 24px;
+    @include mi.flexbox(row, flex-start, flex-start);
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+/* 낮은 자세 모드 */
+.mode-low-posture {
+    .card-list {
+        padding: 16px 24px 12px;
+    }
+}

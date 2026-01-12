@@ -1,0 +1,138 @@
+@use "sass:math";
+
+/* px → rem 변환 함수 */
+@function px($px) {
+    @return math.div($px, 16) * 1rem;
+}
+
+/* 플렉스 박스 */
+@mixin flexbox($direction, $justify, $align){
+	display:flex;
+    flex-direction: $direction;
+    justify-content: $justify;
+    align-items: $align;
+}
+
+/* 말줄임 */
+@mixin ellipsis($num: 1) {
+    @if ($num == 1) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    } @else {
+        display: -webkit-box;
+        overflow: hidden;
+        word-break: keep-all;
+        text-overflow: ellipsis;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: $num;
+    }
+}
+
+/* 폰트 정의 */
+@mixin font-face($family, $file, $weight:400, $path:'/assets/fonts') {
+    @font-face {
+        font-family: $family;
+        font-style: normal;
+        font-weight: $weight;
+        font-display: swap;
+        src:
+        url('#{$path}/#{$file}.woff2') format('woff2'),
+        url('#{$path}/#{$file}.woff') format('woff');
+    }
+}
+
+/* 언어별 폰트 */
+
+/* 한국어 */
+@mixin lang-ko {
+    font-family: 'Pretendard', 'Noto Sans KR', system-ui, sans-serif;
+}
+
+/* 영어 */
+@mixin lang-en {
+    font-family: 'Pretendard', 'Noto Sans KR', system-ui, sans-serif;
+}
+
+/* 중국어 간체 (Simplified Chinese) */
+@mixin lang-zh-cn {
+    font-family: 'Noto Sans SC', system-ui, sans-serif;
+    font-feature-settings: 'palt' on;
+}
+
+/* 중국어 번체 (Traditional Chinese) */
+@mixin lang-zh-tw {
+    font-family: 'Noto Sans TC', system-ui, sans-serif;
+    font-feature-settings: 'palt' on;
+}
+
+/* 일본어 */
+@mixin lang-ja {
+    font-family: 'Noto Sans JP', system-ui, sans-serif;
+}
+
+// 언어별 폰트 사이즈 설정용 믹스인
+// 필수: $ko (한국어 기준 사이즈)
+// 선택: $en / $zh-cn / $zh-tw / $ja (필요한 언어만 전달)
+@mixin font-i18n($ko, $en: null, $zh-cn: null, $zh-tw: null, $ja: null) {
+    font-size: $ko; // 기본은 한국어 기준
+
+    @if $en != null {
+        html:lang(en) & {
+            font-size: $en;
+        }
+    }
+
+    @if $zh-cn != null {
+        html:lang(zh-CN) & {
+            font-size: $zh-cn;
+        }
+    }
+
+    @if $zh-tw != null {
+        html:lang(zh-TW) & {
+            font-size: $zh-tw;
+        }
+    }
+
+    @if $ja != null {
+        html:lang(ja) & {
+            font-size: $ja;
+        }
+    }
+}
+
+// ---------------------------------------
+// 공통 포커스 링 믹스인
+// ---------------------------------------
+// @param $inner-color   내부 2px 색
+// @param $outer-color   외곽 3px 색
+// @param $radius        기본 border-radius (보통 0)
+// ---------------------------------------
+
+@mixin focus-ring($radius: 0, $pseudo: after, $inset: 0) {
+    // 기본: 아무것도 안 보이게 초기화
+    &::#{$pseudo} {
+        content: '';
+        position: absolute;
+        inset: $inset;
+        border-radius: $radius;
+        pointer-events: none;
+        z-index: 100;
+        box-shadow: none;
+    }
+
+    // 1) 일반 모드 + 키보드 포커스일 때
+    html.is-keyboard-user &::#{$pseudo} {
+        box-shadow:
+        0 0 0 2px #FFFFFF,
+        0 0 0 5px #3B4CCF;
+    }
+
+    // 2) 고대비 모드 + 키보드 포커스일 때
+    html.mode-high-contrast.is-keyboard-user &::#{$pseudo} {
+        box-shadow:
+        0 0 0 2px #FFFFFF,
+        0 0 0 5px #FFFF2E;
+    }
+}

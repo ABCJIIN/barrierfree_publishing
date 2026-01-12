@@ -1,0 +1,40 @@
+/* abstracts */
+@use '../scss/abstracts/mixins';
+@use '../scss/abstracts/variables';
+
+/* base */
+@use '../scss/base/reset';
+@use '../scss/base/font';
+
+/* components */
+@use '../scss/components/tab';
+@use '../scss/components/select';
+@use '../scss/components/search';
+@use '../scss/components/card';
+@use '../scss/components/pagination';
+@use '../scss/components/floating-button';
+@use '../scss/components/filter';
+@use '../scss/components/table';
+
+/* layout */
+@use '../scss/layout/header';
+@use '../scss/layout/sub-header';
+@use '../scss/layout/detail-title';
+@use '../scss/layout/bottom-nav';
+@use '../scss/layout/footer';
+@use '../scss/layout/layout';
+@use '../scss/layout/sort';
+@use '../scss/layout/card-list';
+@use '../scss/layout/detail-page';
+@use '../scss/layout/modal';
+@use '../scss/layout/loading';
+
+/* pages */
+@use '../scss/pages/intro';
+@use '../scss/pages/category';
+@use '../scss/pages/tour';
+@use '../scss/pages/restaurant';
+@use '../scss/pages/traffic';
+@use '../scss/pages/map';
+
+/* vendors - 별도로 불러옴 */
