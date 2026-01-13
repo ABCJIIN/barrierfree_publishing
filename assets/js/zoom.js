@@ -191,6 +191,98 @@ function initZoom() {
     htmlEl.classList.contains('mode-low-posture') ||
     bodyEl.classList.contains('mode-low-posture');
 
+    // ====== 드래그(패닝) 이동 ======
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragStartPosX = 0;
+    let dragStartPosY = 0;
+
+    // drag 중에는 hold-move(버튼 꾹)와 충돌 방지
+    const stopMoveAndRaf = () => {
+        stopMove();
+        if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+    };
+
+    // 이벤트를 붙일 대상: moveWrap이 있으면 거기가 제일 안전(컨트롤러 영역 제외)
+    // 없으면 viewport, 그것도 없으면 canvas
+    const dragTarget = moveWrap || viewport || canvas;
+
+    const getPoint = (e) => {
+        if (e.touches && e.touches[0]) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        if (e.changedTouches && e.changedTouches[0]) {
+            return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+    };
+
+    const startDrag = (e) => {
+        if (!isZoomed) return;
+
+        // 버튼(상/하/좌/우/종료) 위에서 드래그 시작하면 무시
+        // (컨트롤러 영역에서 드래그로 화면이 움직이면 UX가 혼란스러워서)
+        const target = e.target;
+        if (target && target.closest && target.closest('.viewport-controller')) return;
+
+        // 텍스트 드래그/이미지 기본동작 방지
+        if (e.cancelable) e.preventDefault();
+
+        stopMoveAndRaf();
+
+        const p = getPoint(e);
+        isDragging = true;
+        dragStartX = p.x;
+        dragStartY = p.y;
+        dragStartPosX = posX;
+        dragStartPosY = posY;
+
+        // 드래그 중 클릭 방지(드래그 후 click 발생하는 케이스)
+        if (dragTarget) dragTarget.classList.add('is-dragging');
+    };
+
+    const moveDrag = (e) => {
+        if (!isZoomed || !isDragging) return;
+
+        if (e.cancelable) e.preventDefault();
+
+        const p = getPoint(e);
+        const dx = p.x - dragStartX;
+        const dy = p.y - dragStartY;
+
+        // 손가락/마우스를 오른쪽으로 끌면 화면이 오른쪽으로 “따라오게” 하려면
+        // 콘텐츠(캔버스)는 반대로 움직여야 하므로 posX/posY는 -dx/-dy 방향으로 변화
+        posX = clamp(dragStartPosX - dx, 0, maxX);
+        posY = clamp(dragStartPosY - dy, 0, maxY);
+
+        applyTransform();
+        updateEdgeButtons();
+    };
+
+    const endDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+
+        if (dragTarget) dragTarget.classList.remove('is-dragging');
+    };
+
+    // 마우스
+    if (dragTarget) {
+        dragTarget.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', moveDrag);
+        window.addEventListener('mouseup', endDrag);
+
+        // 터치 (passive:false로 preventDefault 가능하게)
+        dragTarget.addEventListener('touchstart', startDrag, { passive: false });
+        window.addEventListener('touchmove', moveDrag, { passive: false });
+        window.addEventListener('touchend', endDrag);
+        window.addEventListener('touchcancel', endDrag);
+    }
+
     // 실제 보이는 영역(뷰포트) 크기 기준으로 경계 재계산
     const recalcBounds = () => {
         if (!canvas) return;
