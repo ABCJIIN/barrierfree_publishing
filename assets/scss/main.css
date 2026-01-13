@@ -2032,6 +2032,8 @@ html:lang(en).mode-low-posture .zoom-viewport .viewport-controller .zoom-control
   --sp-qr-bg: #ffffff;
   --sp-qr-radius: 4px;
   --sp-qr-bullet-color: #555555;
+  --sp-qr-btn-color: #000;
+  --sp-qr-border: #888;
   --sp-access-title-color: #2191FD;
   --sp-access-icon-bg: transparent;
   /* 아이콘/이미지 토큰 */
@@ -2290,19 +2292,19 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   flex-direction: row;
   justify-content: center;
   align-items: flex-start;
-  gap: 32px;
+  gap: 40px;
 }
 .detail-page .qr-sec .qr-item {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  gap: 10px;
 }
 .detail-page .qr-sec .qr-item .qr-logo {
   display: block;
   width: 60px;
   height: 54px;
+  margin-bottom: 12px;
 }
 .detail-page .qr-sec .qr-item .qr-logo.google {
   background: var(--sp-icon-qr-google) no-repeat center/contain;
@@ -2311,11 +2313,12 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   background: var(--sp-icon-qr-naver) no-repeat center/contain;
 }
 .detail-page .qr-sec .qr-item .qr-code {
-  width: 98px;
+  width: 88px;
+  height: 88px;
   padding: 5px;
-  height: 99px;
+  margin-bottom: 16px;
   border: 1px solid var(--sp-border);
-  border-radius: var(--sp-qr-radius);
+  border-radius: 4px;
   background: var(--sp-qr-bg);
 }
 .detail-page .qr-sec .qr-item .qr-code img {
@@ -2323,6 +2326,18 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+.detail-page .qr-sec .qr-item .qr-zoom-btn {
+  width: 98px;
+  height: 44px;
+  padding: 0 14px;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--sp-qr-btn-color);
+  white-space: nowrap;
+  border-radius: var(--sp-qr-radius);
+  border: 1px solid var(--sp-qr-border);
+  background: transparent;
 }
 .detail-page .detail-sec .detail-text {
   padding-top: 24px;
@@ -2405,6 +2420,8 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   --sp-qr-bg: #ffffff;
   --sp-qr-radius: 0;
   --sp-qr-bullet-color: #C1C1C1;
+  --sp-qr-btn-color: #fff;
+  --sp-qr-border: #fff;
   --sp-access-title-color: #1AEBFF;
   --sp-access-icon-bg: #FFFF2E;
   --sp-icon-map-zoom-in: url(../../../assets/images/icon/high-contrast/plus.svg);
@@ -2443,6 +2460,7 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   /* 음량조절 모달 */
   /* 문의 모달 */
   /* 무동작 초기화면 복귀 모달 */
+  /* qr코드 크게보기 모달 */
 }
 .modal .modal-content {
   position: absolute;
@@ -2883,6 +2901,56 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
 .modal.idle-reset .modal-btn-wrap button {
   width: calc(50% - 8px);
 }
+.modal.qr-zoom .modal-content {
+  width: calc(100% - 120px);
+  padding: 40px;
+  border: 1px solid transparent;
+  border-radius: 24px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+.modal.qr-zoom .qr-logo {
+  width: 110px;
+  height: 99px;
+  margin-bottom: 56px;
+}
+.modal.qr-zoom .qr-logo.google {
+  background: url(../../../assets/images/common/google_maps_logo.png) no-repeat center/contain;
+}
+.modal.qr-zoom .qr-logo.naver {
+  background: url(../../../assets/images/common/naver_map_logo.png) no-repeat center/contain;
+}
+.modal.qr-zoom .qr-code {
+  width: 300px;
+  height: 300px;
+  padding: 12px;
+  margin-bottom: 48px;
+  border-radius: 8px;
+  border: 2px solid #888;
+}
+.modal.qr-zoom .qr-code img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.modal.qr-zoom .qr-info {
+  margin-bottom: 48px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 124%;
+  text-align: center;
+  color: #000;
+}
+.modal.qr-zoom .modal-btn-wrap button {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #888;
+  color: #000;
+}
 .modal.is-active {
   display: block;
 }
@@ -2892,6 +2960,7 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   /* 교통 모달 */
   /* 디지털 관광지도 모달 */
   /* 무동작 초기화면 복귀 모달 */
+  /* qr코드 크게보기 모달 */
 }
 .mode-low-posture .modal.traffic .modal-content {
   top: auto;
@@ -2920,6 +2989,12 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   top: auto;
   bottom: 208px;
   transform: translate(-50%, 0);
+}
+.mode-low-posture .modal.qr-zoom .modal-content {
+  top: auto;
+  bottom: 0;
+  transform: translate(-50%, 0);
+  border-radius: 24px 24px 0 0;
 }
 
 /* 고대비 모드 */
@@ -2957,6 +3032,14 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
 }
 .mode-high-contrast .modal.idle-reset :focus,
 .mode-high-contrast .modal.idle-reset :focus-visible {
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 5px #3B4CCF;
+  outline: none;
+}
+.mode-high-contrast .modal.qr-zoom {
+  /* 모달 안의 모든 포커스 가능한 요소 */
+}
+.mode-high-contrast .modal.qr-zoom :focus,
+.mode-high-contrast .modal.qr-zoom :focus-visible {
   box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 5px #3B4CCF;
   outline: none;
 }

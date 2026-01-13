@@ -187,6 +187,7 @@
                         <!-- QR 안내 -->
                         <div class="sec-wrap" tabindex="1" aria-label="QR코드를 스캔해 모바일에서 추가 정보를 확인할 수 있습니다.">
                             <section class="qr-sec">
+                                <!-- 260113 퍼블 수정 -->
                                 <div class="sec-inner">
                                     <div class="qr-info-wrap">
                                         <h4 class="section-title">
@@ -197,7 +198,10 @@
                                                 스캔 방법 : 휴대폰 카메라 앱 실행 → QR코드 이미지 스캔
                                             </li>
                                             <li class="qr-guide-item">
-                                                Wi-Fi Zone이 아닌 경우 데이터 요금제에 따라 추가 요금이<br> 부과될 수 있습니다.
+                                                크게보기 버튼을 누르면 QR코드를 크게 확인할 수 있습니다.
+                                            </li>
+                                            <li class="qr-guide-item">
+                                                Wi-Fi Zone이 아닌 경우 데이터 요금제에 따라 추가 요금이<br>부과될 수 있습니다.
                                             </li>
                                         </ul>
                                     </div>
@@ -208,16 +212,19 @@
                                                 <div class="qr-code" tabindex="1" aria-label="구글 지도 QR코드입니다.">
                                                     <img src="../../assets/images/dummy/google_maps_qr.png" alt="구글 지도 위치 정보 QR코드">
                                                 </div>
+                                                <button type="button" class="qr-zoom-btn google" aria-haspopup="dialog" aria-label="구글 지도 QR코드 크게 보기">크게보기</button>
                                             </li>
                                             <li class="qr-item">
                                                 <span class="qr-logo naver" aria-hidden="true"></span>
                                                 <div class="qr-code" tabindex="1" aria-label="네이버 지도 QR코드입니다.">
                                                     <img src="../../assets/images/dummy/naver_map_qr.png" alt="네이버 지도 위치 정보 QR코드">
                                                 </div>
+                                                <button type="button" class="qr-zoom-btn naver" aria-haspopup="dialog" aria-label="네이버 지도 QR코드 크게 보기">크게보기</button>
                                             </li>
                                         </ul>
                                     </div>
                                 </div>
+                                <!-- //260113 퍼블 수정 -->
                             </section>
                         </div>
     
@@ -486,7 +493,43 @@
                     </div>
                 </div>
                 <!-- //공통 모달 -->
-                
+
+                <!-- 260113 퍼블 수정 -->
+                <!-- 구글 qr코드 크게보기 모달 -->
+                <div class="modal qr-zoom google" aria-hidden="true">
+                    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="qrZoomModalTitleGoogle">
+
+                        <span id="qrZoomModalTitleGoogle" class="sr-only">구글 지도 QR코드 크게 보기</span>
+
+                        <span class="qr-logo google" aria-hidden="true"></span>
+                        <div class="qr-code" aria-label="구글 지도 QR코드입니다.">
+                            <img src="../../assets/images/dummy/google_maps_qr.png" alt="구글 지도 위치 정보 QR코드">
+                        </div>
+                        <p class="qr-info">QR코드 스캔을 통해<br>모바일에서도 추가 정보를 확인하세요.</p>
+                        <div class="modal-btn-wrap">
+                            <button type="button" class="close-btn">닫기</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 네이버 qr코드 크게보기 모달 -->
+                <div class="modal qr-zoom naver" aria-hidden="true">
+                    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="qrZoomModalTitleNaver">
+
+                        <span id="qrZoomModalTitleNaver" class="sr-only">네이버 지도 QR코드 크게 보기</span>
+
+                        <span class="qr-logo naver" aria-hidden="true"></span>
+                        <div class="qr-code" aria-label="네이버 지도 QR코드입니다.">
+                            <img src="../../assets/images/dummy/naver_map_qr.png" alt="네이버 지도 위치 정보 QR코드">
+                        </div>
+                        <p class="qr-info">QR코드 스캔을 통해<br>모바일에서도 추가 정보를 확인하세요.</p>
+                        <div class="modal-btn-wrap">
+                            <button type="button" class="close-btn">닫기</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- //260113 퍼블 수정 -->
+
                 <!-- footer -->
                 <footer class="footer">
                     <div class="ft-inner">

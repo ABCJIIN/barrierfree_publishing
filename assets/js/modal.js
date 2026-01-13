@@ -22,6 +22,34 @@ $(function () {
         }
     });
 
+    // 모달 출력 시 관광/음식도 지도 z-index 제어
+    function lowerMapZIndex() {
+        $('.map-area').each(function () {
+            const $map = $(this);
+
+            // 최초 z-index 저장 (1회만)
+            if ($map.data('origin-z') == null) {
+                const z = $map.css('z-index');
+                $map.data('origin-z', z === 'auto' ? '' : z);
+            }
+
+            $map.css('z-index', 1);
+        });
+    }
+
+    function restoreMapZIndex() {
+        $('.map-area').each(function () {
+            const $map = $(this);
+            const originZ = $map.data('origin-z');
+
+            if (originZ === '') {
+                $map.css('z-index', '');
+            } else if (originZ != null) {
+                $map.css('z-index', originZ);
+            }
+        });
+    }
+
     function getFocusable($container) {
         if (!$container || !$container.length) return $();
 
@@ -100,6 +128,7 @@ $(function () {
             .addClass('is-active')
             .attr('aria-hidden', 'false');
 
+        lowerMapZIndex();        // 모달 열리면 지도 z-index 내림
         disableBackgroundFocus();
 
         /*var $focusables = getFocusable($currentModal);
@@ -150,9 +179,31 @@ $(function () {
         }
 
         $currentModal = null;
+
+        // 열려있는 모달이 하나도 없을 때만 지도 복원
+        if (!$('.modal.is-active').length) {
+            restoreMapZIndex();
+        }
     }
 
     // ================== 이벤트 바인딩 ==================
+
+    // 1) QR 크게보기 모달 열기 (구글/네이버)
+    $(document).on('click', '.qr-zoom-btn', function (e) {
+        e.preventDefault();
+
+        const $btn = $(this);
+
+        // 버튼 클래스 기준으로 어떤 모달을 열지 결정
+        const isGoogle = $btn.hasClass('google');
+        const $modal = isGoogle ? $('.modal.qr-zoom.google') : $('.modal.qr-zoom.naver');
+
+        openModal($modal, $btn, {
+            // 필요하면 첫 포커스 위치 지정 가능
+            // focusSelector: '.close-btn',
+            tts: isGoogle ? '구글 지도 QR코드 크게보기 화면입니다.' : '네이버 지도 QR코드 크게보기 화면입니다.'
+        });
+    });
 
     // 1) 교통 모달 열기 (.modal.traffic 전용)
     $(document).on('click', '.traffic-search-btn, .bottom-nav .nav-btn.traffic-btn, .category .traffic-btn', function (e) {

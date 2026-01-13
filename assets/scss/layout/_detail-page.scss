@@ -22,6 +22,8 @@
     --sp-qr-bg: #ffffff;
     --sp-qr-radius: 4px;
     --sp-qr-bullet-color: #555555;
+    --sp-qr-btn-color: #000;
+    --sp-qr-border: #888;
     --sp-access-title-color: #2191FD;
 
     --sp-access-icon-bg: transparent;
@@ -268,17 +270,17 @@
 
         .qr-list {
             @include mi.flexbox(row, center, flex-start);
-            gap: 32px;
+            gap: 40px;
         }
 
         .qr-item {
             @include mi.flexbox(column, flex-start, center);
-            gap: 10px;
 
             .qr-logo {
                 display: block;
                 width: 60px;
                 height: 54px;
+                margin-bottom: 12px;
                 &.google {
                     background: var(--sp-icon-qr-google) no-repeat center/contain;
                 }
@@ -288,11 +290,12 @@
             }
 
             .qr-code {
-                width: 98px;
+                width: 88px;
+                height: 88px;
                 padding: 5px;
-                height: 99px;
+                margin-bottom: 16px;
                 border: 1px solid var(--sp-border);
-                border-radius: var(--sp-qr-radius);
+                border-radius: 4px;
                 background: var(--sp-qr-bg);
 
                 img {
@@ -301,6 +304,19 @@
                     height: 100%;
                     object-fit: contain;
                 }
+            }
+
+            .qr-zoom-btn {
+                width: 98px;
+                height: 44px;
+                padding: 0 14px;
+                font-size: va.$font-20;
+                font-weight: 500;
+                color: var(--sp-qr-btn-color);
+                white-space: nowrap;
+                border-radius: var(--sp-qr-radius);
+                border: 1px solid var(--sp-qr-border);
+                background: transparent;
             }
         }
     }
@@ -408,6 +424,8 @@
         --sp-qr-bg: #ffffff;
         --sp-qr-radius: 0;
         --sp-qr-bullet-color: #C1C1C1;
+        --sp-qr-btn-color: #fff;
+        --sp-qr-border: #fff;
         --sp-access-title-color: #1AEBFF;
 
         --sp-access-icon-bg: #FFFF2E;
