@@ -1,13 +1,10 @@
-<?php
-    include_once __DIR__.'/../../config/common.php';
-?>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMART TOURIST INFORMATION</title>
-    <script src="<?= asset('/assets/js/idleTimer.js') ?>"></script>
+    <script src="../../assets/js/idleTimer.js"></script>
 
     <script>
         (function () {
@@ -68,18 +65,40 @@
         })();
     </script>
 
-    <link rel="stylesheet" href="<?= asset('/assets/scss/vendors/swiper-bundle.min.css') ?>">
-    <link rel="stylesheet" href="<?= asset('/assets/scss/main.css') ?>">
+    <link rel="stylesheet" href="../../assets/scss/vendors/swiper-bundle.min.css">
+    <link rel="stylesheet" href="../../assets/scss/main.css">
 
-    <script src="<?= asset('/assets/js/vendor/jquery-3.7.1.min.js') ?>"></script>
-    <script src="<?= asset('/assets/js/vendor/swiper-bundle.min.js') ?>"></script>
+    <script src="../../assets/js/vendor/jquery-3.7.1.min.js"></script>
+    <script src="../../assets/js/vendor/swiper-bundle.min.js"></script>
 
-    <script src="<?= asset('/assets/js/common.js') ?>"></script>
-    <script src="<?= asset('/assets/js/zoom.js') ?>"></script>
-    <script src="<?= asset('/assets/js/tab.js') ?>"></script>
-    <script src="<?= asset('/assets/js/select.js') ?>"></script>
-    <script src="<?= asset('/assets/js/modal.js') ?>"></script>
-    <script src="<?= asset('/assets/js/volume.js') ?>"></script>
+    <script src="../../assets/js/common.js"></script>
+    <script src="../../assets/js/zoom.js"></script>
+    <script src="../../assets/js/tab.js"></script>
+    <script src="../../assets/js/select.js"></script>
+    <script src="../../assets/js/modal.js"></script>
+    <script src="../../assets/js/volume.js"></script>
+
+    <!-- ✅ 퍼블(HTML) 전용 include 로더 -->
+    <script>
+        (function () {
+        const INCLUDE = {
+            header: "../../html/include/header.html",
+            footer: "../../html/include/footer.html",
+            bottomNav: "../../html/include/bottom_nav.html",
+            modal: "../../html/include/modal.html",
+            // 원래 PHP에서 "../include/loading.html" 쓰던 부분이랑 경로가 달라서 통일
+            loading: "../../html/include/loading.html"
+        };
+
+        $(function () {
+            $(".header").load(INCLUDE.header);
+            $(".footer").load(INCLUDE.footer);
+            $(".bottom-nav").load(INCLUDE.bottomNav);
+            $(".global-modal-wrap").load(INCLUDE.modal);
+            $(".loading").load(INCLUDE.loading);
+        });
+        })();
+    </script>
 </head>
 <body data-tts-summary="메인 메뉴 화면입니다. 관광, 지도, 교통, 음식점 메뉴가 있습니다. 원하는 메뉴를 선택해 주세요. 처음 화면으로 이동 버튼이 있습니다.">
     <div class="zoom-viewport" aria-label="확대 가능한 화면">
@@ -88,7 +107,7 @@
                 <div class="modal-background">
                 <!-- header -->
                 <header class="header">
-                    <?php include __DIR__.'/../../html/include/header.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/header.html'; ?> -->
                 </header>
                 <!-- //header -->
                 
@@ -97,8 +116,7 @@
                     <section class="category-menu-sec">
                         <h2 class="category-title">여행을 시작할 준비가 되셨나요?</h2>
                         <p class="category-desc">여행에 필요한 다양한 관광정보들을 확인할 수 있어요.</p>
-                            <!-- 251126 개발 시 각 메뉴 카드의 href를
-                                실제 서브 페이지(관광/지도/교통/음식점) 경로로 교체 필요 -->
+                        <!-- 251126 개발 시 각 메뉴 카드의 href를 실제 서브 페이지(관광/지도/교통/음식점) 경로로 교체 필요 -->
                         <ul class="card-btn-list">
                             <li class="card-btn tour">
                                 <a href="/html/tour/tour.html" class="card-btn-link" aria-label="관광 메뉴로 이동" data-tts="관광 메뉴로 이동합니다">
@@ -146,18 +164,18 @@
                     </section>
                 </main>
                 <!-- //main -->
-                 
+
                 </div>
 
                 <!-- 공통 모달 -->
                 <div class="global-modal-wrap">
-                    <?php include __DIR__.'/../../html/include/modal.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/modal.html'; ?> -->
                 </div>
                 <!-- //공통 모달 -->
                 
                 <!-- footer -->
                 <footer class="footer">
-                    <?php include __DIR__.'/../../html/include/footer.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/footer.html'; ?> -->
                 </footer>
                 <!-- //footer -->
             </div>
@@ -165,7 +183,7 @@
             <!-- 251215 로딩화면 추가 -->
             <!-- 로딩화면 -->
             <div class="loading is-hidden" role="status" aria-live="polite" aria-atomic="true">
-                <?php include __DIR__.'/../include/loading.html'; ?>
+                <!-- <?php include __DIR__.'/../include/loading.html'; ?> -->
             </div>
 
             <!-- 상하좌우 이동 버튼 -->

@@ -1,84 +1,10 @@
-<?php 
-include_once __DIR__.'/../../config/common.php';
-date_default_timezone_set('Asia/Seoul');
-
-// GET 파라미터 받기 (없으면 기본값)
-$lang     = $_GET['lang']     ?? 'K';     // K: 국문, E: 영문 이런 식
-$io_type  = $_GET['io_type']  ?? 'I';     // O: 출발, I: 도착
-$fromTime = $_GET['from_time'] ?? date("Hi");
-$toTime   = $_GET['to_time']   ?? '2400';
-$pageNo   = isset($_GET['page_no']) ? (int)$_GET['page_no'] : 1;
-$airline  = $_GET['airline']  ?? null;
-$io_text = $io_type=='O' ? '출발' : '도착';
-
-$A_var = getAiportIch($lang, $fromTime, $io_type, $toTime, $pageNo, $airline);
-
-
-// get 파라미터
-$type = $_GET['type'] ?? '0'; // 0 : 항공 1 : 열차
-$code = $_GET['code'] ?? 'ICN1';
-$code_text = $code=='ICN1' ? '인천 T1' : '인천 T2';
-
-$pageinfo['cpage']	= !empty($_REQUEST['page']) && $_REQUEST['page'] > 0 ? trim($_REQUEST['page']) : 1;
-
-// 요일
-$date = date('Y-m-d');
-$weekMap = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-$yoil_t = $weekMap[date('w')];
-
-
-if($code == 'ICN1' || $code == 'ICN2'){
-
-    $itemNode = $A_var['body']['items']['item'] ?? null;
-
-    if ($itemNode){
-        $A_items = $A_var['body']['items']['item'];
-    }
-    else {
-        $A_items = $A_var['body']['items'];
-    }
-
-    $A_result = [];
-
-
-    foreach($A_items as $key=> $value){
-        if ($code == 'ICN1' && $value['terminalId'] == 'P01') {
-            $A_result[] = $value;
-        }
-        else if ($code == 'ICN2' && $value['terminalId'] == 'P03') {
-            $A_result[] = $value;
-        }
-    }
-
-    $totals = count($A_result);
-
-    // ===== Zebra Pagination 설정 =====
-    $pagination = new Zebra_Pagination();
-
-    // 전체 레코드 개수 (배열 길이)
-    $pagination->records($totals);
-
-    // 한 페이지에 보여줄 행 개수
-    // $perPage = 10;
-    $lowMode = $_COOKIE['lowMode'] ?? '0';
-    $perPage = ($lowMode === '1') ? 5 : 15;
-    $pagination->records_per_page($perPage);
-
-    // 현재 페이지 가져오기 (GET ?page= 에서 읽어옴)
-    $currentPage = $pagination->get_page();
-
-    $pageinfo['cpage'] = $currentPage;
-
-}
-?>
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMART TOURIST INFORMATION</title>
-    <script src="<?= asset('/assets/js/idleTimer.js') ?>"></script>
+    <script src="../../assets/js/idleTimer.js"></script>
 
     <script>
         (function () {
@@ -139,18 +65,40 @@ if($code == 'ICN1' || $code == 'ICN2'){
         })();
     </script>
 
-    <link rel="stylesheet" href="<?= asset('/assets/scss/vendors/swiper-bundle.min.css') ?>">
-    <link rel="stylesheet" href="<?= asset('/assets/scss/main.css') ?>">
+    <link rel="stylesheet" href="../../assets/scss/vendors/swiper-bundle.min.css">
+    <link rel="stylesheet" href="../../assets/scss/main.css">
 
-    <script src="<?= asset('/assets/js/vendor/jquery-3.7.1.min.js') ?>"></script>
-    <script src="<?= asset('/assets/js/vendor/swiper-bundle.min.js') ?>"></script>
-    <script src="<?= asset('/assets/js/common.js') ?>"></script>
-    <script src="<?= asset('/assets/js/zoom.js') ?>"></script>
-    <script src="<?= asset('/assets/js/tab.js') ?>"></script>
-    <script src="<?= asset('/assets/js/select.js') ?>"></script>
-    <script src="<?= asset('/assets/js/modal.js') ?>"></script>
-    <!-- <script src="<?= asset('/assets/js/filter.js') ?>"></script> -->
-    <script src="<?= asset('/assets/js/volume.js') ?>"></script>
+    <script src="../../assets/js/vendor/jquery-3.7.1.min.js"></script>
+    <script src="../../assets/js/vendor/swiper-bundle.min.js"></script>
+    <script src="../../assets/js/common.js"></script>
+    <script src="../../assets/js/zoom.js"></script>
+    <script src="../../assets/js/tab.js"></script>
+    <script src="../../assets/js/select.js"></script>
+    <script src="../../assets/js/modal.js"></script>
+    <!-- <script src="../../assets/js/filter.js"></script> -->
+    <script src="../../assets/js/volume.js"></script>
+
+    <!-- ✅ 퍼블(HTML) 전용 include 로더 -->
+    <script>
+        (function () {
+        const INCLUDE = {
+            header: "../../html/include/header.html",
+            footer: "../../html/include/footer.html",
+            bottomNav: "../../html/include/bottom_nav.html",
+            modal: "../../html/include/modal.html",
+            // 원래 PHP에서 "../include/loading.html" 쓰던 부분이랑 경로가 달라서 통일
+            loading: "../../html/include/loading.html"
+        };
+
+        $(function () {
+            $(".header").load(INCLUDE.header);
+            $(".footer").load(INCLUDE.footer);
+            $(".bottom-nav").load(INCLUDE.bottomNav);
+            $(".global-modal-wrap").load(INCLUDE.modal);
+            $(".loading").load(INCLUDE.loading);
+        });
+        })();
+    </script>
 </head>
 <body data-tts-summary="교통 안내 화면입니다. 항공편 실시간 목록을 확인할 수 있습니다. 상단 교통검색에서 출발·도착과 터미널을 변경할 수 있습니다. 현재 선택된 옵션은 항공, <?= $io_text; ?>, <?= $code_text; ?> 입니다.">
     <div class="zoom-viewport" aria-label="확대 가능한 화면">
@@ -159,7 +107,7 @@ if($code == 'ICN1' || $code == 'ICN2'){
                 <div class="modal-background">
                 <!-- header -->
                 <header class="header">
-                    <?php include __DIR__.'/../../html/include/header.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/header.html'; ?> -->
                 </header>
                 <!-- //header -->
                 
@@ -183,20 +131,20 @@ if($code == 'ICN1' || $code == 'ICN2'){
                         <!-- //1차 수정 -->
                         <h3>
                             <span class="traffic-type">항공</span>
-                            <span class="traffic-direction"><?= $io_text; ?></span>
-                            <span class="traffic-location"><?= $code_text; ?></span>
+                            <span class="traffic-direction">출발</span>
+                            <span class="traffic-location">인천 T1</span>
                         </h3>
                     </div>
                     <!-- //상단 필터 + 제목 영역 -->
 
                     <!-- 날짜/새로고침 + 테이블 영역 -->
                     <!-- 251205 1차 수정 : div => section으로 수정 -->
-                    <section class="traffic-content" tabindex="1" aria-label=" <?= date('Y년m월d일'); ?> 항공편 목록입니다. 당일 자정 내에 운행되는 항공편만 표시됩니다.">
+                    <section class="traffic-content" tabindex="1" aria-label=" 2026년01월13일 항공편 목록입니다. 당일 자정 내에 운행되는 항공편만 표시됩니다.">
                         <div class="traffic-toolbar">
                             <div class="left-wrap">
                                 <div class="date-wrap">
-                                    <time datetime="<?= date('Y-m-d'); ?>"><?= date('Y-m-d'); ?></time>
-                                    <span class="weekday"><?= $yoil_t; ?></span>
+                                    <time datetime="2026-01-13">2026-01-13</time>
+                                    <span class="weekday">화요일</span>
                                 </div>
                                 <p class="info-text">당일 자정 내에 운행되는 항공편만 표시됩니다.</p>
                             </div>
@@ -206,7 +154,7 @@ if($code == 'ICN1' || $code == 'ICN2'){
                             </button>
                         </div>
 
-                        <div class="tb-wrap" tabindex="1" aria-label="">
+                        <div class="tb-wrap" tabindex="-1" aria-label="">
                             <table class="traffic-table">
                                 <caption class="sr-only">실시간 교통 정보</caption>
                                 <!-- 251205 1차 수정 : width값 변경 -->
@@ -225,61 +173,145 @@ if($code == 'ICN1' || $code == 'ICN2'){
                                         <th scope="col">운항 편명</th>
                                         <th scope="col">시간</th>
                                         <th scope="col">구분</th>
-                                        <th scope="col"><?= $io_type == 'O' ? '도착' : '출발' ?></th>
+                                        <th scope="col">도착</th>
                                         <th scope="col">상태</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php  
-
-                                    if ($totals  == 0) {
-                                        echo "
-                                            <tr>
-                                                <td colspan=6 class='transportation__table-noresult' style='height:500px; font-size:30px; text-align:center;'>정보 없음</td>
-                                            </tr>
-                                        ";
-                                    } else {
-                                        // $limit_start = ($pageinfo['cpage'] - 1) * 10;
-                                        $limit_start = ($pageinfo['cpage'] - 1) * $perPage;
-                                        // 마지막 페이지에서 배열 범위 넘어가지 않게 끝 위치 계산
-                                        $limit_end   = min($limit_start + $perPage, $totals);
-                                        for($i =$limit_start; $i <$limit_end; $i++){
-                                            $value = $A_result[$i];
-                                            if (is_array($value)) {
-                                                $T_code = substr($value['flightId'], 0, 2);
-                                                $T_time2 = '';
-
-                                                if ($value['scheduleDateTime'] != $value['estimatedDateTime']) {
-                                                    $T_time2 = 	"<s class='text-muted'>".substr($value['scheduleDateTime'], 0, 2).":".substr($value['scheduleDateTime'], 2, 2)."</s>";
-                                                }
-
-                                                $is_file_exist = file_exists($_SERVER['DOCUMENT_ROOT'] . "/images/airport/{$T_code}.png");
-                                                $T_logo = $is_file_exist ? "<img src='/images/airport/{$T_code}.png' alt='{$value['airline']}' style='max-height:28px;'>" : "{$value['airline']}";
-
-                                                if ($value['airport'] == '') {
-                                                    $airport_code = $value['airportCode'];
-                                                    $sql_airport_title = "SELECT title_1 FROM NP_airport_code WHERE code = '$airport_code'";
-                                                    $result_airport_title = dbaccess($sql_airport_title);
-                                                    $T_airport_title = $result_airport_title['title_1'] ?? '';
-                                                }
-                                                else {
-                                                    $T_airport_title = $value['airport'];
-                                                }
-
-                                                echo "
-                                                    <tr>
-                                                    <td><div class='inner'><em class='airline_logo'>{$T_logo}</em></div></td>
-                                                    <td><div class='inner'>{$value['flightId']}</div></td>
-                                                    <td><div class='inner'>".substr($value['estimatedDateTime'], 0, 2).":".substr($value['estimatedDateTime'], 2, 2)." {$T_time2}</div></td>
-                                                    <td><div class='inner'>"."국제선"."</div></td>
-                                                    <td><div class='inner'>{$T_airport_title}</div></td>
-                                                    <td><div class='inner'>".strtoupper($value['remark'] ?? '-')."</div></td>
-                                                    </tr>
-                                                ";
-                                            }
-                                        }
-                                    }
-                                    ?>
+                                    <tr tabindex="0" role="button" aria-label="항공사 아시아나항공, 운항 편명 오제트 삼 육 일, 시간 09:05,구분 국제선,출발 상하이/푸동 , 상태 탑승중">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/OZ.png" alt="아시아나항공" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">OZ361</div></td>
+                                        <td><div class="inner">09:05 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">상하이/푸동</div></td>
+                                        <td><div class="inner">탑승중</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 길상항공, 운항 편명 에이치오 삼 일 공 오, 시간 09:05,구분 국제선,출발 상하이/푸동 , 상태 탑승중">
+                                        <td><div class="inner"><em class="airline_logo">길상항공</em></div></td>
+                                        <td><div class="inner">HO3105</div></td>
+                                        <td><div class="inner">09:05 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">상하이/푸동</div></td>
+                                        <td><div class="inner">탑승중</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 아시아나항공, 운항 편명 오제트 칠 이 구, 시간 09:10,구분 국제선,출발 하노이 , 상태 탑승마감">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/OZ.png" alt="아시아나항공" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">OZ729</div></td>
+                                        <td><div class="inner">09:10 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">하노이</div></td>
+                                        <td><div class="inner">탑승마감</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 아시아나항공, 운항 편명 오제트 삼 삼 칠, 시간 09:20,구분 국제선,출발 옌청 , 상태 탑승준비">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/OZ.png" alt="아시아나항공" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">OZ337</div></td>
+                                        <td><div class="inner">09:20 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">옌청</div></td>
+                                        <td><div class="inner">탑승준비</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 필리핀항공, 운항 편명 피알 사 팔 구, 시간 09:20,구분 국제선,출발 칼리보 , 상태 지연">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/PR.png" alt="필리핀항공" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">PR489</div></td>
+                                        <td><div class="inner">09:20 <s class="text-muted">08:30</s></div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">칼리보</div></td>
+                                        <td><div class="inner">지연</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 제주항공, 운항 편명 7C1171, 시간 09:25,구분 국제선,출발 도쿄/나리타 , 상태 지연">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/7C.png" alt="제주항공" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">7C1171</div></td>
+                                        <td><div class="inner">09:25 <s class="text-muted">08:45</s></div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">도쿄/나리타</div></td>
+                                        <td><div class="inner">지연</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 타이항공, 운항 편명 티지 육 오 구, 시간 09:35,구분 국제선,출발 방콕/수완나품 , 상태 탑승중">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/TG.png" alt="타이항공" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">TG659</div></td>
+                                        <td><div class="inner">09:35 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">방콕/수완나품</div></td>
+                                        <td><div class="inner">탑승중</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 아시아나항공, 운항 편명 오제트 오 오 일, 시간 09:35,구분 국제선,출발 이스탄불 , 상태 탑승중">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/OZ.png" alt="아시아나항공" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">OZ551</div></td>
+                                        <td><div class="inner">09:35 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">이스탄불</div></td>
+                                        <td><div class="inner">탑승중</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 터키항공, 운항 편명 티케이 팔 공 구 일, 시간 09:35,구분 국제선,출발 이스탄불 , 상태 탑승중">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/TK.png" alt="터키항공" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">TK8091</div></td>
+                                        <td><div class="inner">09:35 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">이스탄불</div></td>
+                                        <td><div class="inner">탑승중</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 아시아나항공, 운항 편명 오제트 삼 공 일, 시간 09:35,구분 국제선,출발 다롄(대련) , 상태 탑승준비">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/OZ.png" alt="아시아나항공" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">OZ301</div></td>
+                                        <td><div class="inner">09:35 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">다롄(대련)</div></td>
+                                        <td><div class="inner">탑승준비</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 중국국제항공, 운항 편명 씨에이 오 공 일 이, 시간 09:35,구분 국제선,출발 다롄(대련) , 상태 탑승준비">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/CA.png" alt="중국국제항공" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">CA5012</div></td>
+                                        <td><div class="inner">09:35 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">다롄(대련)</div></td>
+                                        <td><div class="inner">탑승준비</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 아시아나항공, 운항 편명 오제트 일 오 이, 시간 09:35,구분 국제선,출발 센다이 , 상태 탑승준비">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/OZ.png" alt="아시아나항공" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">OZ152</div></td>
+                                        <td><div class="inner">09:35 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">센다이</div></td>
+                                        <td><div class="inner">탑승준비</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 전일본공수, 운항 편명 엔에이치 육 구 팔 이, 시간 09:35,구분 국제선,출발 센다이 , 상태 탑승준비">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/NH.png" alt="전일본공수" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">NH6982</div></td>
+                                        <td><div class="inner">09:35 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">센다이</div></td>
+                                        <td><div class="inner">탑승준비</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 제주항공, 운항 편명 7C1201, 시간 09:40,구분 국제선,출발 나고야 , 상태 탑승준비">
+                                        <td><div class="inner"><em class="airline_logo"><img src="/images/airport/7C.png" alt="제주항공" style="max-height:28px;"></em></div></td>
+                                        <td><div class="inner">7C1201</div></td>
+                                        <td><div class="inner">09:40 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">나고야</div></td>
+                                        <td><div class="inner">탑승준비</div></td>
+                                    </tr>
+                                
+                                    <tr tabindex="0" role="button" aria-label="항공사 파라타항공, 운항 편명 더블유이 오 공 일, 시간 09:40,구분 국제선,출발 도쿄/나리타 , 상태 탑승준비">
+                                        <td><div class="inner"><em class="airline_logo">파라타항공</em></div></td>
+                                        <td><div class="inner">WE501</div></td>
+                                        <td><div class="inner">09:40 </div></td>
+                                        <td><div class="inner">국제선</div></td>
+                                        <td><div class="inner">도쿄/나리타</div></td>
+                                        <td><div class="inner">탑승준비</div></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -288,30 +320,39 @@ if($code == 'ICN1' || $code == 'ICN2'){
                     <!-- //날짜/새로고침 + 테이블 영역 -->
                     
                     <div class="pagination" role="navigation" aria-label="페이지 이동">
-                        <?php
-                           $pagination->render();
-                        ?>
+                        <div class="Zebra_Pagination" data-a11y-applied="true" role="navigation" aria-label="페이지 이동">
+                            <ul>
+                                <li><a href="/html/traffic/traffic.html?io_type=O&amp;code=ICN1" class="navigation first" rel="first" aria-label="첫 페이지로 이동" role="button"></a></li>
+                                <li><a href="javascript:void(0)" class="navigation previous disabled" rel="prev" aria-label="이전 페이지로 이동" role="button"></a></li>
+                                <li><a href="/html/traffic/traffic.html?io_type=O&amp;code=ICN1" aria-current="page" class="current" aria-label="1 페이지로 이동" role="button">1</a></li>
+                                <li><a href="/html/traffic/traffic.html?io_type=O&amp;code=ICN1&amp;page=2" aria-label="2 페이지로 이동" role="button">2</a></li>
+                                <li><a href="/html/traffic/traffic.html?io_type=O&amp;code=ICN1&amp;page=3" aria-label="3 페이지로 이동" role="button">3</a></li>
+                                <li><a href="/html/traffic/traffic.html?io_type=O&amp;code=ICN1&amp;page=4" aria-label="4 페이지로 이동" role="button">4</a></li>
+                                <li><a href="/html/traffic/traffic.html?io_type=O&amp;code=ICN1&amp;page=5" aria-label="5 페이지로 이동" role="button">5</a></li>
+                                <li><a href="/html/traffic/traffic.html?io_type=O&amp;code=ICN1&amp;page=2" class="navigation next" rel="next" aria-label="다음 페이지로 이동" role="button"></a></li><li><a href="/html/traffic/traffic.html?io_type=O&amp;code=ICN1&amp;page=20" class="navigation last" rel="last" aria-label="마지막 페이지로 이동" role="button"></a></li>
+                            </ul>
+                        </div>                    
                     </div>
                 </main>
                 <!-- //main -->
 
                 <!-- bottom nav -->
                 <nav class="bottom-nav" aria-label="하단 주요 메뉴">
-                    <?php include __DIR__.'/../../html/include/bottom_nav.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/bottom_nav.html'; ?> -->
                 </nav>
                 <!-- bottom nav -->
-                 
+
                 </div>
 
                 <!-- 공통 모달 -->
                 <div class="global-modal-wrap">
-                    <?php include __DIR__.'/../../html/include/modal.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/modal.html'; ?> -->
                 </div>
                 <!-- //공통 모달 -->
                 
                 <!-- footer -->
                 <footer class="footer">
-                    <?php include __DIR__.'/../../html/include/footer.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/footer.html'; ?> -->
                 </footer>
                 <!-- //footer -->
             </div>
@@ -319,7 +360,7 @@ if($code == 'ICN1' || $code == 'ICN2'){
             <!-- 251215 로딩화면 추가 -->
             <!-- 로딩화면 -->
             <div class="loading is-hidden" role="status" aria-live="polite" aria-atomic="true">
-                <?php include __DIR__.'/../include/loading.html'; ?>
+                <!-- <?php include __DIR__.'/../include/loading.html'; ?> -->
             </div>
 
             <!-- 상하좌우 이동 버튼 -->
