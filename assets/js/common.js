@@ -13,7 +13,6 @@ const TTS_RATE_MAX = 1.6;
 const TTS_RATE_STEP = 0.1;
 let currentRate = TTS_RATE_DEFAULT;
 
-
 $(document).ready(function(){
     currentRate = initRateState();
     currentVolume = initVolumeState();
