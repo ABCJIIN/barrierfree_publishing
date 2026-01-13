@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" >
+<html lang="ko">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -71,12 +71,12 @@
                                     관광지
                                 </button>
                             </li>
-                            <li class="">
+                            <li>
                                 <button id="tabMenu02" type="button" class="tab-btn" role="tab" data-cat="2" aria-selected="false" aria-controls="panelMenu02" aria-label="쇼핑지 탭" data-tts="쇼핑지 탭으로 이동합니다.">
                                     쇼핑지
                                 </button>
                             </li>
-                            <li class="">
+                            <li>
                                 <button id="tabMenu03" type="button" class="tab-btn" role="tab" data-cat="3" aria-selected="false" aria-controls="panelMenu03" aria-label="전통시장 탭" data-tts="전통시장 탭으로 이동합니다.">
                                     전통시장
                                 </button>
@@ -85,9 +85,87 @@
                         <div class="sort-wrap">
                             <div class="sort-inner">
                                 <!-- 251205 1차 수정 : 구조 수정 -->
+                                <!-- 20260112 : 구조 수정 -->
                                 <div class="select-wrap">
+                                    <div class="custom-select">
+                                        <input type="hidden" name="city_id" id="cityIdInput" value="1">
 
+                                        <button class="select-item" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="custom-select-list-1">서울</button>
+
+                                        <div class="option-list-wrap">
+
+                                            <div class="option-controls" role="presentation">
+                                                <div class="btn-wrap prev">
+                                                    <button type="button" class="prev-btn">
+                                                        <span class="icon" aria-hidden="true"></span>
+                                                        <span class="label">이전</span>
+                                                    </button>
+                                                </div>
+
+                                                <div class="btn-wrap next">
+                                                    <button type="button" class="next-btn">
+                                                        <span class="icon" aria-hidden="true"></span>
+                                                        <span class="label">다음</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="option-scroll">
+                                                <ul class="option-list" role="listbox" id="custom-select-list-1">
+                                                    <li class="is-active">
+                                                        <button type="button" role="option" data-city-id="1" aria-selected="true" class="is-active">서울</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="2" aria-selected="false">인천</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="31" aria-selected="false">경기도</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="6" aria-selected="false">부산</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="4" aria-selected="false">대구</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="7" aria-selected="false">울산</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="36" aria-selected="false">경상남도</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="35" aria-selected="false">경상북도</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="3" aria-selected="false">대전</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="34" aria-selected="false">충청남도</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="33" aria-selected="false">충청북도</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="5" aria-selected="false">광주</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="38" aria-selected="false">전라남도</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="37" aria-selected="false">전라북도</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="32" aria-selected="false">강원도</button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" role="option" data-city-id="39" aria-selected="false">제주도</button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                <!-- //20260112 : 구조 수정 -->
                                 <!-- //1차 수정 -->
                                 <p class="info-text">• 현재 위치와 가까운 순으로 표시됩니다.</p>
                             </div>
@@ -96,8 +174,8 @@
                         <div class="tab-cont">
                             <!-- 관광지 -->
                             <section id="panelMenu01" class="tab-panel is-active" role="tabpanel" aria-labelledby="tabMenu01">
-                                                                    <ul class="card-list" aria-label="관광지 목록">
-                                                                            <li class="card">
+                                <ul class="card-list" aria-label="관광지 목록">
+                                    <li class="card">
                                         <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
                                         <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
                                         <a class="card-link" href="./tour_detail.html?id=2638475" aria-label="노들섬 상세 정보 보기">
@@ -120,7 +198,7 @@
                                             </div>
                                         </a>
                                     </li>
-                                                                            <li class="card">
+                                    <li class="card">
                                         <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
                                         <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
                                         <a class="card-link" href="./tour_detail.html?id=1923406" aria-label="중부내륙순환열차(O-트레인) 상세 정보 보기">
@@ -143,7 +221,7 @@
                                             </div>
                                         </a>
                                     </li>
-                                                                            <li class="card">
+                                    <li class="card">
                                         <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
                                         <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
                                         <a class="card-link" href="./tour_detail.html?id=250466" aria-label="aT센터(에이티센터) 상세 정보 보기">
@@ -166,7 +244,7 @@
                                             </div>
                                         </a>
                                     </li>
-                                                                            <li class="card">
+                                    <li class="card">
                                         <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
                                         <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
                                         <a class="card-link" href="./tour_detail.html?id=761181" aria-label="SK텔레콤 미래기술체험관 T.um(티움) 상세 정보 보기">
@@ -189,7 +267,7 @@
                                             </div>
                                         </a>
                                     </li>
-                                                                            <li class="card">
+                                    <li class="card">
                                         <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
                                         <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
                                         <a class="card-link" href="./tour_detail.html?id=130289" aria-label="LG아트센터 상세 정보 보기">
@@ -212,7 +290,7 @@
                                             </div>
                                         </a>
                                     </li>
-                                                                            <li class="card">
+                                    <li class="card">
                                         <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
                                         <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
                                         <a class="card-link" href="./tour_detail.html?id=397572" aria-label="KT&amp;G 상상마당(홍대) 상세 정보 보기">
@@ -235,7 +313,7 @@
                                             </div>
                                         </a>
                                     </li>
-                                                                            <li class="card">
+                                    <li class="card">
                                         <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
                                         <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
                                         <a class="card-link" href="./tour_detail.html?id=2469936" aria-label="KT스퀘어 상세 정보 보기">
@@ -258,7 +336,7 @@
                                             </div>
                                         </a>
                                     </li>
-                                                                            <li class="card">
+                                    <li class="card">
                                         <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
                                         <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
                                         <a class="card-link" href="./tour_detail.html?id=127699" aria-label="63스퀘어 상세 정보 보기">
@@ -281,7 +359,7 @@
                                             </div>
                                         </a>
                                     </li>
-                                                                            <li class="card">
+                                    <li class="card">
                                         <!-- 251114 개발 시 href 실제 URL로 변경 필요 -->
                                         <!-- 251114 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
                                         <a class="card-link" href="./tour_detail.html?id=613775" aria-label="63아트 상세 정보 보기">
@@ -304,8 +382,8 @@
                                             </div>
                                         </a>
                                     </li>
-                                                                        </ul>
-                                                                </section>
+                                </ul>
+                            </section>
                             <!-- 쇼핑지 -->
                             <section id="panelMenu02" class="tab-panel" role="tabpanel" aria-labelledby="tabMenu02">
                                 <div class="inner">
@@ -318,17 +396,20 @@
                             </section>
                         </div>
                         <div class="pagination" role="navigation" aria-label="페이지 이동">
-                        <div class="Zebra_Pagination" data-a11y-applied="true" role="navigation" aria-label="페이지 이동"><ul><li><a href="/html/tour/tour.html" class="navigation first" rel="first" aria-label="첫 페이지로 이동" role="button"></a></li><li><a href="javascript:void(0)" class="navigation previous disabled" rel="prev" aria-label="이전 페이지로 이동" role="button"></a></li><li>
-            <a href="/html/tour/tour.html" aria-current="page" class="current" aria-label="1 페이지로 이동" role="button">1</a>
-        </li><li>
-            <a href="/html/tour/tour.html?page=2" aria-label="2 페이지로 이동" role="button">2</a>
-        </li><li>
-            <a href="/html/tour/tour.html?page=3" aria-label="3 페이지로 이동" role="button">3</a>
-        </li><li>
-            <a href="/html/tour/tour.html?page=4" aria-label="4 페이지로 이동" role="button">4</a>
-        </li><li>
-            <a href="/html/tour/tour.html?page=5" aria-label="5 페이지로 이동" role="button">5</a>
-        </li><li><a href="/html/tour/tour.html?page=2" class="navigation next" rel="next" aria-label="다음 페이지로 이동" role="button"></a></li><li><a href="/html/tour/tour.html?page=12" class="navigation last" rel="last" aria-label="마지막 페이지로 이동" role="button"></a></li></ul></div>                            </div>
+                            <div class="Zebra_Pagination" data-a11y-applied="true" role="navigation" aria-label="페이지 이동">
+                                <ul>
+                                    <li><a href="/html/tour/tour.html" class="navigation first" rel="first" aria-label="첫 페이지로 이동" role="button"></a></li>
+                                    <li><a href="javascript:void(0)" class="navigation previous disabled" rel="prev" aria-label="이전 페이지로 이동" role="button"></a></li>
+                                    <li><a href="/html/tour/tour.html" aria-current="page" class="current" aria-label="1 페이지로 이동" role="button">1</a></li>
+                                    <li><a href="/html/tour/tour.html?page=2" aria-label="2 페이지로 이동" role="button">2</a></li>
+                                    <li><a href="/html/tour/tour.html?page=3" aria-label="3 페이지로 이동" role="button">3</a></li>
+                                    <li><a href="/html/tour/tour.html?page=4" aria-label="4 페이지로 이동" role="button">4</a></li>
+                                    <li><a href="/html/tour/tour.html?page=5" aria-label="5 페이지로 이동" role="button">5</a></li>
+                                    <li><a href="/html/tour/tour.html?page=2" class="navigation next" rel="next" aria-label="다음 페이지로 이동" role="button"></a></li>
+                                    <li><a href="/html/tour/tour.html?page=12" class="navigation last" rel="last" aria-label="마지막 페이지로 이동" role="button"></a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </main>

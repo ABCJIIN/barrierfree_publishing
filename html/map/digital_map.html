@@ -1,55 +1,10 @@
-<?php 
-include_once __DIR__.'/../../config/common.php';
-include_once __DIR__ . '/../../languages/_lang.digital_map.php';
-
-// 임시
-$lang = $_GET['lang'] ?? 'kor';   
-
-$q = '';
-if (isset($_GET['q']) ) { 
-    $q = $_GET['q']; 
-}
-
-if (!isset($language[$lang])) {
-    $lang = 'kor';
-}
-
-// 언어 데이터
-$language_data = $language[$lang]['digital_map'];
-
-
-$group = $_GET['group'] ?? 1;
-
-$lowMode = $_COOKIE['lowMode'] ?? null;
-$perPage = ($lowMode === '1') ? 3 : 9;
-$cpage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-
-// 리스트
-
-$themeList = getDgimapThemList($lang);
-$list = getDgimapList($group,$lang,$q,$cpage,$perPage);
-
-$total        = $list['total'];
-$currentPage  = max(1, (int)$cpage);
-$totalPages   = (int)ceil($total / $perPage);
-
-/*echo "<pre>";
-echo print_r($themeList);
-echo "</pre>";*/
-
-/*echo "<pre>";
-echo print_r($list);
-echo "</pre>";*/
-
-?>
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMART TOURIST INFORMATION</title>
-    <script src="<?= asset('/assets/js/idleTimer.js') ?>"></script>
+    <script src="../../assets/js/idleTimer.js"></script>
 
     <script>
         (function () {
@@ -110,18 +65,40 @@ echo "</pre>";*/
         })();
     </script>
 
-    <link rel="stylesheet" href="<?= asset('/assets/scss/vendors/swiper-bundle.min.css') ?>">
-    <link rel="stylesheet" href="<?= asset('/assets/scss/main.css') ?>">
+    <link rel="stylesheet" href="../../assets/scss/vendors/swiper-bundle.min.css">
+    <link rel="stylesheet" href="../../assets/scss/main.css">
 
-    <script src="<?= asset('/assets/js/vendor/jquery-3.7.1.min.js') ?>"></script>
-    <script src="<?= asset('/assets/js/vendor/swiper-bundle.min.js') ?>"></script>
-    <script src="<?= asset('/assets/js/common.js') ?>"></script>
-    <script src="<?= asset('/assets/js/zoom.js') ?>"></script>
-    <script src="<?= asset('/assets/js/tab.js') ?>"></script>
-    <script src="<?= asset('/assets/js/select.js') ?>"></script>
-    <script src="<?= asset('/assets/js/modal.js') ?>"></script>
-    <script src="<?= asset('/assets/js/filter.js') ?>"></script>
-    <script src="<?= asset('/assets/js/volume.js') ?>"></script>
+    <script src="../../assets/js/vendor/jquery-3.7.1.min.js"></script>
+    <script src="../../assets/js/vendor/swiper-bundle.min.js"></script>
+    <script src="../../assets/js/common.js"></script>
+    <script src="../../assets/js/zoom.js"></script>
+    <script src="../../assets/js/tab.js"></script>
+    <script src="../../assets/js/select.js"></script>
+    <script src="../../assets/js/modal.js"></script>
+    <script src="../../assets/js/filter.js"></script>
+    <script src="../../assets/js/volume.js"></script>
+
+    <!-- ✅ 퍼블(HTML) 전용 include 로더 -->
+    <script>
+        (function () {
+        const INCLUDE = {
+            header: "../../html/include/header.html",
+            footer: "../../html/include/footer.html",
+            bottomNav: "../../html/include/bottom_nav.html",
+            modal: "../../html/include/modal.html",
+            // 원래 PHP에서 "../include/loading.html" 쓰던 부분이랑 경로가 달라서 통일
+            loading: "../../html/include/loading.html"
+        };
+
+        $(function () {
+            $(".header").load(INCLUDE.header);
+            $(".footer").load(INCLUDE.footer);
+            $(".bottom-nav").load(INCLUDE.bottomNav);
+            $(".global-modal-wrap").load(INCLUDE.modal);
+            $(".loading").load(INCLUDE.loading);
+        });
+        })();
+    </script>
 </head>
 <body data-tts-summary="지도 화면입니다. 지역을 선택해 상세 내용을 확인하세요.">
     <div class="zoom-viewport" aria-label="확대 가능한 화면">
@@ -130,7 +107,7 @@ echo "</pre>";*/
                 <div class="modal-background">
                 <!-- header -->
                 <header class="header">
-                    <?php include __DIR__.'/../../html/include/header.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/header.html'; ?> -->
                 </header>
                 <!-- //header -->
                 
@@ -150,74 +127,104 @@ echo "</pre>";*/
 
                     <div class="filter-menu">
                         <ul class="filter-list" role="radiogroup" tabindex="1" aria-label="지역 그룹 선택입니다. 원하는 그룹을 선택하세요.">
-                            <?php for($i=1; $i<= 7; $i++){ 
-                                $groupTitle = trim($language_data['local_title' . $i] ?? '');
-                            ?>
-                            <li class="<?php if($i==$group) echo "is-active"; ?>" >
-                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-group="<?= $i; ?>"><?= $groupTitle ?></button>
+                            <li class="is-active">
+                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-group="1">서울</button>
                             </li>
-                            <?php } ?>
+                            <li>
+                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-group="2">ㄱ - ㄴ</button>
+                            </li>
+                            <li>
+                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-group="3">ㄷ - ㅁ</button>
+                            </li>
+                            <li>
+                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-group="4">ㅂ - ㅅ</button>
+                            </li>
+                            <li>
+                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-group="5">ㅇ</button>
+                            </li>
+                            <li>
+                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-group="6">ㅈ - ㅋ</button>
+                            </li>
+                            <li>
+                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-group="7">ㅌ - ㅎ</button>
+                            </li>
                         </ul>
                         <div class="filter-cont">
                             <!-- 테마 버튼 -->
                             <div class="thema-btn-wrap">
                                 <!-- 251121 개발 시 href 실제 URL로 변경 필요 -->
-                                <a href="javascript:void(0)" class="thema-btn card-link" aria-label="추천 테마입니다. <?= $themeList[0][0]['title']; ?> 상세 정보 보기" data-title="<?= $themeList[0][0]['title']; ?>" data-desc="<?= strip_tags($themeList[0][0]['story'] ?? '') ?>" data-theme="kdh"><?= $themeList[0][0]['title']; ?></a>
-                                <a href="javascript:void(0)" class="thema-btn card-link" aria-label="추천 테마입니다. <?= $themeList[0][1]['title']; ?> 상세 정보 보기" data-title="<?= $themeList[0][1]['title']; ?>" data-desc="<?= strip_tags($themeList[0][1]['story'] ?? '') ?>" data-theme="top100"><?= $themeList[0][1]['title']; ?></a>
+                                <a href="javascript:void(0)" class="thema-btn card-link" aria-label="추천 테마입니다. K-POP 데몬 헌터스 촬영지 상세 정보 보기" data-title="K-POP 데몬 헌터스 촬영지" data-desc="세계인이 주목한 애니메이션 K-POP 데몬 헌터스의 주요 배경으로 등장한 곳입니다. 화려한 거리 풍경과 에너지가 애니메이션의 감동을 그대로 전합니다." data-theme="kdh">K-POP 데몬 헌터스 촬영지</a>
+                                <a href="javascript:void(0)" class="thema-btn card-link" aria-label="추천 테마입니다. 대한민국 관광 100선  상세 정보 보기" data-title="대한민국 관광 100선 " data-desc="이곳은 한국관광공사가 선정한 ‘2025~2026’ 대한민국 관광 100선에 포함된 명소입니다. 한국에 왔다면 꼭 가봐야하는 전국의 명소 100곳의 정보를 확인하세요. " data-theme="top100">대한민국 관광 100선 </a>
                             </div>
                             <!-- 디지털 관광지도 리스트 출력 영역 -->
                             <section class="filter-panel">
                                 <ul class="card-list" aria-label="디지털 관광지도 목록">
-                                    <?php 
-                                    foreach($list[$group] as $val){ 
-                                        $displayName = $val['title'] ?? '';
-                                        if($displayName === '') continue;
-                                    ?>
                                     <li class="card">
                                         <!-- 251121 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
-                                        <a class="card-link" href="javascript:void(0)" aria-label="<?= $displayName; ?> 상세 정보 보기" data-title="<?= $displayName; ?>" data-desc="<?= strip_tags($val['story'] ?? '') ?>">
+                                        <a class="card-link" href="javascript:void(0)" aria-label="명동 상세 정보 보기" data-title="명동" data-desc="명동은 화려한 거리와 글로벌 브랜드 매장, 길거리 음식 등으로 가득한 서울 대표 쇼핑 명소입니다. 명동성당과 남산이 가까워 외국인 관광객에게도 서울의 매력을 응축한 핫플레이스로 손꼽힙니다.">
                                             <div class="card-thumbnail">
                                                 <!-- 251121 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
-                                                <img src="../../assets/images/map/<?=  $val['attachment_file1'];  ?>" alt="<?= $displayName; ?> 이미지">
+                                                <img src="../../assets/images/map/명동.jpg" alt="명동 이미지">
                                             </div>
                                             <div class="card-info">
-                                                <h3 class="card-title"><?= $displayName; ?></h3>
+                                                <h3 class="card-title">명동</h3>
                                             </div>
                                         </a>
                                     </li>
-                                    <?php } ?>
+                                    <li class="card">
+                                        <!-- 251121 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
+                                        <a class="card-link" href="javascript:void(0)" aria-label="성수 상세 정보 보기" data-title="성수" data-desc="성수는 과거 공업지대의 흔적 위에 감성과 트렌드가 조화를 이루며 새롭게 변신한 서울의 대표적인 핫플레이스입니다. 개성 넘치는 로스터리 카페, 감각적인 디저트 맛집, 정갈한 식당들과 함께 감성을 자극하는 플리마켓, 편집숍, 전시 공간이 곳곳에 자리잡고 있어 대채로운 즐거움을 선사합니다. ">
+                                            <div class="card-thumbnail">
+                                                <!-- 251121 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
+                                                <img src="../../assets/images/map/성수.jpg" alt="성수 이미지">
+                                            </div>
+                                            <div class="card-info">
+                                                <h3 class="card-title">성수</h3>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="card">
+                                        <!-- 251121 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
+                                        <a class="card-link" href="javascript:void(0)" aria-label="인사동 상세 정보 보기" data-title="인사동" data-desc="인사동은 한지, 도자기, 고서적 등 한국 전통 공예와 문화가 살아 있는 거리입니다. 쌈지길, 전통 찻집, 갤러리 등이 골목마다 숨어 있어 옛 정서를 느끼며 걷기 좋은 도심 속 쉼터입니다.">
+                                            <div class="card-thumbnail">
+                                                <!-- 251121 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
+                                                <img src="../../assets/images/map/인사동.jpg" alt="인사동 이미지">
+                                            </div>
+                                            <div class="card-info">
+                                                <h3 class="card-title">인사동</h3>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="card">
+                                        <!-- 251121 개발 시 aria-label은 장소명 기반으로 동적 생성 필요: "{장소명} 상세 정보 보기" -->
+                                        <a class="card-link" href="javascript:void(0)" aria-label="홍대 상세 정보 보기" data-title="홍대" data-desc="홍대는 거리공연, 개성 있는 카페, 예술적인 골목이 가득한 서울의 대표적 청춘 문화 거리입니다. 홍익대학교 인근 문화예술 공간과 연남동 감성까지 이어져 트렌디한 경험을 원하는 여행자에게 제격입니다.">
+                                            <div class="card-thumbnail">
+                                                <!-- 251121 개발 시 alt는 장소명 기반으로 동적 생성 필요: "{장소명} 이미지" -->
+                                                <img src="../../assets/images/map/홍대.jpg" alt="홍대 이미지">
+                                            </div>
+                                            <div class="card-info">
+                                                <h3 class="card-title">홍대</h3>
+                                            </div>
+                                        </a>
+                                    </li>
                                 </ul>
                             </section>
                         </div>
-                            <?php if($lowMode == 1) { ?>                     
-                            <?php if ($totalPages > 1){ ?>
-                            <div class="pagination" role="navigation" aria-label="페이지 이동">
-                            <!-- 251121 개발 시 낮은 자세 모드에서만 사용 -->   
-                             <?php
-                                    $pagination = new Zebra_Pagination();
-                                    $pagination->records($list['total']);
-                                    $pagination->records_per_page($perPage);
-
-                                    $pagination->render();
-                            ?>
-                            </div>
-                            <?php } ?>
-                            <?php } ?>
                     </div>
                 </main>
                 <!-- //main -->
 
                 <!-- bottom nav -->
                 <nav class="bottom-nav" aria-label="하단 주요 메뉴">
-                    <?php include __DIR__.'/../../html/include/bottom_nav.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/bottom_nav.html'; ?> -->
                 </nav>
                 <!-- bottom nav -->
-                 
+
                 </div>
 
                 <!-- 공통 모달 -->
                 <div class="global-modal-wrap">
-                    <?php include __DIR__.'/../../html/include/modal.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/modal.html'; ?> -->
                     <!-- 251121 개발 시: 모달 제어는 반드시 javascript:void(0) / closeModal() 공통 함수로만 처리해야 함.
                     클래스/aria-hidden 직접 토글 시 포커스 트랩, 배경 포커스 잠금, ESC 닫기 등이 동작하지 않음 -->
                     <!-- modal -->
@@ -263,7 +270,7 @@ echo "</pre>";*/
                 
                 <!-- footer -->
                 <footer class="footer">
-                    <?php include __DIR__.'/../../html/include/footer.html'; ?>
+                    <!-- <?php include __DIR__.'/../../html/include/footer.html'; ?> -->
                 </footer>
                 <!-- //footer -->                
             </div>
@@ -271,7 +278,7 @@ echo "</pre>";*/
             <!-- 251215 로딩화면 추가 -->
             <!-- 로딩화면 -->
             <div class="loading is-hidden" role="status" aria-live="polite" aria-atomic="true">
-                <?php include __DIR__.'/../include/loading.html'; ?>
+                <!-- <?php include __DIR__.'/../include/loading.html'; ?> -->
             </div>
 
             <!-- 상하좌우 이동 버튼 -->
