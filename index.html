@@ -49,52 +49,6 @@
         })();
     </script>
 
-    <!-- 퍼블 전용 -->
-    <script>
-        (function () {
-            // include 파일 경로 (현재 파일 기준)
-            var INCLUDE = {
-            header:  "./html/include/header.html",
-            footer:  "./html/include/footer.html",
-            modal:   "./html/include/modal.html",
-            loading: "./html/include/loading.html",
-            // 필요하면 bottomNav도 추가해서 사용
-            bottomNav: "./html/include/bottom_nav.html"
-            };
-
-            // jQuery 로드 이후 실행 보장
-            function onReady(fn) {
-            if (window.jQuery) {
-                jQuery(fn);
-            } else {
-                document.addEventListener("DOMContentLoaded", fn);
-            }
-            }
-
-            onReady(function () {
-            // 1) header / footer / modal / loading
-            $(".header").load(INCLUDE.header);
-            $(".footer").load(INCLUDE.footer);
-            $(".global-modal-wrap").load(INCLUDE.modal);
-            $(".loading").load(INCLUDE.loading);
-
-            // 2) bottom-nav 같이 "특정 nav 안에 include"가 필요하면 이렇게
-            //    (페이지마다 bottom-nav가 있을 때만 동작)
-            $(".bottom-nav").each(function () {
-                $(this).load(INCLUDE.bottomNav);
-            });
-
-            // 3) load 실패 디버깅 (경로/서버 문제 확인용)
-            //    필요 없으면 지워도 됨
-            $(".header, .footer, .global-modal-wrap, .loading, .bottom-nav").each(function () {
-                var $el = $(this);
-                // load는 콜백을 element별로 붙이는게 안전
-                // (이미 위에서 load를 호출했으니, 실패 확인이 필요하면 아래처럼 각각 콜백형으로 바꾸는 걸 권장)
-            });
-            });
-        })();
-    </script>
-
     <link rel="stylesheet" href="./assets/scss/vendors/swiper-bundle.min.css">
     <link rel="stylesheet" href="./assets/scss/main.css">
 
@@ -113,7 +67,29 @@
                 <div class="modal-background">
                 <!-- header -->
                 <header class="header">
-                    <!-- <?php include __DIR__.'/html/include/header.html'; ?> -->
+                    <div class="hd-inner">
+                        <h1 class="logo">
+                            <img src="/assets/images/logo.png" alt="SMART TOURIST INFORMATION">
+                        </h1>
+
+                        <div class="status">
+                            <div class="datetime">
+                                <span class="date">
+                                    2025.10.10/<span class="weekday">월요일</span>
+                                </span>
+
+                                <div class="clock">
+                                    <span class="w_time_h">13</span>
+                                    <span class="w_time_bar">:</span>
+                                    <span class="w_time_m">13</span>
+                                </div>
+                            </div>
+
+                            <div class="weather" aria-label="날씨">
+                                <img src="/assets/images/icon/w_icon_weather_1.png" alt="맑은 날씨">
+                            </div>
+                        </div>
+                    </div>
                 </header>
                 <!-- //header -->
                 
@@ -267,7 +243,146 @@
 
                 <!-- 공통 모달 -->
                 <div class="global-modal-wrap">
-                    <!-- <?php include __DIR__.'/html/include/modal.html'; ?> -->
+                    <!-- 음량 조절 모달 -->
+                    <div class="modal volume-control" aria-hidden="true">
+                        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="volumeControlModalTitle">
+                            <div id="volumeControlModalTitle" class="modal-title">
+                                <strong>음량조절</strong>
+                                <span>Sound Control</span>
+                            </div>
+                            <div class="volume-control-wrap">
+
+                                <!-- 251205 1차 수정 : 구조 수정 -->
+                                <div class="volume-btn-wrap">
+                                    <button type="button" class="volume-btn down" aria-label="음량 줄이기"></button>
+                                    <span class="volume-btn-label">작게</span>
+                                </div>
+                                <!-- //1차 수정 -->
+
+                                <div class="volume-range">
+                                    <label for="volumeRange" class="sr-only">음량 조절 (1단계에서 5단계)</label>
+                                    <input type="range" id="volumeRange" class="volume-input" min="0" max="100" step="25" value="50">
+
+                                    <!-- 단계 점 표시 (미래 구간만 보이는 점들) -->
+                                    <div class="volume-marks" aria-hidden="true">
+                                        <span class="mark" data-value="0"></span>
+                                        <span class="mark" data-value="25"></span>
+                                        <span class="mark" data-value="50"></span>
+                                        <span class="mark" data-value="75"></span>
+                                        <span class="mark" data-value="100"></span>
+                                    </div>
+                                </div>
+
+                                <!-- 251205 1차 수정 : 구조 수정 -->
+                                <div class="volume-btn-wrap">
+                                    <button type="button" class="volume-btn up" aria-label="음량 높이기"></button>
+                                    <span class="volume-btn-label">크게</span>
+                                </div>
+                                <!-- //1차 수정 -->
+                            </div>
+                            <div class="modal-btn-wrap">
+                                <button type="button" class="close-btn">닫기</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 교통 검색 모달 -->
+                    <div class="modal traffic" aria-hidden="true" data-tts="교통편 검색을 위한 팝업입니다.">
+                        <div class="modal-content" role="dialog" aria-modal="true" tabindex="1" aria-labelledby="trafficModalTitle">
+                            <div id="trafficModalTitle" class="modal-title">
+                                <strong>교통</strong>
+                            </div>
+                            <div class="tab-menu tab02">
+                                <ul class="tab-list" role="tablist">
+                                    <li class="is-active">
+                                        <button id="tabMenu01" type="button" class="tab-btn" role="tab" aria-selected="true" aria-controls="panelMenu01" aria-label="항공편 검색 옵션입니다.">항공</button>
+                                    </li>
+                                    <!-- 251121 2차 개발 시 추가 될 탭 메뉴 -->
+                                    <!-- <li>
+                                        <button id="tabMenu02" type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="panelMenu02">열차</button>
+                                    </li> -->
+                                </ul>
+                                <div class="tab-cont">
+                                    <!-- 항공 -->
+                                    <section id="panelMenu01" class="tab-panel is-active" role="tabpanel" aria-labelledby="tabMenu01">
+                                        <div class="tab-menu line">
+                                            <ul class="tab-list" role="tablist">
+                                                <li class="is-active">
+                                                    <button id="DepartureTab" type="button" class="tab-btn" role="tab" aria-selected="true" aria-controls="DeparturePanel" aria-label="출발">출발</button>
+                                                </li>
+                                                <li>
+                                                    <button id="ArrivalTab" type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="ArrivalPanel" aria-label="도착">도착</button>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-cont">
+                                                <!-- 출발 -->
+                                                <section id="DeparturePanel" class="tab-panel is-active" role="tabpanel" aria-labelledby="DepartureTab">
+                                                    <div class="filter-menu">
+                                                        <ul class="filter-list" role="radiogroup">
+                                                            <li class="is-active">
+                                                                <button type="button" role="radio" aria-checked="true" class="filter-btn" data-code="ICN1" aria-label="인천 1 터미널">인천 T1</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-code="ICN2" aria-label="인천 2 터미널">인천 T2</button>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </section>
+                                                <!-- //출발 -->
+                                                
+                                                <!-- 도착 -->
+                                                <section id="ArrivalPanel" class="tab-panel" role="tabpanel" aria-labelledby="ArrivalTab">
+                                                    <div class="filter-menu">
+                                                        <ul class="filter-list" role="radiogroup">
+                                                            <li class="is-active">
+                                                                <button type="button" role="radio" aria-checked="true" class="filter-btn" data-code="ICN1" aria-label="인천 1 터미널">인천 T1</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-code="ICN2" aria-label="인천 2 터미널">인천 T2</button>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </section>
+                                                <!-- //도착 -->
+                                            </div>
+                                        </div>
+                                    </section>
+                                    <!-- 251121 2차 개발 시 추가 될 탭 메뉴 -->
+                                    <!-- 열차 -->
+                                    <!-- <section id="panelMenu02" class="tab-panel" role="tabpanel" aria-labelledby="tabMenu02"></section> -->
+                                </div>
+                            </div>
+                            <div class="modal-btn-wrap">
+                                <button type="button" class="close-btn" aria-label="닫기">닫기</button>
+                                <button type="button" class="apply-btn" aria-label="적용">적용</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 무동작 초기화면 복귀 모달 -->
+                    <div class="modal idle-reset" aria-hidden="true">
+                        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="idleResetModalTitle">
+                            <div id="idleResetModalTitle" class="modal-title">
+                                <strong>잠시 후 처음 화면으로 돌아갑니다.</strong>
+                                <p>계속 이용하시려면 화면을 터치해 주세요.</p>
+                            </div>
+                            <div class="countdown-wrap">
+                                <strong class="countdown-num">30</strong>
+                            </div>
+                            <div class="modal-btn-wrap">
+                                <!-- <button type="button" class="return-home-btn">처음으로</button> -->
+                                <style>
+                                    .modal .modal-btn-wrap button.return-stay-btn {
+                                        width: 100%;
+                                        border-radius: 8px;
+                                        border: 1px solid #888;
+                                        color: #000;
+                                    }
+                                </style>
+                                <button type="button" class="close-btn return-stay-btn">연장하기</button>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- modal -->
                     <div class="modal inquiry" aria-hidden="true">
@@ -299,7 +414,19 @@
                 
                 <!-- footer -->
                 <footer class="footer">
-                    <!-- <?php include __DIR__.'/html/include/footer.html'; ?> -->
+                    <div class="ft-inner">
+                        <p class="copyright">©SMART TOURIST. ALL RIGHT RESERVED.</p>
+                        <div class="btn-wrap">
+                            <button type="button" class="volume-control-btn" aria-label="음량 조절 열기">
+                                <span class="volume-icon" aria-hidden="true"></span>
+                                <span class="btn-label">음량조절</span>
+                            </button>
+                            <button type="button" class="zoom-btn" aria-pressed="false" aria-label="돋보기 모드 켜기">
+                                <span class="zoom-icon" aria-hidden="true"></span>
+                                <span class="btn-label">돋보기</span>
+                            </button>
+                        </div>
+                    </div>
                 </footer>
                 <!-- //footer -->
             </div>
@@ -307,7 +434,10 @@
             <!-- 251215 로딩화면 추가 -->
             <!-- 로딩화면 -->
             <div class="loading is-hidden" role="status" aria-live="polite" aria-atomic="true">
-                <!-- <?php include __DIR__.'/html/include/loading.html'; ?> -->
+                <div class="loading-content">
+                    <strong class="loading-title">화면 로딩 중 입니다.</strong>
+                    <p class="loading-desc">잠시만 기다려 주세요.</p>
+                </div>
             </div>
 
             <!-- 상하좌우 이동 버튼 -->
