@@ -143,13 +143,8 @@
             @include mi.flexbox(row, center, center);
             gap: 6px;
 
-            .current {
+            span {
                 color: #000;
-            }
-
-            .slash,
-            .total {
-                color: #888;
             }
         }
 

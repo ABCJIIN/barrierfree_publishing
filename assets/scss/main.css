@@ -3145,12 +3145,8 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   align-items: center;
   gap: 6px;
 }
-.main.intro .visual-sec .intro-pagination .current {
+.main.intro .visual-sec .intro-pagination span {
   color: #000;
-}
-.main.intro .visual-sec .intro-pagination .slash,
-.main.intro .visual-sec .intro-pagination .total {
-  color: #888;
 }
 .main.intro .visual-sec .slide-toggle {
   width: 50px;
