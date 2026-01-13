@@ -376,26 +376,18 @@
                     </div>
 
                     <!-- 무동작 초기화면 복귀 모달 -->
-                    <div class="modal idle-reset" aria-hidden="true">
+                    <div class="modal idle-reset is-active" aria-hidden="true">
                         <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="idleResetModalTitle">
                             <div id="idleResetModalTitle" class="modal-title">
-                                <strong>잠시 후 처음 화면으로 돌아갑니다.</strong>
-                                <p>계속 이용하시려면 화면을 터치해 주세요.</p>
+                                <strong>잠시 후 처음 화면으로 이동됩니다.</strong>
+                                <p>시간연장 버튼으로 시간을 연장할 수 있습니다.</p>
                             </div>
                             <div class="countdown-wrap">
                                 <strong class="countdown-num">30</strong>
                             </div>
                             <div class="modal-btn-wrap">
-                                <!-- <button type="button" class="return-home-btn">처음으로</button> -->
-                                <style>
-                                    .modal .modal-btn-wrap button.return-stay-btn {
-                                        width: 100%;
-                                        border-radius: 8px;
-                                        border: 1px solid #888;
-                                        color: #000;
-                                    }
-                                </style>
-                                <button type="button" class="close-btn return-stay-btn">연장하기</button>
+                                <button type="button" class="return-home-btn">처음으로</button>
+                                <button type="button" class="close-btn return-stay-btn">시간연장</button>
                             </div>
                         </div>
                     </div>

@@ -75,10 +75,15 @@
             }
 
             &.return-home-btn {
-                width: 100%;
                 border-radius: 8px;
                 border: 1px solid #888;
                 color: #000;
+            }
+
+            &.return-stay-btn {
+                border-radius: 8px;
+                border: 1px solid #3B4CCF;
+                color: #3B4CCF;
             }
         }
     }
@@ -507,6 +512,16 @@
                 letter-spacing: -0.02em;
             }
         }
+
+        .modal-btn-wrap {
+            width: 100%;
+            @include mi.flexbox(row, center, center);
+            gap: 16px;
+
+            button {
+                width: calc(50% - 8px);
+            }
+        }
     }
 
     &.is-active {
@@ -596,6 +611,17 @@
         }
 
         &.volume-control {
+            /* 모달 안의 모든 포커스 가능한 요소 */
+            :focus,
+            :focus-visible {
+                box-shadow:
+                    0 0 0 2px #FFFFFF,
+                    0 0 0 5px #3B4CCF;
+                    outline: none;
+            }
+        }
+
+        &.idle-reset {
             /* 모달 안의 모든 포커스 가능한 요소 */
             :focus,
             :focus-visible {
