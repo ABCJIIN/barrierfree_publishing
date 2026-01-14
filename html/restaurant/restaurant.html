@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>SMART TOURIST INFORMATION</title>
     <script src="../../assets/js/idleTimer.js"></script>
 
@@ -125,206 +125,206 @@
                             <div class="filter-menu">
                                 <div class="sort-wrap">
                                     <div class="sort-inner">
-                                    <!-- 251205 1차 수정 : 구조 수정 -->
-                                    <!-- 20260112 : 구조 수정 -->
-                                    <div class="select-wrap">
-                                        <div class="custom-select sido">
-                                            <input type="hidden" name="city_id" id="cityIdInput" value="1">
-                                            <input type="hidden" name="sigungu_id" id="sigunguIdInput" value="">
-                                            <input type="hidden" name="q" id="qInput" value="">
-                                            <button class="select-item" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="custom-select-list-1">서울</button>
+                                        <!-- 251205 1차 수정 : 구조 수정 -->
+                                        <!-- 20260112 : 구조 수정 -->
+                                        <div class="select-wrap">
+                                            <div class="custom-select sido">
+                                                <input type="hidden" name="city_id" id="cityIdInput" value="1">
+                                                <input type="hidden" name="sigungu_id" id="sigunguIdInput" value="">
+                                                <input type="hidden" name="q" id="qInput" value="">
+                                                <button class="select-item" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="custom-select-list-1">서울</button>
 
-                                            <div class="option-list-wrap">
+                                                <div class="option-list-wrap">
 
-                                                <div class="option-controls" role="presentation">
-                                                    <div class="btn-wrap prev">
-                                                        <button type="button" class="prev-btn">
-                                                            <span class="icon" aria-hidden="true"></span>
-                                                            <span class="label">이전</span>
-                                                        </button>
-                                                    </div>
+                                                    <div class="option-controls" role="presentation">
+                                                        <div class="btn-wrap prev">
+                                                            <button type="button" class="prev-btn">
+                                                                <span class="icon" aria-hidden="true"></span>
+                                                                <span class="label">이전</span>
+                                                            </button>
+                                                        </div>
 
-                                                    <div class="btn-wrap next">
-                                                        <button type="button" class="next-btn">
-                                                            <span class="icon" aria-hidden="true"></span>
-                                                            <span class="label">다음</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                <div class="option-scroll">
-                                                    <ul class="option-list" role="listbox" id="custom-select-list-1">
-                                                        <li class="is-active">
-                                                            <button type="button" role="option" data-city-id="1" aria-selected="true" class="is-active" aria-label="서울">서울</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="2" aria-selected="false" aria-label="인천">인천</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="31" aria-selected="false" aria-label="경기도">경기도</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="6" aria-selected="false" aria-label="부산">부산</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="4" aria-selected="false" aria-label="대구">대구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="7" aria-selected="false" aria-label="울산">울산</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="36" aria-selected="false" aria-label="경상남도">경상남도</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="35" aria-selected="false" aria-label="경상북도">경상북도</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="3" aria-selected="false" aria-label="대전">대전</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="34" aria-selected="false" aria-label="충청남도">충청남도</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="33" aria-selected="false" aria-label="충청북도">충청북도</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="5" aria-selected="false" aria-label="광주">광주</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="38" aria-selected="false" aria-label="전라남도">전라남도</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="37" aria-selected="false" aria-label="전라북도">전라북도</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="32" aria-selected="false" aria-label="강원도">강원도</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-city-id="39" aria-selected="false" aria-label="제주도">제주도</button>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="custom-select sigungu">
-                                            <button class="select-item" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="custom-select-list-2">전체</button>
-
-                                            <div class="option-list-wrap">
-
-                                                <div class="option-controls" role="presentation">
-                                                    <div class="btn-wrap prev">
-                                                        <button type="button" class="prev-btn">
-                                                            <span class="icon" aria-hidden="true"></span>
-                                                            <span class="label">이전</span>
-                                                        </button>
-                                                    </div>
-
-                                                    <div class="btn-wrap next">
-                                                        <button type="button" class="next-btn">
-                                                            <span class="icon" aria-hidden="true"></span>
-                                                            <span class="label">다음</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                <div class="option-scroll">
-                                                    <ul class="option-list sigungu-list" role="listbox" id="custom-select-list-2">
-                                                        <!-- 전체 -->
-                                                        <li class="is-active">
-                                                            <button type="button" role="option" data-sigungu-id="" class="is-active" aria-selected="true">전체</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="70" aria-selected="false" aria-label="강동구">강동구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="58" aria-selected="false" aria-label="마포구">마포구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="59" aria-selected="false" aria-label="양천구">양천구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="61" aria-selected="false" aria-label="강서구">강서구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="62" aria-selected="false" aria-label="구로구">구로구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="63" aria-selected="false" aria-label="금천구">금천구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="64" aria-selected="false" aria-label="영등포구">영등포구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="65" aria-selected="false" aria-label="동작구">동작구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="66" aria-selected="false" aria-label="관악구">관악구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="67" aria-selected="false" aria-label="서초구">서초구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="68" aria-selected="false" aria-label="강남구">강남구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="69" aria-selected="false" aria-label="송파구">송파구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="57" aria-selected="false" aria-label="서대문구">서대문구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="56" aria-selected="false" aria-label="은평구">은평구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="40" aria-selected="false" aria-label="종로구">종로구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="44" aria-selected="false" aria-label="중구">중구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="47" aria-selected="false" aria-label="용산구">용산구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="48" aria-selected="false" aria-label="성동구">성동구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="49" aria-selected="false" aria-label="광진구">광진구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="50" aria-selected="false" aria-label="동대문구">동대문구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="51" aria-selected="false" aria-label="중랑구">중랑구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="52" aria-selected="false" aria-label="성북구">성북구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="53" aria-selected="false" aria-label="강북구">강북구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="54" aria-selected="false" aria-label="도봉구">도봉구</button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" role="option" data-sigungu-id="55" aria-selected="false" aria-label="노원구">노원구</button>
-                                                        </li>
-                                                        
-                                                        <li class="move-btn-wrap" role="presentation">
+                                                        <div class="btn-wrap next">
                                                             <button type="button" class="next-btn">
                                                                 <span class="icon" aria-hidden="true"></span>
                                                                 <span class="label">다음</span>
                                                             </button>
-                                                        </li>
-                                                    </ul>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="option-scroll">
+                                                        <ul class="option-list" role="listbox" id="custom-select-list-1">
+                                                            <li class="is-active">
+                                                                <button type="button" role="option" data-city-id="1" aria-selected="true" class="is-active" aria-label="서울">서울</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="2" aria-selected="false" aria-label="인천">인천</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="31" aria-selected="false" aria-label="경기도">경기도</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="6" aria-selected="false" aria-label="부산">부산</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="4" aria-selected="false" aria-label="대구">대구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="7" aria-selected="false" aria-label="울산">울산</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="36" aria-selected="false" aria-label="경상남도">경상남도</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="35" aria-selected="false" aria-label="경상북도">경상북도</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="3" aria-selected="false" aria-label="대전">대전</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="34" aria-selected="false" aria-label="충청남도">충청남도</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="33" aria-selected="false" aria-label="충청북도">충청북도</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="5" aria-selected="false" aria-label="광주">광주</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="38" aria-selected="false" aria-label="전라남도">전라남도</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="37" aria-selected="false" aria-label="전라북도">전라북도</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="32" aria-selected="false" aria-label="강원도">강원도</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-city-id="39" aria-selected="false" aria-label="제주도">제주도</button>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="custom-select sigungu">
+                                                <button class="select-item" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="custom-select-list-2">전체</button>
+
+                                                <div class="option-list-wrap">
+
+                                                    <div class="option-controls" role="presentation">
+                                                        <div class="btn-wrap prev">
+                                                            <button type="button" class="prev-btn">
+                                                                <span class="icon" aria-hidden="true"></span>
+                                                                <span class="label">이전</span>
+                                                            </button>
+                                                        </div>
+
+                                                        <div class="btn-wrap next">
+                                                            <button type="button" class="next-btn">
+                                                                <span class="icon" aria-hidden="true"></span>
+                                                                <span class="label">다음</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="option-scroll">
+                                                        <ul class="option-list sigungu-list" role="listbox" id="custom-select-list-2">
+                                                            <!-- 전체 -->
+                                                            <li class="is-active">
+                                                                <button type="button" role="option" data-sigungu-id="" class="is-active" aria-selected="true">전체</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="70" aria-selected="false" aria-label="강동구">강동구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="58" aria-selected="false" aria-label="마포구">마포구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="59" aria-selected="false" aria-label="양천구">양천구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="61" aria-selected="false" aria-label="강서구">강서구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="62" aria-selected="false" aria-label="구로구">구로구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="63" aria-selected="false" aria-label="금천구">금천구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="64" aria-selected="false" aria-label="영등포구">영등포구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="65" aria-selected="false" aria-label="동작구">동작구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="66" aria-selected="false" aria-label="관악구">관악구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="67" aria-selected="false" aria-label="서초구">서초구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="68" aria-selected="false" aria-label="강남구">강남구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="69" aria-selected="false" aria-label="송파구">송파구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="57" aria-selected="false" aria-label="서대문구">서대문구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="56" aria-selected="false" aria-label="은평구">은평구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="40" aria-selected="false" aria-label="종로구">종로구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="44" aria-selected="false" aria-label="중구">중구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="47" aria-selected="false" aria-label="용산구">용산구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="48" aria-selected="false" aria-label="성동구">성동구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="49" aria-selected="false" aria-label="광진구">광진구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="50" aria-selected="false" aria-label="동대문구">동대문구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="51" aria-selected="false" aria-label="중랑구">중랑구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="52" aria-selected="false" aria-label="성북구">성북구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="53" aria-selected="false" aria-label="강북구">강북구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="54" aria-selected="false" aria-label="도봉구">도봉구</button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" role="option" data-sigungu-id="55" aria-selected="false" aria-label="노원구">노원구</button>
+                                                            </li>
+                                                            
+                                                            <li class="move-btn-wrap" role="presentation">
+                                                                <button type="button" class="next-btn">
+                                                                    <span class="icon" aria-hidden="true"></span>
+                                                                    <span class="label">다음</span>
+                                                                </button>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <!-- 20260112 : 구조 수정 -->
+                                        <!-- //1차 수정 -->
+                                        <p class="info-text">• 현재 위치와 가까운 순으로 표시됩니다.</p>
                                     </div>
-                                    <!-- 20260112 : 구조 수정 -->
-                                    <!-- //1차 수정 -->
-                                    <p class="info-text">• 현재 위치와 가까운 순으로 표시됩니다.</p>
-                                </div>
-                                <div class="dimmed" aria-hidden="true"></div>
+                                    <div class="dimmed" aria-hidden="true"></div>
                                 </div>
                                 <div class="filter-list-wrap">
                                     <button type="button" class="filter-move-btn prev is-disabled" aria-label="이전 카테고리로 이동" aria-disabled="true"></button>
