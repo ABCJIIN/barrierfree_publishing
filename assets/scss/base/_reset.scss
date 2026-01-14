@@ -37,6 +37,8 @@ html, body {
     font-size: 16px;
     font-weight: 400;
     line-height: 1;
+    touch-action: none;          /* pinch-zoom + pan 차단 */
+    overscroll-behavior: none;   /* 화면 밀림/체인 스크롤 방지 */
 }
 
 /* 문서 루트 언어별 폰트 패밀리 적용 */

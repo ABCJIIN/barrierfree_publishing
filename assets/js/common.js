@@ -641,7 +641,7 @@ function changeVolume(delta) {
   focusables[nextIndex].focus();
 }*/
 function moveFocus(next = true) {
-    document.documentElement.classList.add('is-keyboard-user');
+    // document.documentElement.classList.add('is-keyboard-user');
     
     TTS.stop();
 
@@ -974,4 +974,43 @@ function enhanceZebraPaginationA11y() {
     },
     true
   );
+})();
+
+/* ==============================================
+    Input Mode Detection (전역 실행)
+    - 키보드/키패드 입력 감지 시: is-keyboard-user 클래스 추가
+    - 마우스/터치 입력 감지 시: is-keyboard-user 클래스 제거
+   ============================================== */
+(function () {
+    const root = document.documentElement;
+
+    // 키보드(키패드) 사용 감지
+    window.addEventListener('keydown', function (e) {
+        // 모든 키 입력에 대해 반응하거나, 특정 키만 반응하도록 설정
+        // 배리어프리 키오스크의 경우, 키패드의 어떤 키를 눌러도 포커스가 보여야 함
+        
+        // 이미 클래스가 있다면 중복 실행 방지
+        if (root.classList.contains('is-keyboard-user')) return;
+
+        // (옵션) 특정 키만 반응하게 하려면 아래 조건문 사용
+        /*
+        const focusKeys = [
+            9, 13, 37, 38, 39, 40, // Tab, Enter, Arrows
+            128, 129, 135, 134, 131, 130, 127, 126 // F-Keys (키패드)
+        ];
+        if (!focusKeys.includes(e.keyCode)) return; 
+        */
+
+        root.classList.add('is-keyboard-user');
+    });
+
+    // 마우스 클릭 시 해제
+    window.addEventListener('mousedown', function () {
+        root.classList.remove('is-keyboard-user');
+    });
+
+    // 터치 시작 시 해제
+    window.addEventListener('touchstart', function () {
+        root.classList.remove('is-keyboard-user');
+    });
 })();

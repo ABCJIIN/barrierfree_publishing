@@ -221,15 +221,32 @@ function initZoom() {
         return { x: e.clientX, y: e.clientY };
     };
 
+    const INTERACTIVE_SELECTOR = [
+        'a[href]',
+        'button',
+        'input',
+        'select',
+        'textarea',
+        'label',
+        '[role="button"]',
+        '[role="link"]',
+        '[tabindex]:not([tabindex="-1"])'
+    ].join(',');
+
     const startDrag = (e) => {
         if (!isZoomed) return;
 
         // 버튼(상/하/좌/우/종료) 위에서 드래그 시작하면 무시
         // (컨트롤러 영역에서 드래그로 화면이 움직이면 UX가 혼란스러워서)
         const target = e.target;
+
+        // 컨트롤러 영역 제외
         if (target && target.closest && target.closest('.viewport-controller')) return;
 
-        // 텍스트 드래그/이미지 기본동작 방지
+        // 캔버스 내부 “클릭 가능한 요소”는 드래그 시작 금지
+        if (target && target.closest && target.closest(INTERACTIVE_SELECTOR)) return;
+
+        // 여기서부터만 드래그로 취급
         if (e.cancelable) e.preventDefault();
 
         stopMoveAndRaf();
