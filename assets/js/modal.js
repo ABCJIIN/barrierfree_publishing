@@ -188,6 +188,31 @@ $(function () {
 
     // ================== 이벤트 바인딩 ==================
 
+    // 1) 인트로 슬라이드 상세 모달 열기 (slide02 / slide03 클래스 기준)
+    $(document).on('click', '.slide-detail-btn', function (e) {
+        e.preventDefault();
+
+        const $btn   = $(this);
+        const $slide = $btn.closest('.swiper-slide');
+
+        if (!$slide.length) return;
+
+        // slide02 / slide03 같은 클래스 추출
+        const slideClass = $slide
+            .attr('class')
+            .split(' ')
+            .find(c => /^slide\d+$/.test(c));
+
+        if (!slideClass) return;
+
+        // 동일한 slide 클래스를 가진 slide-modal 찾기
+        const $modal = $('.modal.slide-modal.' + slideClass).first();
+        if (!$modal.length) return;
+
+        // 공통 모달 열기
+        openModal($modal, $btn);
+    });
+
     // 1) QR 크게보기 모달 열기 (구글/네이버)
     $(document).on('click', '.qr-zoom-btn', function (e) {
         e.preventDefault();
