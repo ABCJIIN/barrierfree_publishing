@@ -2511,6 +2511,7 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   height: 499px;
   padding: 16px 0;
   overflow-y: hidden;
+  touch-action: none;
 }
 .mode-low-posture .detail-page .sec-wrap.is-hidden {
   display: none;
