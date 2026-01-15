@@ -169,11 +169,12 @@
 
         .qr-desc {
             width: 100%;
+            height: 128px;
             padding-bottom: 32px;
             font-size: va.$font-24;
             color: var(--mdm-qr-desc-color);
             font-weight: 500;
-            line-height: 32px;
+            line-height: 132%;
             border-bottom: 1px solid var(--mdm-qr-desc-border);
         }
 
