@@ -2476,6 +2476,7 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   /* 문의 모달 */
   /* 무동작 초기화면 복귀 모달 */
   /* qr코드 크게보기 모달 */
+  /* 인트로 슬라이드 모달 */
 }
 .modal .modal-content {
   position: absolute;
@@ -2966,6 +2967,47 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   border: 1px solid #888;
   color: #000;
 }
+.modal.slide-modal .modal-content {
+  padding: 40px;
+}
+.modal.slide-modal .img-wrap {
+  width: 100%;
+  height: 400px;
+  background: #000;
+  margin-bottom: 48px;
+}
+.modal.slide-modal .img-wrap img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.modal.slide-modal .info-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.modal.slide-modal .info-wrap .modal-title {
+  margin-bottom: 16px;
+  color: #000;
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 124%;
+}
+.modal.slide-modal .info-wrap .detail-info {
+  margin-bottom: 48px;
+  color: #555;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 140%;
+}
+.modal.slide-modal .modal-btn-wrap button {
+  width: 100%;
+}
 .modal.is-active {
   display: block;
 }
@@ -2976,6 +3018,7 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   /* 디지털 관광지도 모달 */
   /* 무동작 초기화면 복귀 모달 */
   /* qr코드 크게보기 모달 */
+  /* 인트로 슬라이드 모달 */
 }
 .mode-low-posture .modal.traffic .modal-content {
   top: auto;
@@ -3006,6 +3049,12 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   transform: translate(-50%, 0);
 }
 .mode-low-posture .modal.qr-zoom .modal-content {
+  top: auto;
+  bottom: 0;
+  transform: translate(-50%, 0);
+  border-radius: 24px 24px 0 0;
+}
+.mode-low-posture .modal.slide-modal .modal-content {
   top: auto;
   bottom: 0;
   transform: translate(-50%, 0);
@@ -3111,6 +3160,7 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   position: relative;
   width: 100%;
   margin-bottom: 40px;
+  /* 이미지 슬라이드 상세 모달 버튼 */
   /* 영상 제어 버튼 (영상 위에 오버레이) */
 }
 .main.intro .visual-sec .slide-wrap {
@@ -3152,6 +3202,36 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   display: block;
   object-fit: contain;
   z-index: 0;
+}
+.main.intro .visual-sec .slide-detail-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 224px;
+  transform: translateX(-50%);
+  padding: 0 16px;
+  height: 50px;
+  border-radius: 100px;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  z-index: 20;
+}
+.main.intro .visual-sec .slide-detail-btn .icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: url(../../../assets/images/icon/arrow_right_wh.svg) no-repeat center/contain;
+}
+.main.intro .visual-sec .slide-detail-btn .label {
+  font-size: 1.25rem;
+  font-weight: 500;
+  text-align: center;
+  color: #fff;
 }
 .main.intro .visual-sec .video-wrap {
   position: relative;
@@ -3435,6 +3515,9 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
 }
 .mode-low-posture .main.intro .visual-sec .video-wrap {
   height: 100%;
+}
+.mode-low-posture .main.intro .visual-sec .slide-detail-btn {
+  bottom: 25px;
 }
 .mode-low-posture .main.intro .visual-sec .video-control {
   bottom: 25px;
