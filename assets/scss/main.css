@@ -51,6 +51,8 @@ html, body {
   font-size: 16px;
   font-weight: 400;
   line-height: 1;
+  touch-action: none; /* pinch-zoom + pan 차단 */
+  overscroll-behavior: none; /* 화면 밀림/체인 스크롤 방지 */
 }
 
 /* 문서 루트 언어별 폰트 패밀리 적용 */
@@ -1637,6 +1639,7 @@ html:lang(en).mode-low-posture .bottom-nav .nav-btn .label {
   height: 100vh;
   margin: 0 auto;
   background: var(--zv-bg);
+  touch-action: none;
   /* 상/하/좌/우 이동 버튼 */
 }
 .zoom-viewport.is-active {
@@ -1662,6 +1665,7 @@ html:lang(en).mode-low-posture .bottom-nav .nav-btn .label {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  touch-action: none;
 }
 .zoom-viewport .zoom-canvas {
   width: 100%;

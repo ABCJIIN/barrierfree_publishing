@@ -12,6 +12,7 @@
     height: 100vh;
     margin: 0 auto;
     background: var(--zv-bg);
+    touch-action: none;
 
     &.is-active {
         min-height: auto;
@@ -42,6 +43,7 @@
         height: 100%;
         // height: 100vh;
         overflow: hidden;
+        touch-action: none;
     }
 
     .zoom-canvas {
