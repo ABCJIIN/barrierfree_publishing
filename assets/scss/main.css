@@ -2592,11 +2592,12 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
 }
 .modal.digital-map .qr-desc {
   width: 100%;
+  height: 128px;
   padding-bottom: 32px;
   font-size: 1.5rem;
   color: var(--mdm-qr-desc-color);
   font-weight: 500;
-  line-height: 32px;
+  line-height: 132%;
   border-bottom: 1px solid var(--mdm-qr-desc-border);
 }
 .modal.digital-map .qr-area {
