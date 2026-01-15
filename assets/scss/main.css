@@ -856,8 +856,8 @@ input[type=search]::-webkit-search-results-button {
   --fb-arrow-up-icon: url(../../../assets/images/icon/arrow_up_bl.svg);
   --fb-arrow-down-icon: url(../../../assets/images/icon/arrow_down_bl.svg);
   position: fixed;
-  right: 24px;
-  bottom: 169px;
+  right: 32px;
+  bottom: 235px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -937,6 +937,8 @@ html.mode-high-contrast.is-keyboard-user .floating-btn .sec-move-btn:focus::afte
 /* 낮은 자세 모드 */
 .mode-low-posture .floating-btn {
   display: flex;
+  right: 24px;
+  bottom: 169px;
 }
 
 /* 고대비 모드 */
