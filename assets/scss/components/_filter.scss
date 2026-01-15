@@ -36,6 +36,7 @@
             @include mi.flexbox(row, flex-start, center);
             border-bottom: 0;
             background: transparent;
+            touch-action: pan-y;
         }
     }
 
@@ -74,6 +75,8 @@
                 border: 1px solid var(--fm-btn-border);
                 background: var(--fm-btn-bg);
                 white-space: nowrap;
+                -webkit-user-select: none;
+                user-select: none;
             }
             &.is-active {
                 .filter-btn {
