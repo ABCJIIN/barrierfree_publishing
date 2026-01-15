@@ -12,8 +12,8 @@
     --fb-arrow-down-icon: url(../../../assets/images/icon/arrow_down_bl.svg);
 
     position: fixed;
-    right: 24px;
-    bottom: 169px;
+    right: 32px;
+    bottom: 235px;
     @include mi.flexbox(column, center, stretch);
     border: 1px solid var(--fb-border);
     border-radius: 8px;
@@ -86,6 +86,9 @@
 .mode-low-posture {
     .floating-btn {
         display: flex;
+
+        right: 24px;
+        bottom: 169px;
     }
 }
 
