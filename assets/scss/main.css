@@ -848,6 +848,13 @@ input[type=search]::-webkit-search-results-button {
 
 /* abstracts */
 .floating-btn {
+  /* 플로팅 버튼 전용 로컬 디자인 토큰 */
+  --fb-border: #3B4CCF;
+  --fb-label: #3B4CCF;
+  --fb-divide-border: #3B4CCF;
+  /* 아이콘/이미지 토큰 */
+  --fb-arrow-up-icon: url(../../../assets/images/icon/arrow_up_bl.svg);
+  --fb-arrow-down-icon: url(../../../assets/images/icon/arrow_down_bl.svg);
   position: fixed;
   right: 24px;
   bottom: 169px;
@@ -855,11 +862,10 @@ input[type=search]::-webkit-search-results-button {
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
-  border: 1px solid #3B4CCF;
+  border: 1px solid var(--fb-border);
   border-radius: 8px;
   overflow: hidden;
   z-index: 60;
-  display: none;
 }
 .floating-btn .btn-wrap {
   position: relative;
@@ -877,7 +883,7 @@ input[type=search]::-webkit-search-results-button {
   bottom: 0;
   width: 100%;
   height: 1px;
-  background: #3B4CCF;
+  background: var(--fb-divide-border);
 }
 .floating-btn .btn-wrap.prev.no-bd::before {
   content: none;
@@ -914,7 +920,7 @@ html.mode-high-contrast.is-keyboard-user .floating-btn .sec-move-btn:focus::afte
 .floating-btn .sec-move-btn .label {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #3B4CCF;
+  color: var(--fb-label);
 }
 .floating-btn .sec-move-btn .icon {
   display: inline-block;
@@ -922,15 +928,26 @@ html.mode-high-contrast.is-keyboard-user .floating-btn .sec-move-btn:focus::afte
   height: 20px;
 }
 .floating-btn .sec-move-btn.prev .icon {
-  background: url(../../../assets/images/icon/arrow_up_bl.svg) no-repeat center/contain;
+  background: var(--fb-arrow-up-icon) no-repeat center/contain;
 }
 .floating-btn .sec-move-btn.next .icon {
-  background: url(../../../assets/images/icon/arrow_down_bl.svg) no-repeat center/contain;
+  background: var(--fb-arrow-down-icon) no-repeat center/contain;
 }
 
 /* 낮은 자세 모드 */
 .mode-low-posture .floating-btn {
   display: flex;
+}
+
+/* 고대비 모드 */
+.mode-high-contrast .floating-btn {
+  /* 플로팅 버튼 전용 로컬 디자인 토큰 */
+  --fb-border: #fff;
+  --fb-label: #000;
+  --fb-divide-border: #000;
+  /* 아이콘/이미지 토큰 */
+  --fb-arrow-up-icon: url(../../../assets/images/icon/high-contrast/arrow_up_bk.svg);
+  --fb-arrow-down-icon: url(../../../assets/images/icon/high-contrast/arrow_down_bk.svg);
 }
 
 /* abstracts */
