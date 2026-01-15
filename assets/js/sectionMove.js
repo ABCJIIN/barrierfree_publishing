@@ -1,7 +1,6 @@
-// 서브페이지에서 이전/다음 버튼으로 섹션을 페이징 이동
-// - 낮은자세 모드(html.mode-low-posture)에서만 동작
-// - 각 sec-wrap을 step으로 보고, 세 번째 랩은 내부 섹션(first/second)로 분리 + 페이지네이션
-// - 섹션 높이가 화면보다 약간만 넘치는 미세 넘침은 페이지로 취급하지 않음
+// 서브페이지에서 이전/다음 버튼으로 섹션/스크롤 이동
+// - 낮은자세 모드(html.mode-low-posture) : 기존 섹션/페이지 이동 로직 유지
+// - 일반/고대비 모드 : scroll-sec 영역을 위/아래로 스크롤 이동
 ;(function () {
     'use strict';
 
@@ -25,7 +24,7 @@
         nextBtn:  '.floating-btn .sec-move-btn.next'
     };
 
-    // steps: [{wrapIdx, mode, baseShift, height, pageIndex}]
+    // 저자세 steps: [{wrapIdx, mode, baseShift, height, pageIndex}]
     var steps = [];
     var current = 0;
     var isLowPosture = false;
@@ -35,6 +34,15 @@
 
     // 3번째 랩의 second(=access) 첫 페이지 진입 시 살짝 더 보여주기 위한 오버슈트(px)
     var LAST_SECTION_OVERSHOOT = 72;
+
+    // 일반/고대비 모드에서 버튼 노출 판정 여유(px)
+    var SCROLL_EDGE_EPSILON = 2;
+
+    // 일반/고대비 롱프레스 스크롤 속도/주기
+    var HOLD_SCROLL_SPEED = 16;   // 한번에 움직이는 px (속도)
+    var HOLD_SCROLL_INTERVAL = 16; // ms (대략 60fps)
+    var holdTimer = null;
+    var holdDir = 0;
 
     /* ==============================
     * Utils
@@ -51,7 +59,6 @@
     }
 
     // display:none 또는 .is-hidden 상태에서도 치수 측정을 가능하게 만드는 헬퍼
-    // 호출 시 임시로 보이게 만들고, 반환된 cleanup()을 호출하면 원복
     function ensureMeasureVisible(el){
         var restore = {};
         var applied = false;
@@ -84,9 +91,10 @@
         };
     }
 
-    // 현재 화면에서 유효한 페이징 높이 반환
-    // - 낮은자세 모드에서는 scroll-sec의 패딩을 제외한 실 내용 영역을 사용
-    // - 일반 모드에서는 패딩 포함(clientHeight)
+    /* ==============================
+    * Height helpers
+    * ============================== */
+    // 저자세에서만 "패딩 제외한" 실제 컨텐츠 높이를 페이징 기준으로 사용
     function getAvailHeight(){
         var sec = qs(SEL.scrollSec);
         if (!sec) return 0;
@@ -100,9 +108,8 @@
     }
 
     /* ==============================
-    * Measurement (3번째 랩)
+    * Measurement (3번째 랩 - 저자세용)
     * ============================== */
-    // 3번째 랩의 전체 높이, second 섹션의 시작점(shiftY), 두 섹션이 한 화면에 모두 들어오는지 여부
     function measureThirdWrap(){
         var third = qs(SEL.thirdWrap);
         if (!third) return { totalH: 0, shiftY: 0, fitsBoth: true };
@@ -114,7 +121,6 @@
         var inner  = qs(SEL.inner, third);
         var access = qs(SEL.access, third);
 
-        // second 섹션을 랩 상단에 붙일 때 필요한 이동량(= first 높이)
         var shiftY = 0;
         if (inner && access){
             shiftY = Math.max(0, access.offsetTop - (inner.offsetTop || 0));
@@ -126,9 +132,8 @@
     }
 
     /* ==============================
-    * Steps & Pagination
+    * Steps & Pagination (저자세용)
     * ============================== */
-    // 전체 스텝 구성: 기본은 랩 단위 1스텝, 3번째 랩은 first/second로 분리 가능
     function buildSteps(){
         steps = [];
         var wraps = qsa(SEL.wraps);
@@ -138,7 +143,6 @@
             var totalH = wrap.scrollHeight;
             cleanup();
 
-            // 기본: 하나의 스텝(all) + 내부 페이지네이션
             if (idx !== 2){
                 steps.push({
                     wrapIdx: idx,
@@ -150,7 +154,6 @@
                 return;
             }
 
-            // 3번째 랩: 필요 시 first/second로 분리하고 각자 페이지네이션 부여
             var m = measureThirdWrap();
             if (m.fitsBoth){
                 steps.push({
@@ -161,7 +164,6 @@
                     pageIndex: 0
                 });
             } else {
-                // first 영역
                 steps.push({
                     wrapIdx: idx,
                     mode: 'first',
@@ -169,7 +171,6 @@
                     height: Math.max(0, m.shiftY),
                     pageIndex: 0
                 });
-                // second 영역 (access)
                 steps.push({
                     wrapIdx: idx,
                     mode: 'second',
@@ -188,21 +189,17 @@
         }
     }
 
-    // 해당 step에서 가능한 최댓 페이지 인덱스 계산(0-based)
     function getMaxPageIndex(step){
         var avail = getAvailHeight();
         if (!step || !avail) return 0;
 
         var overflow = step.height - avail;
 
-        // 미세 넘침(ε) 이하는 페이지 없음
         if (overflow <= PAGE_EPSILON) return 0;
 
-        // ε만큼 여유를 두고 계산 (ceil 후 0부터 시작이므로 -1)
         return Math.max(0, Math.ceil((step.height - PAGE_EPSILON) / avail) - 1);
     }
 
-    // 현재 step의 pageIndex를 유효 범위로 보정
     function clampPageIndex(step){
         if (!step) return;
         var maxIdx = getMaxPageIndex(step);
@@ -211,7 +208,7 @@
     }
 
     /* ==============================
-    * Render (visibility & transform)
+    * Render (저자세용: visibility & transform)
     * ============================== */
     function applyVisibility(){
         var wraps = qsa(SEL.wraps);
@@ -232,20 +229,17 @@
 
         var avail = getAvailHeight();
 
-        // 기본 이동량: baseShift + 페이지 * 화면높이
         var rawShift = s.baseShift + (s.pageIndex * avail);
 
-        // 마지막 페이지에서 끝이 똑 떨어지도록 초과 이동 상한 계산
         var overflow = s.height - avail;
         var effectiveOverflow = (overflow > PAGE_EPSILON) ? overflow : 0;
         var maxShift = Math.max(0, s.baseShift + effectiveOverflow);
 
-        // 3번째 랩 second의 첫 페이지에 한해 살짝 더 보여주기(overshoot)
         var isLastStep = (current === steps.length - 1);
         var isAccessFirstPage = (s.mode === 'second' && s.pageIndex === 0);
         if (isLastStep && isAccessFirstPage) {
             rawShift += LAST_SECTION_OVERSHOOT;
-            maxShift += LAST_SECTION_OVERSHOOT; // 상한에도 동일하게 반영
+            maxShift += LAST_SECTION_OVERSHOOT;
         }
 
         var shift = Math.min(rawShift, maxShift);
@@ -253,7 +247,57 @@
     }
 
     /* ==============================
-    * Floating Buttons (prev/next)
+    * 일반/고대비 모드: Scroll Move
+    * ============================== */
+    function getScrollContainer(){
+        // 스크롤이 실제로 걸리는 컨테이너가 scroll-sec라면 이게 맞고,
+        // 만약 페이지 전체(window)가 스크롤이면 아래 로직에서 window로 대체 가능.
+        return qs(SEL.scrollSec);
+    }
+
+    function stopHoldScroll(){
+        if (holdTimer){
+            clearInterval(holdTimer);
+            holdTimer = null;
+        }
+        holdDir = 0;
+    }
+
+    function startHoldScroll(dir){
+        var sc = getScrollContainer();
+        if (!sc) return;
+
+        holdDir = dir;
+
+        // 이미 돌고 있으면 방향만 갱신
+        if (holdTimer) return;
+
+        holdTimer = setInterval(function(){
+            if (!sc) return;
+
+            // 한 프레임당 조금씩 이동
+            sc.scrollTop = sc.scrollTop + (holdDir * HOLD_SCROLL_SPEED);
+
+            // 버튼 숨김/노출 즉시 반영
+            updateFloatingButtons();
+
+            // 끝까지 닿으면 자동 정지 (불필요한 루프 방지)
+            if (isAtTop(sc) && holdDir < 0) stopHoldScroll();
+            if (isAtBottom(sc) && holdDir > 0) stopHoldScroll();
+        }, HOLD_SCROLL_INTERVAL);
+    }
+
+    function isAtTop(sc){
+        return (sc.scrollTop <= SCROLL_EDGE_EPSILON);
+    }
+
+    function isAtBottom(sc){
+        // scrollTop + clientHeight 가 scrollHeight에 거의 닿으면 바닥
+        return (sc.scrollTop + sc.clientHeight >= sc.scrollHeight - SCROLL_EDGE_EPSILON);
+    }
+
+    /* ==============================
+    * Floating Buttons (공통)
     * ============================== */
     function updateFloatingButtons(){
         var prevWrap = qs(SEL.prevWrap);
@@ -261,36 +305,49 @@
         var prevBtn  = qs(SEL.prevBtn);
         var nextBtn  = qs(SEL.nextBtn);
 
-        // 현재 포커스가 어디에 있는지 체크
         var activeEl = document.activeElement;
         var prevHadFocus = prevBtn && (activeEl === prevBtn || prevBtn.contains(activeEl));
         var nextHadFocus = nextBtn && (activeEl === nextBtn || nextBtn.contains(activeEl));
 
-        // 첫 페이지 여부: 첫 스텝 & pageIndex 0
-        var atFirst = (current === 0 && steps[0] && steps[0].pageIndex === 0);
+        var atFirst = false;
+        var atLast  = false;
 
-        // 마지막 페이지 여부: 마지막 스텝 & 해당 스텝의 pageIndex가 max
-        var lastStep = steps[steps.length - 1];
-        var atLast = false;
-        if (lastStep){
-            atLast = (current === steps.length - 1) && (lastStep.pageIndex === getMaxPageIndex(lastStep));
+        if (isLowPosture) {
+            // 저자세: 기존 규칙 유지
+            atFirst = (current === 0 && steps[0] && steps[0].pageIndex === 0);
+
+            var lastStep = steps[steps.length - 1];
+            if (lastStep){
+                atLast = (current === steps.length - 1) && (lastStep.pageIndex === getMaxPageIndex(lastStep));
+            } else {
+                atLast = true;
+            }
+        } else {
+            // 일반/고대비: 스크롤 위치 기준
+            var sc = getScrollContainer();
+            if (sc){
+                atFirst = isAtTop(sc);
+                atLast  = isAtBottom(sc);
+            } else {
+                // 컨테이너가 없다면 둘 다 false로 두고 버튼은 일단 노출
+                atFirst = false;
+                atLast  = false;
+            }
         }
 
         if (prevWrap) prevWrap.style.display = atFirst ? 'none' : '';
         if (nextWrap) nextWrap.style.display = atLast  ? 'none' : '';
 
-        // 보여지는 상태 다시 계산
         var prevVisible = prevWrap ? (prevWrap.style.display !== 'none') : false;
         var nextVisible = nextWrap ? (nextWrap.style.display !== 'none') : false;
 
-        // 🔴 포커스를 갖고 있던 버튼이 사라졌다면 → 남아 있는 버튼으로 포커스 이동
+        // 포커스 이동(버튼이 사라졌을 때)
         if (!prevVisible && prevHadFocus && nextVisible && nextBtn){
             nextBtn.focus();
         } else if (!nextVisible && nextHadFocus && prevVisible && prevBtn){
             prevBtn.focus();
         }
 
-        // 보더 정리(예: 이전만 보일 때 오른쪽 보더 제거 등)
         if (prevWrap){
             if (prevVisible && !nextVisible) addClass(prevWrap, 'no-bd');
             else removeClass(prevWrap, 'no-bd');
@@ -301,10 +358,14 @@
     * Navigation
     * ============================== */
     function goPrev(){
+        if (!isLowPosture){
+            startHoldScroll(-1);
+            return;
+        }
+
         var s = steps[current];
         if (!s) return;
 
-        // 같은 스텝 내에서 이전 페이지
         if (s.pageIndex > 0){
             s.pageIndex--;
             applyVisibility();
@@ -312,7 +373,6 @@
             return;
         }
 
-        // 이전 스텝의 마지막 페이지로
         if (current > 0){
             current--;
             var t = steps[current];
@@ -324,12 +384,16 @@
     }
 
     function goNext(){
+        if (!isLowPosture){
+            startHoldScroll(1);
+            return;
+        }
+
         var s = steps[current];
         if (!s) return;
 
         var maxIdx = getMaxPageIndex(s);
 
-        // 같은 스텝 내에서 다음 페이지
         if (s.pageIndex < maxIdx){
             s.pageIndex++;
             applyVisibility();
@@ -337,7 +401,6 @@
             return;
         }
 
-        // 다음 스텝의 첫 페이지로
         if (current < steps.length - 1){
             current++;
             var t = steps[current];
@@ -350,7 +413,6 @@
     /* ==============================
     * Init & Events
     * ============================== */
-    // 초기 가림/상태 리셋
     function primeClasses(){
         qsa(SEL.wraps).forEach(function(w){
             addClass(w, 'is-hidden');
@@ -360,56 +422,135 @@
     }
 
     var resizeTimer = null;
-    // 리사이즈/회전 시, 기존 step 내 비율(pageIndex/max)을 유지하여 자연스럽게 복원
     function onResize(){
-        if (!isLowPosture) return;
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function(){
-            var prev = steps[current] || null;
-            var prevKey = prev ? (prev.wrapIdx + ':' + prev.mode) : null;
-            var prevRatio = 0;
+            if (isLowPosture){
+                // 저자세: 기존 복원 로직
+                var prev = steps[current] || null;
+                var prevKey = prev ? (prev.wrapIdx + ':' + prev.mode) : null;
+                var prevRatio = 0;
 
-            if (prev){
-                var maxBefore = Math.max(1, getMaxPageIndex(prev));
-                prevRatio = maxBefore ? (prev.pageIndex / maxBefore) : 0;
-            }
-
-            buildSteps();
-
-            if (prevKey){
-                var idx = steps.findIndex(function(s){ return (s.wrapIdx + ':' + s.mode) === prevKey; });
-                if (idx >= 0){
-                    current = idx;
-                    var nowMax = Math.max(1, getMaxPageIndex(steps[current]));
-                    steps[current].pageIndex = Math.round(prevRatio * nowMax);
-                    clampPageIndex(steps[current]);
-                } else {
-                    current = Math.min(current, steps.length - 1);
+                if (prev){
+                    var maxBefore = Math.max(1, getMaxPageIndex(prev));
+                    prevRatio = maxBefore ? (prev.pageIndex / maxBefore) : 0;
                 }
-            }
 
-            applyVisibility();
-            updateFloatingButtons();
+                buildSteps();
+
+                if (prevKey){
+                    var idx = steps.findIndex(function(s){ return (s.wrapIdx + ':' + s.mode) === prevKey; });
+                    if (idx >= 0){
+                        current = idx;
+                        var nowMax = Math.max(1, getMaxPageIndex(steps[current]));
+                        steps[current].pageIndex = Math.round(prevRatio * nowMax);
+                        clampPageIndex(steps[current]);
+                    } else {
+                        current = Math.min(current, steps.length - 1);
+                    }
+                }
+
+                applyVisibility();
+                updateFloatingButtons();
+            } else {
+                // 일반/고대비: 스크롤 기반이므로 버튼만 재계산
+                updateFloatingButtons();
+            }
         }, 150);
+    }
+
+    function onScroll(){
+        if (isLowPosture) return;
+        updateFloatingButtons();
+    }
+
+    function bindHoldEvents(btn, dir){
+        if (!btn) return;
+
+        // 마우스
+        btn.addEventListener('mousedown', function(e){
+            if (isLowPosture) return; // 저자세는 기존 click 방식
+            e.preventDefault();
+            startHoldScroll(dir);
+        });
+        btn.addEventListener('mouseup', function(){
+            if (isLowPosture) return;
+            stopHoldScroll();
+        });
+        btn.addEventListener('mouseleave', function(){
+            if (isLowPosture) return;
+            stopHoldScroll();
+        });
+
+        // 터치 (키오스크/모바일)
+        btn.addEventListener('touchstart', function(e){
+            if (isLowPosture) return;
+            e.preventDefault(); // 길게 누를 때 스크롤/클릭 중복 방지
+            startHoldScroll(dir);
+        }, { passive: false });
+
+        btn.addEventListener('touchend', function(){
+            if (isLowPosture) return;
+            stopHoldScroll();
+        });
+
+        btn.addEventListener('touchcancel', function(){
+            if (isLowPosture) return;
+            stopHoldScroll();
+        });
+
+        // 포커스가 빠져도 정지 (접근성/안전)
+        btn.addEventListener('blur', function(){
+            if (isLowPosture) return;
+            stopHoldScroll();
+        });
     }
 
     function bindEvents(){
         var prevBtn = qs(SEL.prevBtn);
         var nextBtn = qs(SEL.nextBtn);
-        if (prevBtn) prevBtn.addEventListener('click', goPrev);
-        if (nextBtn) nextBtn.addEventListener('click', goNext);
+
+        // ✅ 저자세: 기존 click 이동
+        if (prevBtn) prevBtn.addEventListener('click', function(e){
+            if (!isLowPosture) return;
+            goPrev();
+        });
+        if (nextBtn) nextBtn.addEventListener('click', function(e){
+            if (!isLowPosture) return;
+            goNext();
+        });
+
+        // ✅ 일반/고대비: 롱프레스 연속 스크롤
+        bindHoldEvents(prevBtn, -1);
+        bindHoldEvents(nextBtn,  1);
 
         window.addEventListener('resize', onResize);
         window.addEventListener('orientationchange', onResize);
+
+        var sc = getScrollContainer();
+        if (sc) sc.addEventListener('scroll', onScroll, { passive: true });
+
+        // 안전장치: 화면 전환/탭 이동 시 정지
+        document.addEventListener('visibilitychange', function(){
+            if (document.hidden) stopHoldScroll();
+        });
     }
 
     function init(){
         isLowPosture = !!qs(SEL.rootLow);
-        if (!isLowPosture) return; // 낮은자세 모드에서만 동작
 
-        primeClasses();
-        buildSteps();
-        applyVisibility();
+        if (isLowPosture){
+            // 저자세: 기존 섹션 페이징 방식
+            primeClasses();
+            buildSteps();
+            applyVisibility();
+            updateFloatingButtons();
+            bindEvents();
+            return;
+        }
+
+        // 일반/고대비: 숨김/이동 로직을 건드리지 않고 스크롤만 제어
+        // (wrap 숨김/transform은 하지 않음!)
         updateFloatingButtons();
         bindEvents();
     }

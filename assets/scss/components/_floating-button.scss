@@ -2,15 +2,24 @@
 @use '../abstracts/variables' as va;
 
 .floating-btn {
+    /* 플로팅 버튼 전용 로컬 디자인 토큰 */
+    --fb-border: #3B4CCF;
+    --fb-label: #3B4CCF;
+    --fb-divide-border: #3B4CCF;
+
+    /* 아이콘/이미지 토큰 */
+    --fb-arrow-up-icon: url(../../../assets/images/icon/arrow_up_bl.svg);
+    --fb-arrow-down-icon: url(../../../assets/images/icon/arrow_down_bl.svg);
+
     position: fixed;
     right: 24px;
     bottom: 169px;
     @include mi.flexbox(column, center, stretch);
-    border: 1px solid #3B4CCF;
+    border: 1px solid var(--fb-border);
     border-radius: 8px;
     overflow: hidden;
     z-index: 60;
-    display: none;
+    // display: none;
     .btn-wrap {
         position: relative;
         // width: 99px;
@@ -26,7 +35,7 @@
                 bottom: 0;
                 width: 100%;
                 height: 1px;
-                background: #3B4CCF;
+                background: var(--fb-divide-border);
             }
             /* 이전 버튼만 화면에 노출될때 추가 */
             &.no-bd {
@@ -53,7 +62,7 @@
         .label {
             font-size: va.$font-20;
             font-weight: 700;
-            color: #3B4CCF;
+            color: var(--fb-label);
         }
         .icon {
             display: inline-block;
@@ -62,12 +71,12 @@
         }
         &.prev {
             .icon {
-                background: url(../../../assets/images/icon/arrow_up_bl.svg) no-repeat center/contain;
+                background: var(--fb-arrow-up-icon) no-repeat center/contain;
             }
         }
         &.next {
             .icon {
-                background: url(../../../assets/images/icon/arrow_down_bl.svg) no-repeat center/contain;
+                background: var(--fb-arrow-down-icon) no-repeat center/contain;
             }
         }
     }
@@ -77,5 +86,19 @@
 .mode-low-posture {
     .floating-btn {
         display: flex;
+    }
+}
+
+/* 고대비 모드 */
+.mode-high-contrast {
+    .floating-btn {
+        /* 플로팅 버튼 전용 로컬 디자인 토큰 */
+        --fb-border: #fff;
+        --fb-label: #000;
+        --fb-divide-border: #000;
+
+        /* 아이콘/이미지 토큰 */
+        --fb-arrow-up-icon: url(../../../assets/images/icon/high-contrast/arrow_up_bk.svg);
+        --fb-arrow-down-icon: url(../../../assets/images/icon/high-contrast/arrow_down_bk.svg);
     }
 }
