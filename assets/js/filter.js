@@ -1,5 +1,5 @@
 // 필터 버튼 좌우 이동
-// 필터 버튼의 텍스트 길이에 따라 자동 정렬
+// 필터 버튼의 텍스트 길이에 따라 자동 정렬 + 스와이프(좌/우)로 prev/next 이동
 $(function () {
     'use strict';
 
@@ -13,6 +13,13 @@ $(function () {
     };
 
     var STATE_KEY = 'filterState';
+
+    /* ==============================
+     * Swipe Tuning (감도 조절)
+     * ============================== */
+    var SWIPE_THRESHOLD = 40; // px: 이 이상 움직이면 스와이프 인식 (↓ 민감, ↑ 둔감)
+    var H_RATIO         = 1.2; // 가로/세로 판별 (↓ 대각선도 인식, ↑ 수평만 인식)
+    var COOLDOWN_MS     = 300; // 연속 트리거 방지(ms)
 
     // ===== 라디오(필터 선택) 기본 동작 =====
     function initFilterRadios($root) {
@@ -30,6 +37,7 @@ $(function () {
                 $li.addClass('is-active');
                 $btn.attr('aria-checked', 'true');
 
+                // 기존 로직 유지
                 updateRestaurantPagination();
             });
         });
@@ -139,7 +147,7 @@ $(function () {
     function initFilterPaging() {
         var $wraps = $(SEL.wrap);
 
-        // 처음 한 번만: 라디오/prev/next 이벤트 바인딩
+        // 처음 한 번만: 라디오/prev/next/스와이프 이벤트 바인딩
         if (!isFilterPagingInit) {
             // 1) 라디오 동작 세팅
             initFilterRadios($(document));
@@ -201,6 +209,118 @@ $(function () {
                 updateMoveButtons($wrap);
             });
 
+            /* =======================================================
+             *   4) 좌/우 스와이프로 prev/next 트리거
+             * - 현재 구조(hide/show 페이지) 유지
+             * - ul 영역에서 좌/우 드래그하면 버튼 클릭처럼 동작
+             * ======================================================= */
+            (function bindFilterSwipePaging() {
+                var supportsPointer = !!window.PointerEvent;
+
+                function setSwipeState($el, obj) { $el.data('__swipeState', obj); }
+                function getSwipeState($el) { return $el.data('__swipeState'); }
+
+                function getPoint(e) {
+                    // pointer/mouse
+                    if (e.originalEvent && typeof e.originalEvent.clientX === 'number') {
+                        return { x: e.originalEvent.clientX, y: e.originalEvent.clientY };
+                    }
+                    // touch
+                    var oe = e.originalEvent || e;
+                    var t = (oe.touches && oe.touches[0]) || (oe.changedTouches && oe.changedTouches[0]);
+                    if (t) return { x: t.clientX, y: t.clientY };
+                    return { x: 0, y: 0 };
+                }
+
+                function onStart(e) {
+                    var $list = $(this);
+                    var $wrap = $list.closest(SEL.wrap);
+
+                    // paging state 없으면 무시
+                    var pagingState = $wrap.data(STATE_KEY);
+                    if (!pagingState) return;
+
+                    // prev/next 버튼 위에서 시작은 제외(원하면 유지/삭제)
+                    if ($(e.target).closest(SEL.prev + ',' + SEL.next).length) return;
+
+                    var p = getPoint(e);
+                    setSwipeState($list, {
+                        sx: p.x,
+                        sy: p.y,
+                        locked: false,
+                        canceled: false,
+                        fired: false,
+                        lastFireAt: 0
+                    });
+                }
+
+                function onMove(e) {
+                    var $list = $(this);
+                    var st = getSwipeState($list);
+                    if (!st || st.canceled || st.fired) return;
+
+                    var p = getPoint(e);
+                    var dx = p.x - st.sx;
+                    var dy = p.y - st.sy;
+
+                    // 방향 판정(초기)
+                    if (!st.locked) {
+                        if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+
+                        // 가로가 충분히 크면 스와이프로 락
+                        if (Math.abs(dx) > Math.abs(dy) * H_RATIO) {
+                            st.locked = true;
+                        } else {
+                            // 세로성 제스처면 취소 (스크롤 방해 X)
+                            st.canceled = true;
+                            setSwipeState($list, st);
+                            return;
+                        }
+                    }
+
+                    // 가로 스와이프 확정이면 스크롤 방지
+                    if (e.cancelable) e.preventDefault();
+
+                    // threshold 넘으면 한 번만 트리거
+                    if (Math.abs(dx) >= SWIPE_THRESHOLD) {
+                        var now = Date.now();
+                        if (now - st.lastFireAt < COOLDOWN_MS) return;
+
+                        st.fired = true;
+                        st.lastFireAt = now;
+                        setSwipeState($list, st);
+
+                        var $wrap = $list.closest(SEL.wrap);
+
+                        // dx < 0: 왼쪽으로 밀기 => 다음
+                        if (dx < 0) {
+                            $wrap.find(SEL.next).trigger('click');
+                        } else {
+                            $wrap.find(SEL.prev).trigger('click');
+                        }
+                    }
+                }
+
+                function onEnd() {
+                    $(this).removeData('__swipeState');
+                }
+
+                var LIST_SEL = SEL.wrap + ' ' + SEL.list; // ".filter-list-wrap .filter-list"
+
+                if (supportsPointer) {
+                    $(document)
+                        .on('pointerdown.filterSwipe', LIST_SEL, onStart)
+                        .on('pointermove.filterSwipe', LIST_SEL, onMove)
+                        .on('pointerup.filterSwipe pointercancel.filterSwipe', LIST_SEL, onEnd);
+                } else {
+                    // 구형 WebView fallback
+                    $(document)
+                        .on('touchstart.filterSwipe', LIST_SEL, onStart)
+                        .on('touchmove.filterSwipe', LIST_SEL, onMove)
+                        .on('touchend.filterSwipe touchcancel.filterSwipe', LIST_SEL, onEnd);
+                }
+            })();
+
             isFilterPagingInit = true;
         }
 
@@ -213,44 +333,79 @@ $(function () {
 
             if (!total) return;
 
-            // 항상 처음부터 다시 계산
-            var firstPage = renderFromStart($wrap, 0);
+            // === 01/12 추가 ===
+            // active(선택된) li 인덱스 찾기 (없으면 0)
+            var activeIdx = $items.index($items.filter('.is-active').first());
+            if (activeIdx < 0) activeIdx = 0;
 
-            var state = {
-                total: total,
-                start: firstPage.start,
-                end:   firstPage.end,
-                starts: [firstPage.start],
-                pointer: 0
-            };
+            // active가 포함된 "페이지"를 찾기 위해 starts를 순차 생성
+            var starts = [];
+            var pointer = 0;
+            var found = false;
 
-            $wrap.data(STATE_KEY, state);
-            updateMoveButtons($wrap);
+            var startIdx = 0;
+            while (startIdx < total) {
+                var page = renderFromStart($wrap, startIdx);
+                starts.push(page.start);
+
+                // active가 이 페이지 안에 있으면 stop
+                if (activeIdx >= page.start && activeIdx <= page.end) {
+                    pointer = starts.length - 1;
+
+                    // 이 페이지를 최종으로 보여주도록 state 반영
+                    var state = {
+                        total: total,
+                        start: page.start,
+                        end:   page.end,
+                        starts: starts,
+                        pointer: pointer
+                    };
+
+                    $wrap.data(STATE_KEY, state);
+                    updateMoveButtons($wrap);
+                    found = true;
+                    break; // while만 종료
+                }
+
+                // 다음 페이지로
+                startIdx = page.end + 1;
+            }
+            // === 01/12 추가 끝===
+
+            // found 없을 시 첫페이지로
+            if (!found) {
+                var firstPage = renderFromStart($wrap, 0);
+
+                var state2 = {
+                    total: total,
+                    start: firstPage.start,
+                    end:   firstPage.end,
+                    starts: [firstPage.start],
+                    pointer: 0
+                };
+
+                $wrap.data(STATE_KEY, state2);
+                updateMoveButtons($wrap);
+            }
         });
     }
 
-
+    // DOM 준비 시 1차 계산 + 폰트/로드/리사이즈 재계산
     $(function () {
-        // DOM 준비 시 1차 계산
         initFilterPaging();
 
-        // 웹폰트가 다 로딩된 후 한 번 더 계산
         if (document.fonts && document.fonts.ready) {
             document.fonts.ready.then(function () {
-            initFilterPaging();
+                initFilterPaging();
             });
         }
 
-        // 이미지/레이아웃까지 모두 로딩 완료 후 한 번 더
         $(window).on('load', function () {
             initFilterPaging();
         });
 
-        // 혹시나 화면 크기/모드(저시선 모드 등) 바뀔 때도 다시 계산
         $(window).on('resize.filterList', function () {
             initFilterPaging();
         });
     });
-
-
 });

@@ -993,6 +993,7 @@ html.mode-high-contrast.is-keyboard-user .floating-btn .sec-move-btn:focus::afte
   align-items: center;
   border-bottom: 0;
   background: transparent;
+  touch-action: pan-y;
 }
 .filter-menu .filter-move-btn {
   width: 57px;
@@ -1029,6 +1030,8 @@ html.mode-high-contrast.is-keyboard-user .floating-btn .sec-move-btn:focus::afte
   border: 1px solid var(--fm-btn-border);
   background: var(--fm-btn-bg);
   white-space: nowrap;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .filter-menu .filter-list li.is-active .filter-btn {
   font-weight: 800;
