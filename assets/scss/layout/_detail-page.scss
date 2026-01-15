@@ -12,9 +12,6 @@
     --sp-heading-color: #000000;
     --sp-body-color: #555555;
     
-    --sp-subway-tag-bg: #6594C2;
-    --sp-subway-tag-color: #ffffff;
-    
     --sp-map-radius: 8px;
     --sp-map-btn-bg: #ffffff;
     --sp-map-btn-color: #000000;
@@ -148,10 +145,9 @@
                         padding: 0 10px;
                         font-size: va.$font-24;
                         font-weight: 500;
-                        color: var(--sp-subway-tag-color);
+                        color: #fff;
                         letter-spacing: -0.02em;
                         border-radius: 100px;
-                        background: var(--sp-subway-tag-bg);
                     }
                 }
             }
@@ -429,9 +425,6 @@
 
         --sp-heading-color: #ffffff;
         --sp-body-color: #C1C1C1;
-
-        --sp-subway-tag-bg: #6594C2;
-        --sp-subway-tag-color: #ffffff;
 
         --sp-map-radius: 0;
         --sp-map-btn-bg: #1B1F23;
