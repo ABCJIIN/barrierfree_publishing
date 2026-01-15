@@ -125,10 +125,6 @@ main.traffic {
         .left-wrap {
             @include mi.flexbox(row, flex-start, center);
             gap: 16px;
-
-            .info-text {
-                display: none;
-            }
         }
 
         .date-wrap {
@@ -228,7 +224,6 @@ main.traffic {
             .left-wrap {
                 .info-text {
                     font-size: va.$font-20;
-                    display: flex; // 색상은 상위 변수 그대로 사용
                 }
             }
 

@@ -4155,9 +4155,6 @@ main.traffic .traffic-content .left-wrap {
   align-items: center;
   gap: 16px;
 }
-main.traffic .traffic-content .left-wrap .info-text {
-  display: none;
-}
 main.traffic .traffic-content .date-wrap time,
 main.traffic .traffic-content .date-wrap .weekday {
   font-size: 1.75rem;
@@ -4242,7 +4239,6 @@ main.traffic .traffic-content .info-text::before {
 }
 .mode-low-posture main.traffic .traffic-content .left-wrap .info-text {
   font-size: 1.25rem;
-  display: flex;
 }
 .mode-low-posture main.traffic .traffic-content .date-wrap time,
 .mode-low-posture main.traffic .traffic-content .date-wrap .weekday {
