@@ -331,8 +331,8 @@ function initCustomSelect() {
     }
 
     /* -----------------------------
-    * Tab/Shift+Tab: 옵션 내부 순환
-    * - wrap 순간에는 스크롤도 edge로 같이 이동
+    * Tab/Shift+Tab: 옵션 내부 이동
+    * - 무한 루프 제거: 끝에 도달하면 외부로 focus 이동
     * ----------------------------- */
     function cycleFocusWithinOptions($select, e) {
         var p = getParts($select);
@@ -344,13 +344,15 @@ function initCustomSelect() {
         var curIdx = $activeOpt && $activeOpt.length ? $opts.index($activeOpt) : -1;
 
         var backward = !!e.shiftKey;
-        e.preventDefault();
 
-        // 옵션이 아닌 곳에서 Tab 진입:
+        // [Case 1] 옵션 리스트 외부(Trigger 등)에서 Tab으로 처음 진입 시
         if (curIdx < 0) {
+            e.preventDefault(); // 기본 동작 막고 강제 진입
+
+            // Shift+Tab이면 마지막부터, Tab이면 처음부터 진입
             var entryIdx = backward ? ($opts.length - 1) : 0;
 
-            // 진입도 edge 정렬(특히 Shift+Tab으로 마지막 진입 시 아래로 맞춤)
+            // 진입 시 스크롤 위치 정렬
             scrollToEdge($select, backward ? "bottom" : "top");
 
             var $entry = $opts.eq(entryIdx);
@@ -359,30 +361,29 @@ function initCustomSelect() {
             return;
         }
 
-        var nextIdx = backward ? (curIdx - 1) : (curIdx + 1);
-
-        // wrap 발생 여부 판단
-        var didWrapToStart = (!backward && curIdx === $opts.length - 1);
-        var didWrapToEnd   = (backward && curIdx === 0);
-
-        if (nextIdx < 0) nextIdx = $opts.length - 1;
-        if (nextIdx >= $opts.length) nextIdx = 0;
-
-        // wrap이면 스크롤도 같이 edge로 이동
-        if (didWrapToStart) {
-            scrollToEdge($select, "top");
-        } else if (didWrapToEnd) {
-            scrollToEdge($select, "bottom");
+        // [Case 2] 리스트의 끝/시작에서 Tab을 눌렀을 때 (루프 제거 & 탈출)
+        if (!backward && curIdx === $opts.length - 1) {
+            // 마지막 옵션에서 Tab -> 외부 다음 요소로 이동 (기본 동작 허용)
+            // closeAllSelects(); // 목록 닫기
+            return; 
         }
 
+        if (backward && curIdx === 0) {
+            // 첫 번째 옵션에서 Shift+Tab -> 외부 이전 요소(Trigger 등)로 이동 (기본 동작 허용)
+            // closeAllSelects(); // 목록 닫기
+            return;
+        }
+
+        // [Case 3] 리스트 내부에서 한 칸씩 이동
+        e.preventDefault(); // 브라우저 기본 탭 이동 막음
+
+        var nextIdx = backward ? (curIdx - 1) : (curIdx + 1);
         var $target = $opts.eq(nextIdx);
+
         focusPreventScroll($target, p.$scroll);
 
-        // wrap이 아닐 때만 "한 칸" 보정
-        if (!didWrapToStart && !didWrapToEnd) {
-            revealByOneStep($select, $target, backward ? "up" : "down");
-        }
-
+        // 한 칸씩 스크롤 보정
+        revealByOneStep($select, $target, backward ? "up" : "down");
         updateMoveBtnState($select);
     }
 
@@ -638,8 +639,16 @@ function initCustomSelect() {
 
         if (!p.$trigger.hasClass("on")) return;
 
-        if ($(document.activeElement).is('button[role="option"]')) return;
+        var activeEl = document.activeElement;
+
+        // 포커스가 셀렉트 바깥이면 전역 트랩은 개입하지 않는다.
+        // (열린 채로 다음/이전 탭 요소로 자연스럽게 이동 가능)
+        if (!$(activeEl).closest($select).length) return;
+
+        // 옵션 자체에서의 Tab은 옵션 keydown이 처리 중이므로 중복 개입 금지
+        if ($(activeEl).is('button[role="option"]')) return;
 
         cycleFocusWithinOptions($select, e);
     });
+
 }

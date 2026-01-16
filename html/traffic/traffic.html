@@ -71,6 +71,7 @@
     <script src="../../assets/js/vendor/jquery-3.7.1.min.js"></script>
     <script src="../../assets/js/vendor/swiper-bundle.min.js"></script>
     <script src="../../assets/js/common.js"></script>
+    <script src="../../assets/js/focus.js"></script>
     <script src="../../assets/js/zoom.js"></script>
     <script src="../../assets/js/tab.js"></script>
     <script src="../../assets/js/select.js"></script>
@@ -79,12 +80,12 @@
     <script src="../../assets/js/volume.js"></script>
 </head>
 <body data-tts-summary="교통 안내 화면입니다. 항공편 실시간 목록을 확인할 수 있습니다. 상단 교통검색에서 출발·도착과 터미널을 변경할 수 있습니다. 현재 선택된 옵션은 항공, <?= $io_text; ?>, <?= $code_text; ?> 입니다.">
-    <div class="zoom-viewport" aria-label="확대 가능한 화면">
+    <div class="zoom-viewport" data-focus-loop="page" aria-label="확대 가능한 화면">
         <div class="zoom-move-wrap h917">
             <div class="zoom-canvas">
                 <div class="modal-background">
                 <!-- header -->
-                <header class="header">
+                <header class="header focus-inset" tabindex="0">
                     <div class="hd-inner">
                         <h1 class="logo">
                             <img src="/assets/images/logo.png" alt="SMART TOURIST INFORMATION">
@@ -112,7 +113,7 @@
                 <!-- //header -->
                 
                 <!-- sub header -->
-                <div class="sub-header">
+                <div class="sub-header focus-inset" tabindex="0">
                     <div class="sub-hd-inner">
                         <h2 class="page-title">교통</h2>
                     </div>
@@ -129,7 +130,7 @@
                             <span class="label">교통검색</span>
                         </button>
                         <!-- //1차 수정 -->
-                        <h3>
+                        <h3 tabindex="0">
                             <span class="traffic-type">항공</span>
                             <span class="traffic-direction">출발</span>
                             <span class="traffic-location">인천 T1</span>
@@ -139,14 +140,14 @@
 
                     <!-- 날짜/새로고침 + 테이블 영역 -->
                     <!-- 251205 1차 수정 : div => section으로 수정 -->
-                    <section class="traffic-content" tabindex="1" aria-label=" 2026년01월13일 항공편 목록입니다. 당일 자정 내에 운행되는 항공편만 표시됩니다.">
+                    <section class="traffic-content" aria-label=" 2026년01월13일 항공편 목록입니다. 당일 자정 내에 운행되는 항공편만 표시됩니다.">
                         <div class="traffic-toolbar">
                             <div class="left-wrap">
-                                <div class="date-wrap">
+                                <div class="date-wrap" tabindex="0">
                                     <time datetime="2026-01-13">2026-01-13</time>
                                     <span class="weekday">화요일</span>
                                 </div>
-                                <p class="info-text">당일 자정 내에 운행되는 항공편만 표시됩니다.</p>
+                                <p class="info-text" tabindex="0">당일 자정 내에 운행되는 항공편만 표시됩니다.</p>
                             </div>
                             <button type="button" class="refresh-btn" aria-label="항공편 새로 고침">
                                 <span class="icon" aria-hidden="true"></span>
@@ -167,7 +168,7 @@
                                     <col style="width:120px;">
                                 </colgroup>
                                 <!-- //1차 수정 -->
-                                <thead>
+                                <thead tabindex="0">
                                     <tr>
                                         <th scope="col">항공사</th>
                                         <th scope="col">운항 편명</th>
@@ -445,7 +446,7 @@
 
                     <!-- 교통 검색 모달 -->
                     <div class="modal traffic" aria-hidden="true" data-tts="교통편 검색을 위한 팝업입니다.">
-                        <div class="modal-content" role="dialog" aria-modal="true" tabindex="1" aria-labelledby="trafficModalTitle">
+                        <div class="modal-content" role="dialog" aria-modal="true" tabindex="0" aria-labelledby="trafficModalTitle">
                             <div id="trafficModalTitle" class="modal-title">
                                 <strong>교통</strong>
                             </div>

@@ -64,11 +64,8 @@
         width: calc(50% - 8px);
         height: 612px;
         @include mi.flexbox(column, flex-start, flex-start);
-        border-radius: 20px;
-        border: 3px solid var(--cg-card-border);
-        background: var(--cg-card-bg);
     }
-
+    
     .card-btn-link {
         position: relative;
         display: block;
@@ -76,6 +73,8 @@
         height: 100%;
         padding: 48px;
         border-radius: 20px;
+        border: 3px solid var(--cg-card-border);
+        background: var(--cg-card-bg);
     }
 
     .card-btn-title {
