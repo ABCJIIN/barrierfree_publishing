@@ -116,16 +116,28 @@ button {
   box-shadow: none;
 }
 
-/* 2) 키보드 사용 중일 때만 포커스 링 표시 */
+/* 2) 키보드 사용 중일 때만 포커스 링 표시 (기본 = 바깥) */
 html.is-keyboard-user :focus,
 html.is-keyboard-user :focus-visible {
   box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 5px #3B4CCF;
 }
 
-/* 3) 고대비 모드 + 키보드일 때 */
+/* 3) 고대비 모드 + 키보드일 때 (기본 = 바깥) */
 html.mode-high-contrast.is-keyboard-user :focus,
 html.mode-high-contrast.is-keyboard-user :focus-visible {
   box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 5px #FFFF2E;
+}
+
+/* 4) 안쪽 포커스가 필요한 요소만 */
+html.is-keyboard-user .focus-inset:focus,
+html.is-keyboard-user .focus-inset:focus-visible {
+  box-shadow: inset 0 0 0 3px #3B4CCF, inset 0 0 0 5px #FFFFFF;
+}
+
+/* 5) 고대비 + 안쪽 포커스 */
+html.mode-high-contrast.is-keyboard-user .focus-inset:focus,
+html.mode-high-contrast.is-keyboard-user .focus-inset:focus-visible {
+  box-shadow: inset 0 0 0 3px #FFFF2E, inset 0 0 0 5px #FFFFFF;
 }
 
 /* 스크린리더용 클래스 */
