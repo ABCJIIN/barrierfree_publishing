@@ -64,6 +64,39 @@ $(function () {
         });
     }
 
+    // footer에서 모달 열려있을 때도 포커싱 허용할 요소들
+    function getFooterFocusable() {
+        // 필요한 버튼만 딱 지정 (원하면 셀렉터 추가 가능)
+        const $footer = $('.footer');
+        if (!$footer.length) return $();
+
+        return $footer
+            .find('button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+            .filter(':visible')
+            .filter(function () {
+                var $el = $(this);
+                if ($el.is('[disabled]')) return false;
+                if ($el.attr('aria-hidden') === 'true') return false;
+                return true;
+            });
+    }
+
+    // 모달 오픈 시 실제 포커스가 순환할 "전체" 리스트 (모달 → footer 순서)
+    function getLoopFocusables() {
+        const $modalFocus = getFocusable($currentModal);
+        const $footerFocus = getFooterFocusable();
+
+        // 중복 제거(혹시 같은 요소가 잡힐 경우 대비)
+        const $all = $modalFocus.add($footerFocus);
+        const seen = new Set();
+        return $all.filter(function () {
+            const el = this;
+            if (seen.has(el)) return false;
+            seen.add(el);
+            return true;
+        });
+    }
+
     // 배경 포커스 막기
     function disableBackgroundFocus() {
         /*var $all = $(focusableSelector).filter(':visible');
@@ -87,6 +120,10 @@ $(function () {
             .find('.modal')
             .not($currentModal)
             .attr('inert', '');
+
+        // footer는 모달 중에도 포커스 가능해야 하므로 inert 해제
+        $('.footer').removeAttr('inert');
+        $('.footer').find('[inert]').removeAttr('inert');
     }
 
     // 배경 포커스 원복
@@ -293,24 +330,64 @@ $(function () {
 
         // Tab 포커스 트랩
         if (e.key === 'Tab') {
-            var $focusables = getFocusable($currentModal);
+            var $focusables = getLoopFocusables();
             if (!$focusables.length) return;
 
-            var $first = $focusables.first();
-            var $last = $focusables.last();
+            // 모달 요소만 따로 (경계 판단용)
+            var $modalFocus = getFocusable($currentModal);
+            var $footerFocus = getFooterFocusable();
+
+            if (!$modalFocus.length) return; // 모달에 포커스가 하나도 없으면 루프 의미 없음
+
+            var $firstModal  = $modalFocus.first();
+            var $lastModal   = $modalFocus.last();
+
+            // footer가 없으면 기존처럼 모달 내부에서만 트랩
+            if (!$footerFocus.length) {
+                var $first = $modalFocus.first();
+                var $last  = $modalFocus.last();
+                var active = document.activeElement;
+
+                if (e.shiftKey) {
+                    if (active === $first[0]) { e.preventDefault(); $last.focus(); }
+                } else {
+                    if (active === $last[0]) { e.preventDefault(); $first.focus(); }
+                }
+                return;
+            }
+
+            var $firstFooter = $footerFocus.first();
+            var $lastFooter  = $footerFocus.last();
+
             var active = document.activeElement;
 
             if (e.shiftKey) {
-                // Shift + Tab: 첫 요소에서 이전 → 마지막으로
-                if (active === $first[0]) {
+                // Shift+Tab (역방향)
+                // 1) 모달 첫 요소에서 Shift+Tab → footer 마지막으로
+                if (active === $firstModal[0]) {
                     e.preventDefault();
-                    $last.focus();
+                    $lastFooter.focus();
+                    return;
+                }
+                // 2) footer 첫 요소에서 Shift+Tab → 모달 마지막으로
+                if (active === $firstFooter[0]) {
+                    e.preventDefault();
+                    $lastModal.focus();
+                    return;
                 }
             } else {
-                // Tab: 마지막 요소에서 다음 → 첫 요소로
-                if (active === $last[0]) {
+                // Tab (정방향)
+                // 1) 모달 마지막 요소에서 Tab → footer 첫 요소로
+                if (active === $lastModal[0]) {
                     e.preventDefault();
-                    $first.focus();
+                    $firstFooter.focus();
+                    return;
+                }
+                // 2) footer 마지막 요소에서 Tab → 모달 첫 요소로
+                if (active === $lastFooter[0]) {
+                    e.preventDefault();
+                    $firstModal.focus();
+                    return;
                 }
             }
         }
