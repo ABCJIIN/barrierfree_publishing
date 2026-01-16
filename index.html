@@ -55,18 +55,19 @@
     <script src="./assets/js/vendor/jquery-3.7.1.min.js"></script>
     <script src="./assets/js/vendor/swiper-bundle.min.js"></script>
     <script src="./assets/js/common.js"></script>
+    <script src="./assets/js/focus.js"></script>
     <script src="./assets/js/zoom.js"></script>
     <script src="./assets/js/modal.js"></script>
     <script src="./assets/js/volume.js"></script>
     <script src="./assets/js/introSlide.js"></script>
 </head>
 <body data-tts-summary="스마트 관광 안내 메인 화면입니다. 모드를 선택할 수 있습니다. 좌우 화살표로 이동 후 확인 버튼을 누르세요.">
-    <div class="zoom-viewport" aria-label="확대 가능한 화면">
+    <div class="zoom-viewport" data-focus-loop="page" aria-label="확대 가능한 화면">
         <div class="zoom-move-wrap h1100">
             <div class="zoom-canvas">
                 <div class="modal-background">
                 <!-- header -->
-                <header class="header">
+                <header class="header focus-inset" tabindex="0">
                     <div class="hd-inner">
                         <h1 class="logo">
                             <img src="/assets/images/logo.png" alt="SMART TOURIST INFORMATION">
@@ -121,12 +122,12 @@
 
                                     <!-- 1번 슬라이드 : 이미지 -->
                                     <div class="swiper-slide">
-                                        <img src="./assets/intro_slide/UA_Intro01.png" tabindex="1" aria-label="서울 중구 투어패스 이미지 안내 포스터입니다." alt="서울 중구 투어패스 이미지">
+                                        <img src="./assets/intro_slide/UA_Intro01.png" tabindex="0" aria-label="서울 중구 투어패스 이미지 안내 포스터입니다." alt="서울 중구 투어패스 이미지">
                                     </div>
 
                                     <!-- 2번 슬라이드 : 이미지 -->
                                     <div class="swiper-slide slide02">
-                                        <img src="./assets/intro_slide/UA_Intro02.png" tabindex="1" aria-label="오픈포트 크리스마스 이미지 포스터입니다." alt="오픈포트 크리스마스 이미지">
+                                        <img src="./assets/intro_slide/UA_Intro02.png" tabindex="0" aria-label="오픈포트 크리스마스 이미지 포스터입니다." alt="오픈포트 크리스마스 이미지">
                                         <button type="button" aria-haspopup="dialog" class="slide-detail-btn" aria-label="오픈포트 크리스마스 상세 안내 보기">
                                             <span class="label">자세히 보기</span>
                                             <span class="icon" aria-hidden="true"></span>
@@ -135,7 +136,7 @@
 
                                     <!-- 3번 슬라이드 : 이미지 -->
                                     <div class="swiper-slide slide03">
-                                        <img src="./assets/intro_slide/UA_Intro03.png" tabindex="1" aria-label="코리아 썸머 뷰티세일 이미지 포스터입니다." alt="코리아 썸머 뷰티세일 이미지">
+                                        <img src="./assets/intro_slide/UA_Intro03.png" tabindex="0" aria-label="코리아 썸머 뷰티세일 이미지 포스터입니다." alt="코리아 썸머 뷰티세일 이미지">
                                         <button type="button" aria-haspopup="dialog" class="slide-detail-btn" aria-label="코리아 썸머 뷰티세일 상세 안내 보기">
                                             <span class="label">자세히 보기</span>
                                             <span class="icon" aria-hidden="true"></span>
@@ -296,7 +297,7 @@
 
                     <!-- 교통 검색 모달 -->
                     <div class="modal traffic" aria-hidden="true" data-tts="교통편 검색을 위한 팝업입니다.">
-                        <div class="modal-content" role="dialog" aria-modal="true" tabindex="1" aria-labelledby="trafficModalTitle">
+                        <div class="modal-content" role="dialog" aria-modal="true" tabindex="0" aria-labelledby="trafficModalTitle">
                             <div id="trafficModalTitle" class="modal-title">
                                 <strong>교통</strong>
                             </div>
@@ -416,17 +417,17 @@
                 <!-- 2번째 슬라이드 -->
                 <div class="modal slide-modal slide02" aria-hidden="true">
                     <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="introSlide02ModalTitle">
-                        <div class="img-wrap" tabindex="1">
+                        <div class="img-wrap" tabindex="0">
                             <img src="./assets/intro_slide/UA_Intro02.png" aria-label="오픈포트 크리스마스 이미지 포스터입니다." alt="오픈포트 크리스마스 이미지">
                         </div>
                         <div class="info-wrap">
-                            <h2 id="introSlide02ModalTitle" class="modal-title" tabindex="1">오픈 포트 크리스마스 : 불멍 (Open Port Christmas)</h2>
-                            <p class="detail-info" tabindex="1">
+                            <h2 id="introSlide02ModalTitle" class="modal-title" tabindex="0">오픈 포트 크리스마스 : 불멍 (Open Port Christmas)</h2>
+                            <p class="detail-info" tabindex="0">
                                 행사 · 공연 기간 : 2025.12.27 토요일 11:00 ~ 18:00<br>
                                 행사장소 : 인천광역시 중구 월미로 33 상상플랫폼 1883 개항광장<br>
                                 주최자 : 인천광역시, 주관사 : 인천관광공사
                             </p>
-                            <p class="detail-info" tabindex="1">
+                            <p class="detail-info" tabindex="0">
                                 크리스마스 감성 속에서 반려견과 함께 불멍을 즐기는<br>
                                 연말 힐링 축제로, 불멍 체험과 멍멍 놀이터,<br>
                                 유기견 기부에 참여하는 온기 나눔 이벤트를 운영할 예정입니다.
@@ -441,16 +442,16 @@
                 <!-- 3번째 슬라이드 -->
                 <div class="modal slide-modal slide03" aria-hidden="true">
                     <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="introSlide03ModalTitle">
-                        <div class="img-wrap" tabindex="1">
+                        <div class="img-wrap" tabindex="0">
                             <img src="./assets/intro_slide/UA_Intro03.png" aria-label="코리아 썸머 뷰티세일 이미지 포스터입니다." alt="코리아 썸머 뷰티세일 이미지">
                         </div>
                         <div class="info-wrap">
-                            <h2 id="introSlide03ModalTitle" class="modal-title" tabindex="1">KOREA SUMMER BEAUTY SALE</h2>
-                            <p class="detail-info" tabindex="1">
+                            <h2 id="introSlide03ModalTitle" class="modal-title" tabindex="0">KOREA SUMMER BEAUTY SALE</h2>
+                            <p class="detail-info" tabindex="0">
                                 행사 · 공연 기간 : 2023.07.20 목요일 ~ 2023.08.20 일요일<br>
                                 주최자 : 문화체육관광부, 주관사 : (재)한국방문의해위원회
                             </p>
-                            <p class="detail-info" tabindex="1">
+                            <p class="detail-info" tabindex="0">
                                 코리아뷰티페스티벌은 관광업계와 민간기업이 함께 참여하는<br>
                                 K-뷰티 테마의 외래 관광객 대상 축제로,<br>
                                 헤어·메이크업·패션·의료·웰니스 체험과 다양한 이벤트,<br>

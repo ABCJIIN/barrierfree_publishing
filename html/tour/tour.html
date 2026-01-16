@@ -13,6 +13,7 @@
     <script src="../../assets/js/vendor/jquery-3.7.1.min.js"></script>
     <script src="../../assets/js/vendor/swiper-bundle.min.js"></script>
     <script src="../../assets/js/common.js"></script>
+    <script src="../../assets/js/focus.js"></script>
     <script src="../../assets/js/zoom.js"></script>
     <script src="../../assets/js/tab.js"></script>
     <script src="../../assets/js/select.js"></script>
@@ -21,13 +22,13 @@
 </head>
 
 <body data-tts-summary="관광 목록입니다. 항목을 선택하세요.">
-    <div class="zoom-viewport" aria-label="확대 가능한 화면">
-        <div class="zoom-move-wrap h917">
+    <div class="zoom-viewport" data-focus-loop="page" aria-label="확대 가능한 화면">
+        <div class="zoom-move-wrap h917">   
         <div class="zoom-canvas">
             <div class="modal-background">
 
             <!-- header -->
-            <header class="header">
+            <header class="header focus-inset" tabindex="0">
                 <div class="hd-inner">
                     <h1 class="logo">
                         <img src="/assets/images/logo.png" alt="SMART TOURIST INFORMATION">
@@ -55,7 +56,7 @@
             <!-- //header -->
 
             <!-- sub header -->
-            <div class="sub-header">
+            <div class="sub-header focus-inset" tabindex="0">
                 <div class="sub-hd-inner">
                 <h2 class="page-title">관광</h2>
                 </div>
@@ -169,7 +170,7 @@
                                 </div>
                                 <!-- //20260112 : 구조 수정 -->
                                 <!-- //1차 수정 -->
-                                <p class="info-text">• 현재 위치와 가까운 순으로 표시됩니다.</p>
+                                <p class="info-text" tabindex="0">• 현재 위치와 가까운 순으로 표시됩니다.</p>
                             </div>
                             <div class="dimmed" aria-hidden="true"></div>
                         </div>
@@ -527,7 +528,7 @@
 
                 <!-- 교통 검색 모달 -->
                 <div class="modal traffic" aria-hidden="true" data-tts="교통편 검색을 위한 팝업입니다.">
-                    <div class="modal-content" role="dialog" aria-modal="true" tabindex="1" aria-labelledby="trafficModalTitle">
+                    <div class="modal-content" role="dialog" aria-modal="true" tabindex="0" aria-labelledby="trafficModalTitle">
                         <div id="trafficModalTitle" class="modal-title">
                             <strong>교통</strong>
                         </div>

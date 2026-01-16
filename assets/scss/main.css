@@ -2296,11 +2296,11 @@ html:lang(en) .detail-page .base-info-sec .info-list .info-item .info-desc {
 .detail-page .base-info-sec .map-wrap {
   border-radius: var(--sp-map-radius);
   border: 1px solid var(--sp-border);
-  overflow: hidden;
 }
 .detail-page .base-info-sec .map-wrap .map-area {
   width: 100%;
   height: 304px;
+  z-index: 2;
 }
 .detail-page .base-info-sec .map-wrap .map-control {
   position: relative;
@@ -2429,12 +2429,19 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  gap: 16px;
+}
+.detail-page .qr-sec .qr-item .img-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
 }
 .detail-page .qr-sec .qr-item .qr-logo {
   display: block;
   width: 60px;
   height: 54px;
-  margin-bottom: 12px;
 }
 .detail-page .qr-sec .qr-item .qr-logo.google {
   background: var(--sp-icon-qr-google) no-repeat center/contain;
@@ -2446,7 +2453,6 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   width: 88px;
   height: 88px;
   padding: 5px;
-  margin-bottom: 16px;
   border: 1px solid var(--sp-border);
   border-radius: 4px;
   background: var(--sp-qr-bg);
@@ -3777,9 +3783,6 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  border-radius: 20px;
-  border: 3px solid var(--cg-card-border);
-  background: var(--cg-card-bg);
 }
 .main.category .card-btn-link {
   position: relative;
@@ -3788,6 +3791,8 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   height: 100%;
   padding: 48px;
   border-radius: 20px;
+  border: 3px solid var(--cg-card-border);
+  background: var(--cg-card-bg);
 }
 .main.category .card-btn-title {
   font-size: 3rem;

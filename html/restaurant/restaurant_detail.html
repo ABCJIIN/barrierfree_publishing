@@ -71,6 +71,7 @@
     <script src="../../assets/js/vendor/jquery-3.7.1.min.js"></script>
     <script src="../../assets/js/vendor/swiper-bundle.min.js"></script>
     <script src="../../assets/js/common.js"></script>
+    <script src="../../assets/js/focus.js"></script>
     <script src="../../assets/js/zoom.js"></script>
     <script src="../../assets/js/tab.js"></script>
     <script src="../../assets/js/select.js"></script>
@@ -80,12 +81,12 @@
     <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=1mizviwsce"></script>
 </head>
 <body data-tts-summary="식당 상세 화면입니다. 음식점 소개와 위치, 이용 정보를 확인할 수 있습니다. 뒤로 가기 버튼으로 목록으로 돌아갈 수 있습니다. 현재 선택한 음식점은 <?= $row['store_name']; ?> 입니다.">
-    <div class="zoom-viewport" aria-label="확대 가능한 화면">
+    <div class="zoom-viewport" data-focus-loop="page" aria-label="확대 가능한 화면">
         <div class="zoom-move-wrap h917">
             <div class="zoom-canvas">
                 <div class="modal-background">
                 <!-- header -->
-                <header class="header">
+                <header class="header focus-inset" tabindex="0">
                     <div class="hd-inner">
                         <h1 class="logo">
                             <img src="/assets/images/logo.png" alt="SMART TOURIST INFORMATION">
@@ -113,7 +114,7 @@
                 <!-- //header -->
                 
                 <!-- sub header -->
-                <div class="sub-header">
+                <div class="sub-header focus-inset" tabindex="0">
                     <div class="sub-hd-inner">
                         <h2 class="page-title">음식점</h2>
                     </div>
@@ -125,7 +126,7 @@
                     <!-- 251205 1차 수정 : 버튼 추가 -->
                     <div class="detail-title">
                         <button type="button" class="nav-btn prev" aria-label="뒤로가기 버튼"></button>
-                        <h3>삼호복집 </h3>
+                        <h3 tabindex="0">삼호복집 </h3>
                     </div>
                     <!-- //1차 수정 -->
                     <div class="scroll-sec">
@@ -133,22 +134,22 @@
                         <div class="sec-wrap">
                             <section class="base-info-sec">
                                 <div class="sec-inner">
-                                    <div class="info-wrap" tabindex="1" aria-label="기본정보입니다. 주소, 전화번호, 대표메뉴를 확인할 수 있습니다.">
+                                    <div class="info-wrap" aria-label="기본정보입니다. 주소, 전화번호, 대표메뉴를 확인할 수 있습니다.">
                                         <h4 class="section-title sr-only">기본정보</h4>
                                         <ul class="info-list row04">
-                                            <li class="info-item" tabindex="1" aria-label="주소 : 서울특별시 서대문구 연세로5다길 10">
+                                            <li class="info-item" tabindex="0" aria-label="주소 : 서울특별시 서대문구 연세로5다길 10">
                                                 <span class="info-term">주소</span>
                                                 <span class="info-desc">서울특별시 서대문구 연세로5다길 10</span>
                                             </li>
-                                            <li class="info-item" tabindex="1" aria-label="전화번호 : 02-337-9019">
+                                            <li class="info-item" tabindex="0" aria-label="전화번호 : 02-337-9019">
                                                 <span class="info-term">전화</span>
                                                 <span class="info-desc">02-337-9019</span>
                                             </li>
-                                            <li class="info-item" tabindex="1" aria-label="대표메뉴 : 삼코스">
+                                            <li class="info-item" tabindex="0" aria-label="대표메뉴 : 삼코스">
                                                 <span class="info-term">대표메뉴</span>
                                                 <span class="info-desc">삼코스</span>
                                             </li>
-                                            <li class="info-item" tabindex="1" aria-label="인근 지하철역 : 4호선동대문 1호선동대문 ">
+                                            <li class="info-item" tabindex="0" aria-label="인근 지하철역 : 4호선동대문 1호선동대문 ">
                                                 <span class="info-term">지하철역</span>
                                                 <div class="subway-wrap">
                                                     <span class="info-desc subway">
@@ -167,8 +168,8 @@
                                             </li>
                                         </ul>
                                     </div>
-                                    <div class="map-wrap" role="group" aria-label="위치 안내 지도" tabindex="1">
-                                        <div class="map-area" id="map" aria-hidden="true" style="position: relative; overflow: hidden; background: rgb(248, 249, 250);">
+                                    <div class="map-wrap" role="group" aria-label="위치 안내 지도">
+                                        <div class="map-area" id="map" style="position: relative; overflow: hidden; background: rgb(248, 249, 250);">
                                             <!-- 지도 API 또는 정적 이미지 영역 -->
                                             <div style="position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; overflow: visible; width: 100%; height: 100%; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); z-index: 0; cursor: url(&quot;https://ssl.pstatic.net/static/maps/mantle/2x/openhand.cur&quot;), default;"><div style="position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; overflow: visible; width: 100%; height: 100%; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); z-index: 0;"><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 1;"><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: none; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 0; user-select: none;"></div><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 1; user-select: none;"><div style="position: absolute; top: 0px; left: 0px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; display: block; width: 0px; height: 0px; overflow: visible; box-sizing: content-box !important;"><div draggable="false" unselectable="on" style="position: absolute; top: -265px; left: 251px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27938/12689@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 247px; left: -5px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27937/12691@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -9px; left: 251px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27938/12690@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -9px; left: -5px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27937/12690@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 247px; left: 251px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27938/12691@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -265px; left: -5px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27937/12689@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -265px; left: 507px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27939/12689@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 247px; left: -261px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27936/12691@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -9px; left: 507px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27939/12690@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -9px; left: -261px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27936/12690@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 247px; left: 507px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27939/12691@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -265px; left: -261px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; transform: translateZ(0px); opacity: 1; width: 256px; height: 256px;"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1767925527/15/27936/12689@2x.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div></div></div><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 100;"><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 101;"></div><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 103;"><div title="" style="position: absolute; overflow: hidden; box-sizing: content-box !important; cursor: inherit; left: 216px; top: 118px; width: 22px; height: 33px;"><map name="nmarker-FF7D8753-9FAC-464F-B1FC-A779D3D0BDF7"><area href="#" shape="poly" coords="11,0,9,0,6,1,4,2,2,4,0,8,0,12,1,14,2,16,5,19,5,20,6,23,8,26,9,30,9,34,13,34,13,30,14,26,16,23,17,20,17,19,20,16,21,14,22,12,22,12,22,8,20,4,18,2,16,1,13,0" alt="마커의 경위도는 126.934995686228,37.5565239920929 입니다." style="display: block; cursor: pointer;"></map><img draggable="false" unselectable="on" src="https://ssl.pstatic.net/static/maps/mantle/2x/marker-default.png" alt="" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; position: absolute; cursor: inherit; width: 22px; height: 33px; left: 0px; top: 0px;"><img src="https://ssl.pstatic.net/static/maps/mantle/2x/dot.gif" alt="" usemap="#nmarker-FF7D8753-9FAC-464F-B1FC-A779D3D0BDF7" style="position: absolute; border: 0px; left: 0px; top: 0px; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; user-select: none; width: 22px; height: 33px;"></div></div><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 106;"></div></div></div><div style="position: absolute; display: none; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; overflow: visible; width: 100%; height: 100%; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); background-color: rgb(255, 255, 255); z-index: 10000; opacity: 0.5;"></div></div></div><div style="position: absolute; z-index: 100; margin: 0px; padding: 0px; pointer-events: none; bottom: 0px; right: 0px;"><div style="border: 0px none; margin: -3px 0px 0px; padding: 0px; pointer-events: none; float: right; height: 20px;"><div style="position: relative; width: 79px; height: 14px; margin: 0px 12px 6px 2px; overflow: hidden; pointer-events: auto;"><span style="display: block; margin: 0px; padding: 0px 4px; text-align: center; font-size: 10px; line-height: 11px; font-family: Helvetica, AppleSDGothicNeo-Light, nanumgothic, NanumGothic, 나눔고딕, Dotum, 돋움, sans-serif; font-weight: 700; color: rgb(34, 34, 37); text-shadow: rgba(255, 255, 255, 0.8) -1px 0px, rgba(255, 255, 255, 0.8) 0px 1px, rgba(255, 255, 255, 0.8) 1px 0px, rgba(255, 255, 255, 0.8) 0px -1px;">300m</span><img src="https://ssl.pstatic.net/static/maps/mantle/2x/new-scale-normal-b.png" width="73" height="3" alt="" style="position: absolute; left: 3px; bottom: 0px; z-index: 2; display: block; width: 73px; height: 3px; overflow: hidden; margin: 0px; padding: 0px; border: 0px none; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important;"><img src="https://ssl.pstatic.net/static/maps/mantle/2x/new-scale-normal-l.png" width="3" height="8" alt="" style="position:absolute;left:0;bottom:0;z-index:2;display:block;width:3px;height:8px;overflow:hidden;margin:0;padding:0;border:0 none;max-width:none !important;max-height:none !important;min-width:0 !important;min-height:0 !important;"><img src="https://ssl.pstatic.net/static/maps/mantle/2x/new-scale-normal-r.png" width="3" height="8" alt="" style="position:absolute;right:0;bottom:0;z-index:2;display:block;width:3px;height:8px;overflow:hidden;margin:0;padding:0;border:0 none;max-width:none !important;max-height:none !important;min-width:0 !important;min-height:0 !important;"></div></div><div style="border: 0px none; margin: 0px; padding: 0px; pointer-events: none; float: right;"><a href="https://ssl.pstatic.net/static/maps/mantle/notice/legal.html" target="_blank" style="display: block; width: 45px; height: 10px; overflow: hidden; margin: 0px 5px 7px 12px; pointer-events: auto;"><img src="https://ssl.pstatic.net/static/maps/mantle/2x/new-naver-logo-normal.png" width="45" height="10" alt="NAVER" style="display:block;width:45px;height:10px;overflow:hidden;border:0 none;margin:0;padding:0;max-width:none !important;max-height:none !important;min-width:0 !important;min-height:0 !important;"></a></div></div><div style="position: absolute; z-index: 100; margin: 0px; padding: 0px; pointer-events: none; bottom: 0px; left: 0px;"><div style="border: 0px none; margin: 0px; padding: 0px; pointer-events: none; float: left; height: 19px;"><div class="map_copyright" style="margin: 0px; padding: 0px 0px 2px 10px; height: 19px; line-height: 19px; color: rgb(68, 68, 68); font-family: Helvetica, AppleSDGothicNeo-Light, nanumgothic, NanumGothic, 나눔고딕, Dotum, 돋움, sans-serif; font-size: 11px; clear: both; white-space: nowrap; pointer-events: none;"><div style="float: left;"><span style="white-space: pre; color: rgb(68, 68, 68);">© NAVER Corp.</span></div><a href="#" style="font-family: Helvetica, AppleSDGothicNeo-Light, nanumgothic, NanumGothic, 나눔고딕, Dotum, 돋움, sans-serif; font-size: 11px; line-height: 19px; margin: 0px 0px 0px 5px; padding: 0px; color: rgb(68, 68, 68); float: left; pointer-events: auto; text-decoration: underline; display: none;">더보기</a><div style="float: left;"><a target="_blank" href="http://www.openstreetmap.org/copyright" style="pointer-events: auto; white-space: pre; display: none; color: rgb(68, 68, 68);"> /OpenStreetMap</a></div></div></div></div><div style="border: 1px solid rgb(41, 41, 48); background: rgb(255, 255, 255); padding: 15px; color: rgb(51, 51, 51); position: absolute; font-size: 11px; line-height: 1.5; clear: both; display: none; max-width: 350px !important; max-height: 300px !important;"><h5 style="font-size: 12px; margin-top: 0px; margin-bottom: 10px;">지도 데이터</h5><a href="#" style="position: absolute; top: 8px; right: 8px; width: 14px; height: 14px; font-size: 14px; line-height: 14px; display: block; overflow: hidden; color: rgb(68, 68, 68); text-decoration: none; font-weight: bold; text-align: center;">x</a><div><span style="white-space: pre; color: rgb(68, 68, 68); float: left;">© NAVER Corp.</span><a target="_blank" href="http://www.openstreetmap.org/copyright" style="pointer-events: auto; white-space: pre; color: rgb(68, 68, 68); float: left; display: none;"> /OpenStreetMap</a></div></div>
                                         </div>
@@ -194,11 +195,11 @@
                         </div>
     
                         <!-- QR 안내 -->
-                        <div class="sec-wrap" tabindex="1" aria-label="QR코드를 스캔해 모바일에서 추가 정보를 확인할 수 있습니다.">
+                        <div class="sec-wrap" aria-label="QR코드를 스캔해 모바일에서 추가 정보를 확인할 수 있습니다.">
                             <!-- 260113 퍼블 수정 -->
                             <section class="qr-sec">
                                 <div class="sec-inner">
-                                    <div class="qr-info-wrap">
+                                    <div class="qr-info-wrap" tabindex="0">
                                         <h4 class="section-title">
                                             QR코드 스캔을 통해 모바일에서도 추가 정보를 확인하세요.
                                         </h4>
@@ -217,16 +218,20 @@
                                     <div class="qr-wrap">
                                         <ul class="qr-list">
                                             <li class="qr-item">
-                                                <span class="qr-logo google" aria-hidden="true"></span>
-                                                <div class="qr-code" tabindex="1" aria-label="구글 지도 QR코드입니다.">
-                                                    <img src="../../assets/images/dummy/google_maps_qr.png" alt="구글 지도 위치 정보 QR코드">
+                                                <div class="img-wrap" tabindex="0">
+                                                    <span class="qr-logo google" aria-hidden="true"></span>
+                                                    <div class="qr-code" aria-label="구글 지도 QR코드입니다.">
+                                                        <img src="../../assets/images/dummy/google_maps_qr.png" alt="구글 지도 위치 정보 QR코드">
+                                                    </div>
                                                 </div>
                                                 <button type="button" class="qr-zoom-btn google" aria-haspopup="dialog" aria-label="구글 지도 QR코드 크게 보기">크게보기</button>
                                             </li>
                                             <li class="qr-item">
-                                                <span class="qr-logo naver" aria-hidden="true"></span>
-                                                <div class="qr-code" tabindex="1" aria-label="네이버 지도 QR코드입니다.">
-                                                    <img src="../../assets/images/dummy/naver_map_qr.png" alt="네이버 지도 위치 정보 QR코드">
+                                                <div class="img-wrap" tabindex="0">
+                                                    <span class="qr-logo naver" aria-hidden="true"></span>
+                                                    <div class="qr-code" aria-label="네이버 지도 QR코드입니다.">
+                                                        <img src="../../assets/images/dummy/naver_map_qr.png" alt="네이버 지도 위치 정보 QR코드">
+                                                    </div>
                                                 </div>
                                                 <button type="button" class="qr-zoom-btn naver" aria-haspopup="dialog" aria-label="네이버 지도 QR코드 크게 보기">크게보기</button>
                                             </li>
@@ -238,47 +243,60 @@
                         </div>
     
                         <!-- 상세 정보 & 무장애 편의정보 -->
-                        <div class="sec-wrap" tabindex="1" aria-label="상세정보입니다. 상세정보 신촌 한식 맛집, 풍성한 복코스 다국어메뉴판,예약가능,테이크아웃가능,무료주차,스마트오더,남녀화장실분리 서비스 제공. 영업시간 : 월요일: 11:30-22:00, 화요일: 11:30-22:00, 수요일: 11:30-22:00, 목요일: 11:30-22:00, 금요일: 11:30-22:00, 토요일: 11:30-22:00 ">
+                        <div class="sec-wrap">
                             <section class="detail-sec">
                                 <div class="sec-inner">
-                                    <h4 class="section-title">상세정보</h4>
-                                    <p class="detail-text">
-                                        신촌 한식 맛집, 풍성한 복코스<br>
-                                        다국어메뉴판,예약가능,테이크아웃가능,무료주차,스마트오더,남녀화장실분리
-                                    </p>
+                                    <h4 class="section-title" tabindex="0">상세정보</h4>
+                                    <div class="story-block" tabindex="0" aria-label="화계사는 원래 부허동이라는 곳에 보덕암이라는 암자였으며, 현재 화계사 자리로 이전하여 조선 중종 17년(1522년)에 신월대사가 창건하였다. 광해군 10년인 1618년 화재로 모두 소실되었다가 다음 해에 도월스님에 의해 중건되었다. 백운봉(白雲峰 836.5m), 인수봉(人壽峰 810.5m), 만경봉(萬鏡峰 787.0m)으로 북한산의 핵심을 이루고 있는 삼각산(三角山)의 동남쪽으로, 칼바위 능선을 지나 흘러내린 끝자락에자리 잡고 있으며, 도심과 가깝고 주택가와 인접해 있으면서도 숲과 계곡이 감싸 안아 자연에서 주는 편안함과, 고즈넉한 산사의 정취를 느낄 수 있는 강북구의 대표적인 사찰이다.">
+                                        <p class="detail-text">화계사는 원래 부허동이라는 곳에 보덕암이라는 암자였으며, 현재 화계사 자리로 이전하여 조선 중종 17년(1522년)에 신월대사가 창건하였다. 광해군 10년인 1618년 화재로 모두 소실되었다가 다음 해에 도월스님에 의해 중건되었다. 백운봉(白雲峰 836.5m), 인수봉(人壽峰 810.5m), 만경봉(萬鏡峰 787.0m)으로 북한산의 핵심을 이루고 있는 삼각산(三角山)의 동남쪽으로, 칼바위 능선을 지나 흘러내린 끝자락에자리 잡고 있으며, 도심과 가깝고 주택가와 인접해 있으면서도 숲과 계곡이 감싸 안아 자연에서 주는 편안함과, 고즈넉한 산사의 정취를 느낄 수 있는 강북구의 대표적인 사찰이다.</p>
+                                    </div>
+                                    <div class="story-block" tabindex="0" aria-label="1866년 용선스님과 범운스님이 지은 건물들이 지금까지 내려오고 있으며, 명부전의 지장보살과 시왕은 특히 유명하다. 이 조각들은 고려 말엽의 나옹스님이 정교하게 깎은 작품들로서, 1877년 조대비가 화계사에 안치했다고 한다. 조선시대에는 국태민안을 빌던 왕가 사람들의 출입이 많아 궁궐이라고 불려질 정도였으며, 대원군은 이곳 골짜기에 있는 오탁천약수로 피부병을 고치기 위하여  이 절에 머물렀기 때문에 대원군의 글씨를  비롯해서 그와의 인연이 많이 얽혀 있다.">
+                                        <p class="detail-text">1866년 용선스님과 범운스님이 지은 건물들이 지금까지 내려오고 있으며, 명부전의 지장보살과 시왕은 특히 유명하다. 이 조각들은 고려 말엽의 나옹스님이 정교하게 깎은 작품들로서, 1877년 조대비가 화계사에 안치했다고 한다. 조선시대에는 국태민안을 빌던 왕가 사람들의 출입이 많아 궁궐이라고 불려질 정도였으며, 대원군은 이곳 골짜기에 있는 오탁천약수로 피부병을 고치기 위하여  이 절에 머물렀기 때문에 대원군의 글씨를  비롯해서 그와의 인연이 많이 얽혀 있다.</p>
+                                    </div>
+                                    <div class="story-block" tabindex="0" aria-label="현재 화계사는 숭산스님에 의해 시작된 관음국제선원의 산실로서 외국인 승려들과 불자들이 이곳에서 수행하고 있다. 규모는 크지 않지만 소나무, 전나무, 느티나무에 둘러싸여 이곳을 찾는 이들의 마음을 평온하게 만들어 준다. 또한, 화계사에는 화계사를 직접 체험 해 볼 수 있는 템플스테이 프로그램이 마련되어 있다.">
+                                        <p class="detail-text">현재 화계사는 숭산스님에 의해 시작된 관음국제선원의 산실로서 외국인 승려들과 불자들이 이곳에서 수행하고 있다. 규모는 크지 않지만 소나무, 전나무, 느티나무에 둘러싸여 이곳을 찾는 이들의 마음을 평온하게 만들어 준다. 또한, 화계사에는 화계사를 직접 체험 해 볼 수 있는 템플스테이 프로그램이 마련되어 있다.</p>
+                                    </div>
+                                    <div class="story-block" tabindex="0" aria-label="템플스테이(Templestay)는 한국의 전통사찰에 머물면서 사찰의 일상생활을 체험하고 한국 불교의 전통 문화와 수행 정신을 체험하는 프로그램으로, 도시와 매우 근접해 있으면서도 깊은 산사의 체험을 할 수 있는 것이 화계사 템플스테이의 특징이다. 다양한 필요에 맞추어 체험형, 휴식형, 당일형 프로그램 등이 준비되어 있다.">
+                                        <p class="detail-text">템플스테이(Templestay)는 한국의 전통사찰에 머물면서 사찰의 일상생활을 체험하고 한국 불교의 전통 문화와 수행 정신을 체험하는 프로그램으로, 도시와 매우 근접해 있으면서도 깊은 산사의 체험을 할 수 있는 것이 화계사 템플스테이의 특징이다. 다양한 필요에 맞추어 체험형, 휴식형, 당일형 프로그램 등이 준비되어 있다.</p>
+                                    </div>
                                 </div>
                             </section>
-                            <section class="detail-sec">
+                            <section class="access-sec">
                                 <div class="sec-inner">
-                                    <h4 class="section-title">영업시간</h4>
-                                    <p class="detail-text">
-                                        월요일: 11:30-22:00, 화요일: 11:30-22:00, 수요일: 11:30-22:00, 목요일: 11:30-22:00, 금요일: 11:30-22:00, 토요일: 11:30-22:00
-                                    </p>
+                                    <h4 class="section-title" tabindex="0">무장애 편의정보</h4>
+                                    <div class="access-wrap">
+                                        <div class="access-item" tabindex="0">
+                                            <h5 class="access-title">지체장애</h5>
+                                            <ul class="access-list">
+                                                <li><span class="icon_parking"></span>장애인 주차장 있음(8대)_무장애 편의시설</li>
+                                                <li><span class="icon_publictransport"></span>출입구까지 턱이 없어 휠체어 접근 가능함</li>
+                                                <li><span class="icon_exit"></span>주출입구는 턱이 없어 휠체어 접근 가능함</li>
+                                                <li><span class="icon_elevator"></span>엘리베이터 있음</li>
+                                                <li><span class="icon_restroom"></span>장애인 화장실 있음</li>
+                                                <li><span class="icon_auditorium"></span>장애인 전용 관람석 있음(4석)</li>
+                                            </ul>
+                                        </div>
+                                        <div class="access-item" tabindex="0">
+                                            <h5 class="access-title">시각장애</h5>
+                                            <ul class="access-list">
+                                                <li><span class="icon_braileblock"></span>점자블록 있음(주요시설 앞)_시각장애인 편의시설</li>
+                                                <li><span class="icon_audioguide"></span>음성안내기 있음</li>
+                                                <li><span class="icon_brailepromotion"></span>점자안내판 있음</li>
+                                            </ul>
+                                        </div>
+                                        <div class="access-item" tabindex="0">
+                                            <h5 class="access-title">영유아가족</h5>
+                                            <ul class="access-list">
+                                                <li><span class="icon_lactationroom"></span>수유실 있음(1층 중정 화장실 옆)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </section>
                         </div>
                     </div>
                 </main>
                 <!-- //main -->
-    
-                <!-- floating button -->
-                <div class="floating-btn">
-                    <div class="btn-wrap prev">
-                        <button type="button" class="sec-move-btn prev" aria-label="이전 섹션으로 이동">
-                            <span class="icon" aria-hidden="true"></span>
-                            <span class="label">이전</span>
-                        </button>
-                    </div>
-                    <div class="btn-wrap next">
-                        <!-- 251205 1차 수정 : icon / label 순서 변경 -->
-                        <button type="button" class="sec-move-btn next" aria-label="다음 섹션으로 이동">
-                            <span class="icon" aria-hidden="true"></span>
-                            <span class="label">다음</span>
-                        </button>
-                        <!-- //1차 수정 -->
-                    </div>
-                </div>
-                <!-- //floating button -->
 
                 <!-- bottom nav -->
                 <nav class="bottom-nav" aria-label="하단 주요 메뉴">
@@ -390,7 +408,7 @@
 
                     <!-- 교통 검색 모달 -->
                     <div class="modal traffic" aria-hidden="true" data-tts="교통편 검색을 위한 팝업입니다.">
-                        <div class="modal-content" role="dialog" aria-modal="true" tabindex="1" aria-labelledby="trafficModalTitle">
+                        <div class="modal-content" role="dialog" aria-modal="true" tabindex="0" aria-labelledby="trafficModalTitle">
                             <div id="trafficModalTitle" class="modal-title">
                                 <strong>교통</strong>
                             </div>
@@ -533,6 +551,25 @@
                     </div>
                 </footer>
                 <!-- //footer -->
+
+                <!-- floating button -->
+                <div class="floating-btn">
+                    <div class="btn-wrap prev">
+                        <button type="button" class="sec-move-btn prev" aria-label="이전 섹션으로 이동">
+                            <span class="icon" aria-hidden="true"></span>
+                            <span class="label">이전</span>
+                        </button>
+                    </div>
+                    <div class="btn-wrap next">
+                        <!-- 251205 1차 수정 : icon / label 순서 변경 -->
+                        <button type="button" class="sec-move-btn next" aria-label="다음 섹션으로 이동">
+                            <span class="icon" aria-hidden="true"></span>
+                            <span class="label">다음</span>
+                        </button>
+                        <!-- //1차 수정 -->
+                    </div>
+                </div>
+                <!-- //floating button -->
             </div>
 
             <!-- 251215 로딩화면 추가 -->
