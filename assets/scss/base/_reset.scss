@@ -137,6 +137,13 @@ html.mode-high-contrast.is-keyboard-user .focus-inset:focus-visible {
         inset 0 0 0 5px #FFFFFF;
 }
 
+/* 6) table의 tr에 포커스 (row 전용 예외 처리) */
+html.is-keyboard-user tr[tabindex]:focus,
+html.is-keyboard-user tr[tabindex]:focus-visible {
+    position: relative;
+    transform: translateZ(0);
+}
+
 /* 스크린리더용 클래스 */
 .sr-only {
     position: absolute !important;

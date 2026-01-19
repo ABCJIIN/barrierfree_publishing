@@ -86,19 +86,13 @@
 
             .info-item {
                 width: 100%;
+                height: 120px;
                 @include mi.flexbox(row, flex-start, center);
                 gap: 8px;
                 border-bottom: 1px solid var(--sp-border);
 
-                &:first-child {
-                    height: 120px;
-                }
-
-                &:nth-child(2) {
-                    height: 80px;
-                }
-
                 &:last-child {
+                    height: auto;
                     min-height: 120px;
                     padding: 24px 16px 24px 0;
                     border-bottom: 0;
@@ -149,6 +143,13 @@
                         letter-spacing: -0.02em;
                         border-radius: 100px;
                     }
+                }
+            }
+
+            /* 관광 - 지하철 노선도 4개 이상인 경우 */
+            &.subway-multi {
+                .info-item:nth-child(2) {
+                    height: 80px;
                 }
             }
 

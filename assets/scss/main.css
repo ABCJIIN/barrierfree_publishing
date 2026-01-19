@@ -140,6 +140,13 @@ html.mode-high-contrast.is-keyboard-user .focus-inset:focus-visible {
   box-shadow: inset 0 0 0 3px #FFFF2E, inset 0 0 0 5px #FFFFFF;
 }
 
+/* 6) table의 tr에 포커스 (row 전용 예외 처리) */
+html.is-keyboard-user tr[tabindex]:focus,
+html.is-keyboard-user tr[tabindex]:focus-visible {
+  position: relative;
+  transform: translateZ(0);
+}
+
 /* 스크린리더용 클래스 */
 .sr-only {
   position: absolute !important;
@@ -1235,6 +1242,9 @@ html:lang(en) .tb-wrap tbody tr td:nth-child(2), html:lang(en) .tb-wrap tbody tr
 .subway-tag.line-kk {
   background-color: #F5A200;
 } /* 수인분당선 */
+.subway-tag.line-ui {
+  background-color: #B0BE47;
+} /* 우이신설역 */
 /* 부산 도시철도 */
 .subway-tag.line-b1 {
   background-color: #F06A00;
@@ -1779,7 +1789,7 @@ html:lang(en).mode-low-posture .bottom-nav .nav-btn .label {
   bottom: 100px;
 }
 .zoom-viewport.is-active .floating-btn {
-  bottom: 219px;
+  bottom: 336px;
 }
 .zoom-viewport .zoom-move-wrap {
   position: relative;
@@ -2217,10 +2227,12 @@ html:lang(en).mode-low-posture .zoom-viewport .viewport-controller .zoom-control
 .detail-page .base-info-sec .info-list {
   border-top: 1px solid var(--sp-border);
   border-bottom: 1px solid var(--sp-border);
+  /* 관광 - 지하철 노선도 4개 이상인 경우 */
   /* 음식점 */
 }
 .detail-page .base-info-sec .info-list .info-item {
   width: 100%;
+  height: 120px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -2228,13 +2240,8 @@ html:lang(en).mode-low-posture .zoom-viewport .viewport-controller .zoom-control
   gap: 8px;
   border-bottom: 1px solid var(--sp-border);
 }
-.detail-page .base-info-sec .info-list .info-item:first-child {
-  height: 120px;
-}
-.detail-page .base-info-sec .info-list .info-item:nth-child(2) {
-  height: 80px;
-}
 .detail-page .base-info-sec .info-list .info-item:last-child {
+  height: auto;
   min-height: 120px;
   padding: 24px 16px 24px 0;
   border-bottom: 0;
@@ -2288,6 +2295,9 @@ html:lang(en) .detail-page .base-info-sec .info-list .info-item .info-desc {
   color: #fff;
   letter-spacing: -0.02em;
   border-radius: 100px;
+}
+.detail-page .base-info-sec .info-list.subway-multi .info-item:nth-child(2) {
+  height: 80px;
 }
 .detail-page .base-info-sec .info-list.row04 .info-item {
   height: 90px;
