@@ -224,7 +224,18 @@
     .lang-sec {
         margin-bottom: 31px;
 
+        .title-wrap {
+            position: relative;
+            @include mi.flexbox(column, center, center);
+            margin-bottom: 24px;
+            > div {
+                @include mi.flexbox(column, center, center);
+                gap: 16px;
+            }
+        }
+
         .lang-title {
+            display: inline-block;
             font-size: va.$font-40;
             font-weight: 700;
             text-align: center;
@@ -236,7 +247,7 @@
         }
 
         .lang-guide {
-            padding: 16px 0 24px;
+            display: inline-block;
             font-size: va.$font-32;
             font-weight: 500;
             text-align: center;
@@ -435,8 +446,8 @@
                 line-height: 38px;
             }
 
-            .lang-guide {
-                padding: 8px 0 24px;
+            .title-wrap > div {
+                gap: 8px;
             }
 
             .lang-btn {

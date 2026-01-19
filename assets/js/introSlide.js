@@ -283,55 +283,85 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateSlideFocus(swiper) {
-    var activeSlide = swiper.slides[swiper.activeIndex];
+        var activeSlide = swiper.slides[swiper.activeIndex];
+        if (!activeSlide) return;
 
-    swiper.slides.forEach(function (slideEl) {
-        var isActive = (slideEl === activeSlide);
+        swiper.slides.forEach(function (slideEl) {
+            var isActive = (slideEl === activeSlide);
 
-        // 슬라이드 자체 포커스 금지
-        slideEl.setAttribute('tabindex', '-1');
+            // 1) 슬라이드 자체: 활성 0 / 비활성 -1 (원하는 요구사항)
+            slideEl.setAttribute('tabindex', isActive ? '0' : '-1');
 
-        var focusables = slideEl.querySelectorAll('a, button, input, textarea, select, [tabindex]');
+            // 2) aria-hidden
+            if (!isActive) slideEl.setAttribute('aria-hidden', 'true');
+            else slideEl.removeAttribute('aria-hidden');
 
-        if (!isActive) {
-        // 포커스가 남아있는데 숨기려 하면 경고/꼬임 발생 → 먼저 포커스 빼기
-        if (slideEl.contains(document.activeElement)) {
-            // 가능하면 슬라이드 밖 컨트롤로 보내기(없으면 blur)
-            var fallback = document.querySelector('.intro-controls .slide-prev, .intro-controls .slide-next, .intro-controls .slide-toggle');
-            if (fallback) fallback.focus();
-            else { try { document.activeElement.blur(); } catch(e) {} }
-        }
-
-        // 비활성: tabindex 잠금(원래 값 기억)
-        focusables.forEach(function (el) {
-            if (el.getAttribute('data-swiper-locked') === '1') return;
-
-            if (el.hasAttribute('tabindex')) {
-            el.setAttribute('data-prev-tabindex', el.getAttribute('tabindex'));
+            // 3) 비활성 슬라이드면 inert로 통째로 차단 (가능한 환경에서 강력추천)
+            // - 크로미움 기반 키오스크면 거의 지원됨
+            if ('inert' in slideEl) {
+            slideEl.inert = !isActive;
             }
-            el.setAttribute('tabindex', '-1');
-            el.setAttribute('data-swiper-locked', '1');
-        });
 
-        slideEl.setAttribute('aria-hidden', 'true');
-        } else {
-        // 활성: tabindex 복구
-        focusables.forEach(function (el) {
-            if (el.getAttribute('data-swiper-locked') !== '1') return;
+            // 4) 슬라이드 내부 포커스 후보들 (슬라이드 자신은 포함하지 않도록 "slideEl.querySelectorAll"만 사용)
+            // - 버튼/링크/폼요소 + 커스텀 tabindex 요소들
+            var innerFocusables = slideEl.querySelectorAll(
+            'a[href], button, input, textarea, select, [tabindex]'
+            );
 
-            if (el.hasAttribute('data-prev-tabindex')) {
-            el.setAttribute('tabindex', el.getAttribute('data-prev-tabindex'));
-            el.removeAttribute('data-prev-tabindex');
+            // 5) TTS로 읽힐 이미지 타겟
+            var ttsTargets = slideEl.querySelectorAll('[data-slide-focus="slide-media"]');
+
+            if (!isActive) {
+            // --------------------
+            // 비활성: 내부 전부 잠금
+            // --------------------
+            ttsTargets.forEach(function (el) {
+                el.setAttribute('tabindex', '-1');
+            });
+
+            innerFocusables.forEach(function (el) {
+                // (중요) 슬라이드 자체는 여기 포함되지 않지만 혹시 대비
+                if (el === slideEl) return;
+
+                // 이미 잠긴 건 스킵
+                if (el.getAttribute('data-swiper-locked') === '1') return;
+
+                // 원래 tabindex 있던 애만 백업
+                if (el.hasAttribute('tabindex')) {
+                el.setAttribute('data-prev-tabindex', el.getAttribute('tabindex'));
+                }
+
+                el.setAttribute('tabindex', '-1');
+                el.setAttribute('data-swiper-locked', '1');
+            });
+
             } else {
-            el.removeAttribute('tabindex');
-            }
-            el.removeAttribute('data-swiper-locked');
-        });
+            // --------------------
+            // 활성: 이미지 타겟은 포커스 가능(0)
+            // --------------------
+            ttsTargets.forEach(function (el) {
+                el.setAttribute('tabindex', '0');
+            });
 
-        // 핵심: 활성 슬라이드는 복제(duplicate)여도 aria-hidden 절대 금지
-        slideEl.removeAttribute('aria-hidden');
-        }
-    });
+            // 잠가둔 요소 복구
+            innerFocusables.forEach(function (el) {
+                if (el === slideEl) return;
+
+                if (el.getAttribute('data-swiper-locked') !== '1') return;
+
+                if (el.hasAttribute('data-prev-tabindex')) {
+                el.setAttribute('tabindex', el.getAttribute('data-prev-tabindex'));
+                el.removeAttribute('data-prev-tabindex');
+                } else {
+                // 원래 tabindex 없던 요소(button/a 등)는 tabindex 제거
+                // (기본 포커스 동작으로 돌아가게)
+                el.removeAttribute('tabindex');
+                }
+
+                el.removeAttribute('data-swiper-locked');
+            });
+            }
+        });
     }
 
     // 슬라이드 자동 재생 토글 버튼 (슬라이드 흐름만 제어, 영상 재생은 그대로)

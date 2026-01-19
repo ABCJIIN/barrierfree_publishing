@@ -5,6 +5,7 @@ console.log('idleTimer loaded');
     const TOTAL_LIMIT = (window.IDLE_TIMEOUT || 180) * 1000; // 전체 3분
     const WARNING_TIME = 30 * 1000; // 30초
 
+
     let idleTimer = null;
     let warningTimer = null;
     let countdownTimer = null;
@@ -51,7 +52,7 @@ console.log('idleTimer loaded');
         Modal.open($modal, null, {
             tts: '30초 후 처음 화면으로 이동합니다. 계속 이용하시려면 화면을 터치해 주세요.',
             ttsOnce: true,
-            focusSelector: '.return-home-btn'
+            focusSelector: '#idleResetModalTitle'
         });
 
         const btn = $modal.find('.return-home-btn')[0];
