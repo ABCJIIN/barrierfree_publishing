@@ -40,6 +40,11 @@
         }
     }
     .volume-control-btn {
+        &.close {
+            .volume-icon {
+                background: url(../../../assets/images/icon/close.svg) no-repeat center/contain;
+            }
+        }
         .volume-icon {
             display: inline-block;
             width: 24px;

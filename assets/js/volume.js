@@ -166,3 +166,25 @@ function initVolume() {
 }
 
 // document.addEventListener('DOMContentLoaded', initVolume);
+
+// ===============================
+// footer 음량조절 버튼
+// ===============================
+function setVolumeBtnState(isOpen) {
+    var $btn = $('.footer .volume-control-btn');
+    if (!$btn.length) return;
+
+    var $label = $btn.find('.btn-label');
+
+    if (isOpen) {
+        $btn.addClass('close');
+        $btn.attr('aria-pressed', 'true');
+        $btn.attr('aria-label', '음량 조절 닫기');
+        if ($label.length) $label.text('음량조절 종료');
+    } else {
+        $btn.removeClass('close');
+        $btn.attr('aria-pressed', 'false');
+        $btn.attr('aria-label', '음량 조절 열기');
+        if ($label.length) $label.text('음량조절');
+    }
+}

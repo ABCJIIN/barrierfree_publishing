@@ -1729,6 +1729,9 @@ html:lang(en).mode-low-posture .bottom-nav .nav-btn .label {
   color: #fff;
   font-weight: 500;
 }
+.footer .volume-control-btn.close .volume-icon {
+  background: url(../../../assets/images/icon/close.svg) no-repeat center/contain;
+}
 .footer .volume-control-btn .volume-icon {
   display: inline-block;
   width: 24px;
