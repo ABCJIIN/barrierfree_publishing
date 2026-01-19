@@ -73,6 +73,7 @@ function initVolume() {
     const marks = document.querySelectorAll('.volume-marks .mark');
     const btnDown = document.querySelector('.volume-btn.down');
     const btnUp = document.querySelector('.volume-btn.up');
+    const rangeWrap = volumeRange.closest('.volume-range');
 
     if (!volumeRange) return;
 
@@ -86,7 +87,8 @@ function initVolume() {
     function updateVolumeUI(value) {
         // 1) bar 채우기
         const percent = ((value - MIN) / (MAX - MIN)) * 100;
-        volumeRange.style.setProperty('--volume-percent', `${percent}%`);
+        if (rangeWrap) rangeWrap.style.setProperty('--volume-percent', `${percent}%`);
+        else volumeRange.style.setProperty('--volume-percent', `${percent}%`);
 
         // 2) 점 표시 (0/25/50/75/100)
         marks.forEach(mark => {
@@ -96,6 +98,11 @@ function initVolume() {
             } else {
                 mark.classList.remove('is-past');
             }
+
+            // 현재 값과 동일한 마크를 선택 상태로 표시(접근성)
+            const isSelected = (markVal === value);
+            mark.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+            mark.classList.toggle('is-selected', isSelected);
         });
     }
 
@@ -104,6 +111,44 @@ function initVolume() {
     // -------------------------
     volumeRange.value = currentVolume;
     updateVolumeUI(currentVolume);
+
+    // -------------------------
+    // 마크 위치를 thumb 중심에 맞추기
+    // -------------------------
+    function positionMarksToThumb() {
+        const input = volumeRange;
+        const wrap = input.closest('.volume-range');
+        const marksWrap = wrap ? wrap.querySelector('.volume-marks') : null;
+        if (!marksWrap) return;
+
+        const inputRect = input.getBoundingClientRect();
+        const marksRect = marksWrap.getBoundingClientRect();
+
+        const THUMB = 40; // CSS thumb와 동일해야 함
+        const radius = THUMB / 2;
+
+        const trackLeft = radius;
+        const trackRight = inputRect.width - radius;
+        const trackWidth = trackRight - trackLeft;
+
+        const offsetX = inputRect.left - marksRect.left;
+
+        marks.forEach((mark) => {
+            const v = parseInt(mark.dataset.value, 10);
+            const ratio = (v - MIN) / (MAX - MIN);
+            const x = offsetX + trackLeft + trackWidth * ratio;
+            mark.style.left = x + 'px';
+        });
+    }
+
+    // 초기 2회(레이아웃 확정) + 리사이즈
+    positionMarksToThumb();
+    requestAnimationFrame(positionMarksToThumb);
+
+    window.addEventListener('resize', () => {
+        positionMarksToThumb();
+        requestAnimationFrame(positionMarksToThumb);
+    });
 
     let isProgrammaticChange = false;
 
@@ -156,13 +201,20 @@ function initVolume() {
     marks.forEach(mark => {
         mark.addEventListener('click', () => {
             const isActiveVoice = $('html').hasClass('mode-voice');
-            if(isActiveVoice) {
-                TTS.speak('음량이 조절되었습니다.');
+            if (isActiveVoice && window.TTS && typeof window.TTS.speak === 'function') {
+                const stepLabel = mark.getAttribute('aria-label') || '음량이 조절되었습니다.';
+                TTS.speak(stepLabel + '로 설정되었습니다.');
             }
+
             volumeRange.value = mark.dataset.value;
             volumeRange.dispatchEvent(new Event('input', { bubbles: true }));
         });
     });
+
+    document.addEventListener('volume-marks-layout', () => {
+    positionMarksToThumb();
+    requestAnimationFrame(positionMarksToThumb);
+});
 }
 
 // document.addEventListener('DOMContentLoaded', initVolume);

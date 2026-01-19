@@ -114,36 +114,24 @@
                 <main class="main intro">
                     <section class="visual-sec" aria-labelledby="introCarouselHeading">
                         <h2 id="introCarouselHeading" class="sr-only">관광 안내 인트로 슬라이드</h2>
+                        <h2 class="intro-title"
+                            tabindex="0"
+                            data-line1="즐거운 여행을"
+                            data-line2="이곳에서 시작해보세요.">
+                            즐거운 여행을<br>이곳에서 시작해보세요.
+                        </h2>
                         <div class="slide-wrap">
                             <div class="swiper intro-slide" aria-roledescription="carousel">
                                 <div class="swiper-wrapper">
-                                    <!-- 1번 슬라이드 : 영상 -->
-                                    <!-- <div class="swiper-slide">
-                                        <div class="video-wrap">
-                                            <video muted playsinline>
-                                                <source src="./assets/intro_slide/UA_Intro01.mp4" type="video/mp4">
-                                            </video>
-                                            <div class="video-control" role="group" aria-label="첫 번째 영상 재생 제어">
-                                                <button type="button" class="video-btn video-play is-hidden" aria-label="영상 재생">
-                                                    <span class="icon" aria-hidden="true"></span>
-                                                    <span class="label">영상 재생</span>
-                                                </button>
-                                                <button type="button" class="video-btn video-pause" aria-label="영상 일시정지">
-                                                    <span class="icon" aria-hidden="true"></span>
-                                                    <span class="label">영상 일시정지</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div> -->
 
                                     <!-- 1번 슬라이드 : 이미지 -->
-                                    <div class="swiper-slide">
-                                        <img src="./assets/intro_slide/UA_Intro01.png" tabindex="0" aria-label="서울 중구 투어패스 이미지 안내 포스터입니다." alt="서울 중구 투어패스 이미지">
+                                    <div class="swiper-slide focus-inset">
+                                        <img src="./assets/intro_slide/UA_Intro01.png" data-slide-focus="slide-media" aria-label="서울 중구 투어패스 이미지 안내 포스터입니다." alt="서울 중구 투어패스 이미지">
                                     </div>
 
                                     <!-- 2번 슬라이드 : 이미지 -->
-                                    <div class="swiper-slide slide02">
-                                        <img src="./assets/intro_slide/UA_Intro02.png" tabindex="0" aria-label="오픈포트 크리스마스 이미지 포스터입니다." alt="오픈포트 크리스마스 이미지">
+                                    <div class="swiper-slide slide02 focus-inset">
+                                        <img src="./assets/intro_slide/UA_Intro02.png" data-slide-focus="slide-media" aria-label="오픈포트 크리스마스 이미지 포스터입니다." alt="오픈포트 크리스마스 이미지">
                                         <button type="button" aria-haspopup="dialog" class="slide-detail-btn" aria-label="오픈포트 크리스마스 상세 안내 보기">
                                             <span class="label">자세히 보기</span>
                                             <span class="icon" aria-hidden="true"></span>
@@ -151,8 +139,8 @@
                                     </div>
 
                                     <!-- 3번 슬라이드 : 이미지 -->
-                                    <div class="swiper-slide slide03">
-                                        <img src="./assets/intro_slide/UA_Intro03.png" tabindex="0" aria-label="코리아 썸머 뷰티세일 이미지 포스터입니다." alt="코리아 썸머 뷰티세일 이미지">
+                                    <div class="swiper-slide slide03 focus-inset">
+                                        <img src="./assets/intro_slide/UA_Intro03.png" data-slide-focus="slide-media" aria-label="코리아 썸머 뷰티세일 이미지 포스터입니다." alt="코리아 썸머 뷰티세일 이미지">
                                         <button type="button" aria-haspopup="dialog" class="slide-detail-btn" aria-label="코리아 썸머 뷰티세일 상세 안내 보기">
                                             <span class="label">자세히 보기</span>
                                             <span class="icon" aria-hidden="true"></span>
@@ -185,17 +173,16 @@
                                 </button>
                             </div>
                         </div>
-                        <h2 class="intro-title"
-                            data-line1="즐거운 여행을"
-                            data-line2="이곳에서 시작해보세요.">
-                            즐거운 여행을<br>이곳에서 시작해보세요.
-                        </h2>
                     </section>
 
                     <section class="lang-sec">
                         <div class="inner">
-                            <h3 class="lang-title"><span>언어</span>를 선택하세요.</h3>
-                            <p class="lang-guide">Please select a language</p>
+                            <div class="title-wrap">
+                                <div tabindex="0">
+                                    <h3 class="lang-title"><span>언어</span>를 선택하세요.</h3>
+                                    <p class="lang-guide">Please select a language</p>
+                                </div>
+                            </div>
                             <nav class="lang-select" aria-label="언어 선택">
                                 <!-- 한국어 -->
                                 <button type="button" class="lang-btn lang-kr" lang="ko" aria-label="한국어 선택">
@@ -271,7 +258,7 @@
                     <!-- 음량 조절 모달 -->
                     <div class="modal volume-control" aria-hidden="true">
                         <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="volumeControlModalTitle">
-                            <div id="volumeControlModalTitle" class="modal-title">
+                            <div id="volumeControlModalTitle" class="modal-title" tabindex="0">
                                 <strong>음량조절</strong>
                                 <span>Sound Control</span>
                             </div>
@@ -289,12 +276,12 @@
                                     <input type="range" id="volumeRange" class="volume-input" min="0" max="100" step="25" value="50">
 
                                     <!-- 단계 점 표시 (미래 구간만 보이는 점들) -->
-                                    <div class="volume-marks" aria-hidden="true">
-                                        <span class="mark" data-value="0"></span>
-                                        <span class="mark" data-value="25"></span>
-                                        <span class="mark" data-value="50"></span>
-                                        <span class="mark" data-value="75"></span>
-                                        <span class="mark" data-value="100"></span>
+                                    <div class="volume-marks" role="list">
+                                        <button type="button" class="mark" data-value="0"   aria-label="음량 1단계"></button>
+                                        <button type="button" class="mark" data-value="25"  aria-label="음량 2단계"></button>
+                                        <button type="button" class="mark" data-value="50"  aria-label="음량 3단계"></button>
+                                        <button type="button" class="mark" data-value="75"  aria-label="음량 4단계"></button>
+                                        <button type="button" class="mark" data-value="100" aria-label="음량 5단계"></button>
                                     </div>
                                 </div>
 
@@ -387,7 +374,7 @@
                     <!-- 무동작 초기화면 복귀 모달 -->
                     <div class="modal idle-reset" aria-hidden="true">
                         <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="idleResetModalTitle">
-                            <div id="idleResetModalTitle" class="modal-title">
+                            <div id="idleResetModalTitle" class="modal-title" tabindex="0">
                                 <strong>30초 후 처음 화면으로 이동됩니다.</strong>
                                 <p>시간연장 버튼으로 시간을 연장할 수 있습니다.</p>
                             </div>
@@ -404,17 +391,17 @@
                     <!-- modal -->
                     <div class="modal inquiry" aria-hidden="true">
                         <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="inquiryModalTitle">
-                            <div id="inquiryModalTitle" class="modal-title">
+                            <div id="inquiryModalTitle" class="modal-title" tabindex="0">
                                 <strong>문의</strong>
                                 <span>Inquiry Number</span>
                             </div>
                             <div class="inquiry-info" tabindex="0">
                                 <ul>
-                                    <li class="phone-number">
+                                    <li class="phone-number" tabindex="0">
                                         <span class="icon" aria-hidden="true"></span>
                                         <span class="label">032-466-7282</span>
                                     </li>
-                                    <li class="email-address">
+                                    <li class="email-address" tabindex="0">
                                         <span class="icon" aria-hidden="true"></span>
                                         <span class="label">Helpme@smart.tourist</span>
                                     </li>

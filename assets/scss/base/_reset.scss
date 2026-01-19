@@ -144,6 +144,12 @@ html.is-keyboard-user tr[tabindex]:focus-visible {
     transform: translateZ(0);
 }
 
+/* 7) 음량조절 모달 작동 버튼 */
+html.is-keyboard-user .volume-marks .mark:focus::after,
+html.is-keyboard-user .volume-marks .mark:focus-visible::after {
+    opacity: 1;
+}
+
 /* 스크린리더용 클래스 */
 .sr-only {
     position: absolute !important;

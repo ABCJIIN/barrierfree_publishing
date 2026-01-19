@@ -304,6 +304,10 @@ $(function () {
 
         openModal($targetModal, $(this));
         setVolumeBtnState(true);
+
+        requestAnimationFrame(() => {
+        document.dispatchEvent(new Event('volume-marks-layout'));
+        });
     });
 
     // 1) 문의 모달 열기 (.modal.inquiry 전용)
