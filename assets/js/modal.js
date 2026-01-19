@@ -204,6 +204,12 @@ $(function () {
     function closeModal(restoreFocus = true) {
         if (!$currentModal || !$currentModal.length) return;
 
+        // 닫히는 모달이 볼륨 모달이면 footer 버튼 원복
+        var isVolume = $currentModal.hasClass('volume-control');
+        if (isVolume) {
+            setVolumeBtnState(false);
+        }
+
         $currentModal
             .removeClass('is-active')
             .attr('aria-hidden', 'true');
@@ -273,14 +279,31 @@ $(function () {
         openModal($('.modal.traffic'), $(this));
     });
 
-    // 1) 음량 조절 모달 열기 (.modal.volume-control 전용)
+    // 1) 음량 조절 모달 열기/닫기 토글 (.modal.volume-control 전용)
     $(document).on('click', '.footer .volume-control-btn', function (e) {
         e.preventDefault();
-        const isActiveVoice = $('html').hasClass('mode-voice');
-        if(isActiveVoice) {
+
+        var $targetModal = $('.modal.volume-control');
+        if (!$targetModal.length) return;
+
+        var isActiveVoice = $('html').hasClass('mode-voice');
+
+        // 이미 이 모달이 열려있으면 닫기
+        if ($currentModal && $currentModal.length && $currentModal.is($targetModal)) {
+            if (isActiveVoice && window.TTS && typeof window.TTS.speak === 'function') {
+            TTS.speak('음량 조절을 종료합니다.');
+            }
+            closeModal(true);
+            return;
+        }
+
+        // 열기
+        if (isActiveVoice && window.TTS && typeof window.TTS.speak === 'function') {
             TTS.speak('음량 조절 화면입니다.');
         }
-        openModal($('.modal.volume-control'), $(this));
+
+        openModal($targetModal, $(this));
+        setVolumeBtnState(true);
     });
 
     // 1) 문의 모달 열기 (.modal.inquiry 전용)
