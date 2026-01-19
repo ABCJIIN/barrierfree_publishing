@@ -211,7 +211,6 @@
     });
 })();
 
-
 // ==========================================================
 // Map 내부 요소 Tab 포커스 차단 + iframe 회수 (focus.js 역할은 여기까지만)
 // - map 자체만 tabindex=0 유지
@@ -322,5 +321,257 @@
 
     $(function () {
         initMapFocusGuard();
+    });
+})();
+
+// ======================================================
+// [RESTORE FOCUS + is-keyboard-user AFTER RELOAD] (COMMON)
+// - filter-btn(데이터키 자동), custom-select(모든 셀렉트), Zebra pagination 공통 지원
+// ======================================================
+;(function () {
+    'use strict';
+
+    if (window.__restoreFocusAfterReloadInited) return;
+    window.__restoreFocusAfterReloadInited = true;
+
+    var KEY = '__focusHint';
+    var TTL = 10 * 60 * 1000;
+
+    function save(obj) {
+        try { obj.ts = Date.now(); sessionStorage.setItem(KEY, JSON.stringify(obj)); } catch (e) {}
+    }
+    function load() {
+        try {
+        var raw = sessionStorage.getItem(KEY);
+        if (!raw) return null;
+        var obj = JSON.parse(raw);
+        if (!obj || !obj.ts) return null;
+        if (Date.now() - obj.ts > TTL) return null;
+        return obj;
+        } catch (e) { return null; }
+    }
+    function clear() { try { sessionStorage.removeItem(KEY); } catch (e) {} }
+
+    function visible(el) {
+        return !!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+    }
+    function focus(el) {
+        if (!visible(el)) return false;
+        document.documentElement.classList.add('is-keyboard-user');
+        try { el.focus({ preventScroll: true }); }
+        catch (e) { try { el.focus(); } catch (e2) {} }
+        return true;
+    }
+
+    // ------------------------------
+    // Utils: selector escape (간단)
+    // ------------------------------
+    function escAttr(v) {
+        return String(v).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    }
+
+    // ------------------------------
+    // Utils: filter key 자동 추출
+    // - data-q / data-group 등 "data-*" 중 값이 있는 첫 키를 저장
+    // ------------------------------
+    function getFilterDataKey(btn) {
+        if (!btn) return null;
+        var ds = btn.dataset;
+        if (!ds) return null;
+
+        // 우선순위(명시적으로)
+        if (ds.q !== undefined) return 'q';
+        if (ds.group !== undefined) return 'group';
+
+        // 그 외 data-* 중 값이 존재하는 첫 키
+        for (var k in ds) {
+        if (Object.prototype.hasOwnProperty.call(ds, k) && ds[k] !== '') return k;
+        }
+        return null;
+    }
+
+    // ------------------------------
+    // Utils: custom-select 식별자 추출
+    // - aria-controls(listbox id) 우선
+    // - 없으면 문서 내 index
+    // ------------------------------
+    function getSelectHintFromOption(optionBtn) {
+        var root = optionBtn && optionBtn.closest ? optionBtn.closest('.custom-select') : null;
+        if (!root) return null;
+
+        var trigger = root.querySelector('.select-item');
+        var listId = trigger ? (trigger.getAttribute('aria-controls') || '') : '';
+
+        var idx = -1;
+        try {
+        var all = Array.prototype.slice.call(document.querySelectorAll('.custom-select'));
+        idx = all.indexOf(root);
+        } catch (e) {}
+
+        return { listId: listId, index: idx };
+    }
+
+    // 1) 클릭 "직전" 힌트 저장 (캡처)
+    document.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+
+        // (A) FILTER 공통
+        var fb = t.closest('.filter-btn[role="radio"]');
+        if (fb) {
+        var key = getFilterDataKey(fb);           // ex) 'q' or 'group' or others
+        var val = key ? (fb.dataset[key] || '') : '';
+        save({ kind: 'filter', key: key || '', val: val, text: (fb.textContent || '').trim() });
+        return;
+        }
+
+        // (B) PAGINATION (first/last/next/prev 포함)
+        var pa = t.closest('.Zebra_Pagination a');
+        if (pa) {
+        save({
+            kind: 'pagination',
+            cls: pa.className || '',
+            href: pa.getAttribute('href') || '',
+            text: (pa.textContent || '').trim()
+        });
+        return;
+        }
+
+        // (C) SELECT 공통: 옵션 클릭 -> 해당 custom-select의 trigger로 복원
+        var opt = t.closest('.custom-select .option-list button[role="option"]');
+        if (opt) {
+        var sh = getSelectHintFromOption(opt);
+        if (sh) {
+            save({ kind: 'select', listId: sh.listId || '', index: sh.index });
+        }
+        return;
+        }
+
+        // (D) TAB (있으면)
+        var tab = t.closest('.tab-btn, [role="tab"]');
+        if (tab) {
+        save({ kind: 'tab', id: tab.id || '', controls: tab.getAttribute('aria-controls') || '' });
+        return;
+        }
+    }, true);
+
+    // ------------------------------
+    // Restore finder
+    // ------------------------------
+    function findFromHint(h) {
+        if (!h) return null;
+
+        // ---- FILTER ----
+        if (h.kind === 'filter') {
+            // 1) data-key/value로 복원
+            if (h.key) {
+                var sel = '.filter-btn[role="radio"][data-' + escAttr(h.key) + '="' + escAttr(h.val || '') + '"]';
+                var byKV = document.querySelector(sel);
+                if (byKV) return byKV;
+            }
+
+            // 2) text로 fallback (동일 텍스트가 많으면 위험하지만 최후 수단)
+            if (h.text) {
+                var list = document.querySelectorAll('.filter-btn[role="radio"]');
+                for (var i = 0; i < list.length; i++) {
+                if ((list[i].textContent || '').trim() === h.text) return list[i];
+                }
+            }
+
+            // 3) 현재 선택(aria-checked=true)
+            return document.querySelector('.filter-btn[role="radio"][aria-checked="true"]');
+        }
+
+        // ---- SELECT ----
+        if (h.kind === 'select') {
+            // 1) listbox id 기반(aria-controls)로 가장 안정적으로
+            if (h.listId) {
+                var trig = document.querySelector('.custom-select .select-item[aria-controls="' + escAttr(h.listId) + '"]');
+                if (trig) return trig;
+            }
+            // 2) index 기반
+            if (typeof h.index === 'number' && h.index >= 0) {
+                var all = document.querySelectorAll('.custom-select');
+                if (all[h.index]) {
+                var trg2 = all[h.index].querySelector('.select-item');
+                if (trg2) return trg2;
+                }
+            }
+            return null;
+        }
+
+        // ---- PAGINATION ----
+        if (h.kind === 'pagination') {
+            var root = document.querySelector('.Zebra_Pagination');
+            if (!root) return null;
+
+            // 기능 버튼(클래스 우선)
+            if (/\blast\b/.test(h.cls || ''))  return root.querySelector('a.last')  || root.querySelector('a');
+            if (/\bfirst\b/.test(h.cls || '')) return root.querySelector('a.first') || root.querySelector('a');
+            if (/\bnext\b/.test(h.cls || ''))  return root.querySelector('a.next')  || root.querySelector('a');
+            if (/\bprev(ious)?\b/.test(h.cls || '')) return root.querySelector('a.previous, a.prev') || root.querySelector('a');
+
+            // 숫자 링크는 href 매칭
+            if (h.href && h.href !== '#' && h.href !== '') {
+                var byHref = root.querySelector('a[href="' + escAttr(h.href) + '"]');
+                if (byHref) return byHref;
+            }
+
+            // text 매칭(“3” 같은)
+            if (h.text) {
+                var as = root.querySelectorAll('a');
+                for (var i = 0; i < as.length; i++) {
+                if ((as[i].textContent || '').trim() === h.text) return as[i];
+                }
+            }
+
+            // 최후: current
+            return root.querySelector('a.current, .current, .active');
+        }
+
+        // ---- TAB ----
+        if (h.kind === 'tab') {
+        return (h.id ? document.getElementById(h.id) : null)
+            || (h.controls ? document.querySelector('[role="tab"][aria-controls="' + escAttr(h.controls) + '"], .tab-btn[aria-controls="' + escAttr(h.controls) + '"]') : null)
+            || document.querySelector('[role="tab"][aria-selected="true"], .tab-btn.is-active');
+        }
+
+        return null;
+    }
+
+    function restore() {
+        var h = load();
+        var tries = 0;
+        var max = 25; // 1.25s
+
+        (function loop() {
+            tries++;
+
+            var el = findFromHint(h);
+
+            // span.current는 포커스 불가 -> 숫자 a로 보정
+            if (el && el.tagName === 'SPAN') {
+                var txt = (el.textContent || '').trim();
+                var root = document.querySelector('.Zebra_Pagination');
+                if (root) {
+                    var as = root.querySelectorAll('a');
+                    for (var i = 0; i < as.length; i++) {
+                        if ((as[i].textContent || '').trim() === txt) { el = as[i]; break; }
+                    }
+                }
+            }
+
+            if (el && focus(el)) { clear(); return; }
+            if (tries >= max) { clear(); return; }
+            setTimeout(loop, 50);
+        })();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                restore();
+            });
+        });
     });
 })();
