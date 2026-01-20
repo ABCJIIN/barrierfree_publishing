@@ -35,8 +35,14 @@
 
     function isIntroPage() {
         var path = (location.pathname || '').toLowerCase();
-        return path.endsWith('/index.html') || path.endsWith('index.html')
-            || path.endsWith('/index_voice.html') || path.endsWith('index_voice.html');
+
+        // 1. 루트 경로('/')만 있는 경우 (index.html이 생략된 경우) 처리
+        if (path === '/' || path === '') return true;
+
+        // 2. 파일명이 명시적으로 포함된 경우 (index.html, index_voice.html)
+        // endsWith 대신 indexOf를 사용하여 쿼리스트링(?id=123) 등이 붙어도 인식되도록 개선 권장
+        return path.indexOf('index.html') !== -1 
+            || path.indexOf('index_voice.html') !== -1;
     }
 
     function getFocusableList(root) {
