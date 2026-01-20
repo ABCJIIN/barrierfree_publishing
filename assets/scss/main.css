@@ -2469,8 +2469,8 @@ html.mode-high-contrast.is-keyboard-user .detail-page .base-info-sec .map-wrap .
   background: var(--sp-icon-qr-naver) no-repeat center/contain;
 }
 .detail-page .qr-sec .qr-item .qr-code {
-  width: 88px;
-  height: 88px;
+  width: 98px;
+  height: 98px;
   padding: 5px;
   border: 1px solid var(--sp-border);
   border-radius: 4px;
