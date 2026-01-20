@@ -174,14 +174,28 @@ $(function () {
         }*/
 
         // TTS 처리 (옵션 기반)
-        if (
-            options.tts &&
-            document.documentElement.classList.contains('mode-voice')
-        ) {
-            // 중복 방지: 같은 모달 연속 오픈 시 1회만
-            if (!options.ttsOnce || !$modal.data('tts-spoken')) {
-                TTS.speak(options.tts);
-                $modal.data('tts-spoken', true);
+        // if (
+        //     options.tts &&
+        //     document.documentElement.classList.contains('mode-voice')
+        // ) {
+        //     // 중복 방지: 같은 모달 연속 오픈 시 1회만
+        //     if (!options.ttsOnce || !$modal.data('tts-spoken')) {
+        //         TTS.speak(options.tts);
+        //         $modal.data('tts-spoken', true);
+        //     }
+        // }
+
+        if (document.documentElement.classList.contains('mode-voice')) {
+            const ttsText =
+                (options.tts || '').trim() ||
+                (($modal.attr('data-tts-summary') || '').trim());
+
+            if (ttsText) {
+                // 중복 방지: 같은 모달 연속 오픈 시 1회만 (ttsOnce=false면 매번)
+                if (!options.ttsOnce || !$modal.data('tts-spoken')) {
+                    setTimeout(() => TTS.speak(ttsText), 150); // DOM/포커스 안정화 텀
+                    $modal.data('tts-spoken', true);
+                }
             }
         }
 
@@ -306,7 +320,7 @@ $(function () {
         setVolumeBtnState(true);
 
         requestAnimationFrame(() => {
-        document.dispatchEvent(new Event('volume-marks-layout'));
+            document.dispatchEvent(new Event('volume-marks-layout'));
         });
     });
 
@@ -314,7 +328,7 @@ $(function () {
     $('.intro .card-btn.inquiry').on('click', function (e) {
         e.preventDefault();
         openModal($('.modal.inquiry'), $(this), {
-            tts: '문의 정보 화면입니다. 문의 전화번호 032-466-7282. 문의 메일 Helpme@smart.tourist. 하단에 닫기 버튼이 있습니다.'
+            tts: '문의 정보 화면입니다. 전화번호와 이메일을 확인할 수 있습니다. 위 아래 버튼으로 내용을 이동하고 하단 닫기 버튼을 누르면 이전 화면으로 돌아갑니다.'
         });
     });
 
