@@ -320,35 +320,37 @@
                                     </div>
                                     <div class="dimmed" aria-hidden="true"></div>
                                 </div>
-                                <div class="filter-list-wrap">
-                                    <button type="button" class="filter-move-btn prev is-disabled" aria-label="이전 카테고리로 이동" aria-disabled="true"></button>
-                                    <ul class="filter-list" role="radiogroup" aria-label="음식점 카테고리">
-                                        <li class="is-active">
-                                            <button type="button" role="radio" aria-checked="true" class="filter-btn" data-q="" aria-label="전체">전체</button>
-                                        </li>
-                                        <li>
-                                            <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="musteat" aria-label="지역추천 맛집">지역추천 맛집</button>
-                                        </li>
-                                        <li>
-                                            <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="한식" aria-label="한식">한식</button>
-                                        </li>
-                                        <li>
-                                            <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="중식" aria-label="중식">중식</button>
-                                        </li>
-                                        <li>
-                                            <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="일식" aria-label="일식">일식</button>
-                                        </li>
-                                        <li>
-                                            <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="양식" aria-label="양식">양식</button>
-                                        </li>
-                                        <li>
-                                            <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="베이커리" aria-label="베이커리">베이커리</button>
-                                        </li>
-                                        <li style="display: none;">
-                                            <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="기타" aria-label="기타">기타</button>
-                                        </li>
-                                    </ul>
-                                    <button type="button" class="filter-move-btn next" aria-label="다음 카테고리로 이동"></button>
+                                <div class="filter-list-area">
+                                    <div class="filter-list-wrap" tabindex="0">
+                                        <button type="button" class="filter-move-btn prev is-disabled" aria-label="이전 카테고리로 이동" aria-disabled="true" tabindex="-1"></button>
+                                        <ul class="filter-list" role="radiogroup" aria-label="음식점 카테고리">
+                                            <li class="is-active">
+                                                <button type="button" role="radio" aria-checked="true" class="filter-btn" data-q="" aria-label="전체">전체</button>
+                                            </li>
+                                            <li>
+                                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="musteat" aria-label="지역추천 맛집">지역추천 맛집</button>
+                                            </li>
+                                            <li>
+                                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="한식" aria-label="한식">한식</button>
+                                            </li>
+                                            <li>
+                                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="중식" aria-label="중식">중식</button>
+                                            </li>
+                                            <li>
+                                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="일식" aria-label="일식">일식</button>
+                                            </li>
+                                            <li>
+                                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="양식" aria-label="양식">양식</button>
+                                            </li>
+                                            <li>
+                                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="베이커리" aria-label="베이커리">베이커리</button>
+                                            </li>
+                                            <li style="display: none;">
+                                                <button type="button" role="radio" aria-checked="false" class="filter-btn" data-q="기타" aria-label="기타">기타</button>
+                                            </li>
+                                        </ul>
+                                        <button type="button" class="filter-move-btn next" aria-label="다음 카테고리로 이동" tabindex="-1"></button>
+                                    </div>
                                 </div>
                                 <div class="filter-cont">
                                     <!-- 음식점 리스트 출력 영역 -->

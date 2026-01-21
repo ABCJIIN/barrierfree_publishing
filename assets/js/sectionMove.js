@@ -152,7 +152,7 @@
         prevBtn:  '.floating-btn .sec-move-btn.prev',
         nextBtn:  '.floating-btn .sec-move-btn.next',
 
-        focusable: 'a[href], area[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        focusable: 'a[href], area[href], button:not([disabled]):not([tabindex="-1"]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
     };
 
     var steps = [];

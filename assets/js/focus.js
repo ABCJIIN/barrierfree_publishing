@@ -15,7 +15,7 @@
     var FOCUSABLE = [
         'a[href]',
         'area[href]',
-        'button:not([disabled])',
+        'button:not([disabled]):not([tabindex="-1"])',
         'input:not([disabled]):not([type="hidden"])',
         'select:not([disabled])',
         'textarea:not([disabled])',

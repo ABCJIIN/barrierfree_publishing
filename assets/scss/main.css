@@ -998,16 +998,19 @@ html.mode-high-contrast.is-keyboard-user .floating-btn .sec-move-btn:focus::afte
   /* 필터 리스트 좌우 이동 버튼 */
   /* 기본 필터 리스트 */
 }
-.filter-menu .filter-list-wrap {
+.filter-menu .filter-list-area {
   position: relative;
   width: 100%;
   padding: 0 32px 24px;
+  border-bottom: 1px solid var(--fm-border);
+  background: var(--fm-bg);
+}
+.filter-menu .filter-list-wrap {
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--fm-border);
-  background: var(--fm-bg);
 }
 .filter-menu .filter-list-wrap .filter-list {
   width: calc(100% - 146px);
