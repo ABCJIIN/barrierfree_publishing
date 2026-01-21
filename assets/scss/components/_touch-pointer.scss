@@ -1,0 +1,22 @@
+@use '../abstracts/mixins' as mi;
+@use '../abstracts/variables' as va;
+
+.touch-pointer{
+    position: absolute;
+    left: 0; 
+    top: 0;
+    width: 70px; 
+    height: 70px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);   /* 중심이 좌표에 오도록 */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;               /* UI 클릭/터치 방해 금지 */
+    z-index: 99999;
+    background: url(../../../assets/images/common/touch_pointer.svg) no-repeat center/contain;
+
+    &.is-show {
+        opacity: 1;
+        visibility: visible;
+    }
+}
