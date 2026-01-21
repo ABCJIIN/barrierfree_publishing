@@ -4,17 +4,23 @@
     if (window.__touchPointerInited) return;
     window.__touchPointerInited = true;
 
-    var HIDE_DELAY = 1000;
+    // 0.5초 유지
+    var HIDE_DELAY = 500;
 
     var pointerEl = null;
     var hideTimer = null;
 
-    // 마지막 down 된 포인터만 추적(멀티터치 대응)
+    // 멀티터치: 마지막 down만 추적
     var activePointerId = null;
 
     // move 이벤트 과다 호출 방지(선택)
     var rafId = 0;
     var lastX = 0, lastY = 0;
+
+    // 스크롤 중 표시 방지
+    var isScrolling = false;
+    var scrollTimer = null;
+    var SCROLL_COOLDOWN = 120; // 스크롤 멈춘 뒤 허용까지 딜레이(관성 스크롤 대응)
 
     function hideNow() {
         if (!pointerEl) return;
@@ -56,7 +62,19 @@
         return pointerEl;
     }
 
+    function scheduleHide() {
+        if (hideTimer) clearTimeout(hideTimer);
+        hideTimer = setTimeout(hideNow, HIDE_DELAY);
+    }
+
+    // showAt는 스크롤 중엔 무시
     function showAt(clientX, clientY) {
+        if (isScrolling) return;
+
+        // 안전장치: 좌표가 비정상일 때(0,0 튐) 방지
+        if (clientX == null || clientY == null) return;
+        if (clientX === 0 && clientY === 0) return;
+
         var z = getZoomState();
         var el, left, top;
 
@@ -94,12 +112,11 @@
         }
 
         el.classList.add('is-show');
-
-        if (hideTimer) clearTimeout(hideTimer);
-        hideTimer = setTimeout(hideNow, HIDE_DELAY);
+        scheduleHide();
     }
 
     function onDown(e) {
+        if (isScrolling) return;
         if (e.pointerType === 'mouse' && e.button !== 0) return;
         activePointerId = e.pointerId; // 마지막 손가락 우선
         showAt(e.clientX, e.clientY);
@@ -107,6 +124,7 @@
 
     function onMove(e) {
         // 마지막 down 포인터만 추적
+        if (isScrolling) return;
         if (activePointerId != null && e.pointerId !== activePointerId) return;
 
         var isDraggingMouse = (e.pointerType === 'mouse' && e.buttons === 1);
@@ -136,6 +154,17 @@
         activePointerId = null;
     }
 
+    // 스크롤 핸들러: 스크롤 중 숨김 + 표시 차단
+    function onScroll() {
+        isScrolling = true;
+        hideNow();
+
+        if (scrollTimer) clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(function () {
+            isScrolling = false;
+        }, SCROLL_COOLDOWN);
+    }
+
     function init() {
         if (!document.body) {
             document.addEventListener('DOMContentLoaded', init, { once: true });
@@ -155,6 +184,9 @@
         document.addEventListener('visibilitychange', function () {
             if (document.hidden) cleanupOnLeave();
         });
+
+        // capture:true로 스크롤 이벤트 최대한 빨리 감지
+        window.addEventListener('scroll', onScroll, { passive: true, capture: true });
     }
 
     init();
