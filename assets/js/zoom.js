@@ -62,6 +62,14 @@ function initZoom() {
     // ====== 유틸 ======
     const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
+    function publishZoomState() {
+        window.__ZOOM_STATE__ = window.__ZOOM_STATE__ || {};
+        window.__ZOOM_STATE__.scale = SCALE;
+        window.__ZOOM_STATE__.posX = posX;
+        window.__ZOOM_STATE__.posY = posY;
+        window.__ZOOM_STATE__.isZoomed = isZoomed;
+    }
+
     const isLowPostureMode = () =>
         htmlEl.classList.contains('mode-low-posture') ||
         bodyEl.classList.contains('mode-low-posture');
@@ -78,6 +86,7 @@ function initZoom() {
         }
 
         canvas.style.transform = `translate(${-posX}px, ${-posY}px) scale(${SCALE})`;
+        publishZoomState();
     };
 
     const setDisabled = (btn, disabled) => {
