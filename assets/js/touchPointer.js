@@ -4,8 +4,8 @@
     if (window.__touchPointerInited) return;
     window.__touchPointerInited = true;
 
-    // 0.5초 유지
-    var HIDE_DELAY = 500;
+    // 0.3초 유지
+    var HIDE_DELAY = 300;
 
     var pointerEl = null;
     var hideTimer = null;
