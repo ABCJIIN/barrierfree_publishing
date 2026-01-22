@@ -49,8 +49,6 @@
         var nodes = Array.prototype.slice.call(root.querySelectorAll(FOCUSABLE));
         return nodes.filter(function (el) {
         if (!isVisible(el)) return false;
-        if (el.closest('[aria-hidden="true"]')) return false;
-        if (el.closest('[hidden]')) return false;
         return true;
         });
     }
@@ -79,13 +77,13 @@
     function focusByIndex(list, idx) {
         if (!list.length) return;
         var safe = (idx + list.length) % list.length;
-        list[safe].focus();
+        try { list[safe].focus(); } catch (e) {}
     }
 
     /* ==============================
     * Bridges (유지)
     * ============================== */
-    function handleSortWrapBridge(e) {
+    function handleSortWrapBridge(e, isPrev) {
         var active = document.activeElement;
         if (!active) return false;
 
@@ -106,14 +104,14 @@
         if (!volumeBtn) return false;
 
         // info-text Tab => volume
-        if (active === infoText && !e.shiftKey) {
+        if (active === infoText && !isPrev) {
         e.preventDefault();
         volumeBtn.focus();
         return true;
         }
 
         // volume Shift+Tab => info-text
-        if (active === volumeBtn && e.shiftKey) {
+        if (active === volumeBtn && isPrev) {
         e.preventDefault();
         infoText.focus();
         return true;
@@ -132,6 +130,65 @@
 
         var active = document.activeElement;
 
+        // (중요) modifier 단독은 절대 처리 금지 (Shift만 눌렀는데 이동하는 버그 방지)
+        if (e.key === 'Shift' || e.key === 'Alt' || e.key === 'Control' || e.key === 'Meta') return;
+
+        // 우리가 처리할 키:
+        // - Tab            (기존)
+        // - ArrowRight(→)  = Tab
+        // - ArrowLeft(←)   = Shift+Tab
+        var isTab   = (e.key === 'Tab');
+        var isRight = (e.key === 'ArrowRight');
+        var isLeft  = (e.key === 'ArrowLeft');
+        
+
+        if (!isTab && !isRight && !isLeft) return;
+
+        // FILTER LIST paging 영역 제어(핵심 수정)
+        // - Tab은 필터 스크립트가 전담
+        // - Arrow는 "필터 버튼(라디오)"일 때만 필터 스크립트가 전담
+        //   (그래야 wrap → 라디오로 '진입'이 막히지 않음)
+        // - 단, 전체 첫/마지막에서의 ←/→ 는 바깥 탈출을 위해 focus.js가 처리
+        if (active && active.closest && active.closest('[data-filter-paging="1"]')) {
+            if (isTab) return; // Tab은 항상 필터 스크립트가 전담
+
+            if (isLeft || isRight) {
+                // "필터 버튼(라디오)"에서만 focus.js가 양보
+                var isFilterRadio = (active.getAttribute && active.getAttribute('role') === 'radio')
+                    || (active.classList && active.classList.contains('filter-btn'));
+
+                if (isFilterRadio) {
+                    var wrap = active.closest('.filter-list-wrap');
+                    if (wrap) {
+                        var prevBtn = wrap.querySelector('.filter-move-btn.prev');
+                        var nextBtn = wrap.querySelector('.filter-move-btn.next');
+
+                        var prevDisabled = !!(prevBtn && (prevBtn.classList.contains('is-disabled') || prevBtn.getAttribute('aria-disabled') === 'true'));
+                        var nextDisabled = !!(nextBtn && (nextBtn.classList.contains('is-disabled') || nextBtn.getAttribute('aria-disabled') === 'true'));
+
+                        // 내부 이동/페이지 넘김 구간이면 focus.js는 손 떼기(필터 스크립트가 처리)
+                        // 전체 첫에서 ← / 전체 마지막에서 → 는 바깥 탈출이므로 focus.js가 계속 처리해야 함
+                        if ((isLeft && !prevDisabled) || (isRight && !nextDisabled)) {
+                            return;
+                        }
+                    } else {
+                        // wrap을 못 찾으면 안전하게 양보
+                        return;
+                    }
+                }
+                // 라디오가 아니라면(= wrap/prev/next 등) focus.js가 처리해서 라디오로 진입 가능
+            }
+        }
+
+        // 단축키 조합은 건드리지 않음
+        // - Tab은 Shift는 허용, Ctrl/Alt/Meta는 무시
+        if (isTab) {
+            if (e.altKey || e.ctrlKey || e.metaKey) return;
+        } else {
+            // Arrow는 Ctrl/Alt/Meta 조합이면 무시
+            if (e.altKey || e.ctrlKey || e.metaKey) return;
+        }
+
         // [PATCH] 저자세 + 상세페이지: sectionMove.js에게 "완전 양보"
         // - h3(노들섬) -> scroll-sec 진입 Tab을 focus.js가 먹어버리는 케이스 방지
         if (document.documentElement.classList.contains('mode-low-posture')) {
@@ -149,11 +206,30 @@
             }
         }
 
-        // 커스텀 셀렉트 옵션 내부면 select.js가 담당
-        if (active && active.getAttribute('role') === 'option') return;
+        if (active && active.getAttribute && active.getAttribute('role') === 'option') {
+            if (isLeft || isRight) {
+                var cs = active.closest('.custom-select');
+                if (cs) {
+                    var trig = cs.querySelector('.select-item');
+                    var opened = trig && (trig.classList.contains('on') || trig.getAttribute('aria-expanded') === 'true');
+                    if (opened) {
+                        var opts = cs.querySelectorAll('.option-list button[role="option"]');
+                        var idxOpt = Array.prototype.indexOf.call(opts, active);
 
-        // 필터 리스트 영역은 filter.js가 담당
-        if (active && active.closest && active.closest('.filter-list-wrap')) return;
+                        // 경계가 아니면 focus.js는 손 떼고(select.js가 한 칸 이동)
+                        var atFirst = (idxOpt === 0);
+                        var atLast  = (idxOpt === opts.length - 1);
+                        if (!( (isLeft && atFirst) || (isRight && atLast) )) {
+                            return;
+                        }
+                        // 경계면 계속 진행해서(아래 로직) 바깥으로 이동
+                    }
+                }
+            } else {
+                // Tab은 기존 select.js 로직이 있으니 focus.js는 건드리지 않음
+                return;
+            }
+        }
 
         // 저자세 상세페이지(scroll-sec)는 sectionMove.js가 Tab 흐름 제어 → focus.js는 건드리지 않음
         if (document.documentElement.classList.contains('mode-low-posture')) {
@@ -161,11 +237,17 @@
             if (act && act.closest && act.closest('.detail-page .scroll-sec')) return;
         }
 
-        if (e.key !== 'Tab') return;
+        // 핵심: 이동 방향 결정
+        // - Tab: shiftKey면 이전, 아니면 다음
+        // - ArrowRight: 다음 (Tab과 동일)
+        // - ArrowLeft:  이전 (Shift+Tab과 동일)
+        var isPrev = false;
+        if (isTab) isPrev = !!e.shiftKey;
+        else isPrev = isLeft;
 
         // 저자세 상세페이지: scroll-sec "진입" Tab은 sectionMove.js가 처리하게 양보
+        // ArrowRight/Left도 Tab과 동일한 체인이어야 하므로 같은 로직 적용
         if (document.documentElement.classList.contains('mode-low-posture')) {
-            var active = document.activeElement;
             var sc = document.querySelector('.detail-page .scroll-sec');
 
             // 현재 포커스가 scroll-sec 밖에 있고,
@@ -175,7 +257,7 @@
                 var idxTmp = orderedTmp.indexOf(active);
 
                 if (idxTmp !== -1) {
-                    var nextTmp = e.shiftKey ? orderedTmp[idxTmp - 1] : orderedTmp[idxTmp + 1];
+                    var nextTmp = isPrev ? orderedTmp[idxTmp - 1] : orderedTmp[idxTmp + 1];
                     if (nextTmp && sc.contains(nextTmp)) {
                         return; // 여기서 빠지면 sectionMove.js 캡처 핸들러가 이어서 받음
                     }
@@ -183,25 +265,82 @@
             }
         }
 
+        function handleMapZoomBridge(e, isPrev) {
+            var active = document.activeElement;
+            if (!active) return false;
+
+            var mapEl = document.querySelector('#map.map-area, #map');
+            if (!mapEl) return false;
+
+            // 같은 섹션 안에서 zoom 버튼을 찾기(구조가 달라도 안정적)
+            var scope = mapEl.closest('.sec-wrap, .map-wrap, .map-section, section') || document;
+
+            var zin  = scope.querySelector('.map-zoom-in-btn');
+            var zout = scope.querySelector('.map-zoom-out-btn');
+
+            // 포커스 가능 보정(혹시 tabindex=-1이면 올려서 Tab/Arrow 리스트에도 들어오게)
+            if (zin && zin.getAttribute('tabindex') === '-1') zin.setAttribute('tabindex', '0');
+            if (zout && zout.getAttribute('tabindex') === '-1') zout.setAttribute('tabindex', '0');
+
+            // map/zoom 체인일 때만 처리
+            var inChain =
+                (active === mapEl) ||
+                (zin && active === zin) ||
+                (zout && active === zout);
+
+            if (!inChain) return false;
+
+            // 체인 규칙을 "Tab/Arrow 공통"으로 고정
+            // next: map -> zoom-in -> zoom-out
+            // prev: zoom-out -> zoom-in -> map
+            if (!isPrev) {
+                if (active === mapEl && zin) {
+                    e.preventDefault(); zin.focus(); return true;
+                }
+                if (zin && active === zin && zout) {
+                    e.preventDefault(); zout.focus(); return true;
+                }
+                // zoom-out의 next는 그냥 기존 ordered list 로직으로 넘기려면 false
+                return false;
+            } else {
+                if (zout && active === zout && zin) {
+                    e.preventDefault(); zin.focus(); return true;
+                }
+                if (zin && active === zin) {
+                    e.preventDefault(); mapEl.focus(); return true;
+                }
+                return false;
+            }
+        }
+
+        // map ↔ zoom 브릿지 (Tab/Shift+Tab/→/← 모두 동일)
+        if (handleMapZoomBridge(e, isPrev)) return;
 
         // sort-wrap 브릿지
-        if (handleSortWrapBridge(e)) return;
+        if (handleSortWrapBridge(e, isPrev)) return;
+
 
         var ordered = buildOrderedList(root);
         if (!ordered.length) return;
 
         var idx = ordered.indexOf(active);
 
-        // 루트 밖에서 Tab 진입 시
+        // 루트 밖에서 Tab/Arrow 진입 시
         if (!root.contains(active) || idx === -1) {
         e.preventDefault();
         focusByIndex(ordered, 0);
         return;
         }
 
+        // 기본 동작 방지 후 포커스 이동
         e.preventDefault();
-        if (e.shiftKey) focusByIndex(ordered, idx - 1);
+        if (isPrev) focusByIndex(ordered, idx - 1);
         else focusByIndex(ordered, idx + 1);
+
+        // common.js와 함께 쓸 때: 포커스 이동 후 TTS도 읽게(있으면)
+        if (window.speakIfNew) {
+            try { window.speakIfNew(document.activeElement); } catch (e2) {}
+        }
     }
 
     function initPageLoop(root) {
@@ -218,10 +357,11 @@
 })();
 
 // ==========================================================
-// Map 내부 요소 Tab 포커스 차단 + iframe 회수 (focus.js 역할은 여기까지만)
+// Map 내부 요소 Tab 포커스 차단 + iframe 회수 + 방향키로 지도 이동
 // - map 자체만 tabindex=0 유지
 // - map 내부(iframe 포함)로 포커스가 들어가면 map으로 되돌림
 // - 확대/축소 버튼(.map-zoom-in-btn / .map-zoom-out-btn)은 예외로 허용
+// - map에 포커스 있을 때 방향키로 지도 pan (가능하면 직접, 아니면 이벤트로 위임)
 // ==========================================================
 ;(function () {
     'use strict';
@@ -243,6 +383,9 @@
         '[tabindex]'
     ].join(',');
 
+    // 방향키 이동 거리(px) - 필요하면 조절
+    var PAN_STEP = 60;
+
     function disableInnerFocus($map) {
         if (!$map || !$map.length) return;
 
@@ -262,11 +405,72 @@
         });
     }
 
+    // (1) 가능하면 전역 지도 인스턴스에서 pan을 직접 호출
+    function tryPanMap(dx, dy) {
+        // 프로젝트마다 전역 이름이 다를 수 있어서 “대표 후보”들을 최대한 안전하게 탐색
+        // - window.map / window.naverMap / window.__naverMap / window._map 등
+        var candidates = [
+            window.naverMap,
+            window.__naverMap,
+            window.map,
+            window._map,
+            window.__map
+        ].filter(Boolean);
+
+        // naver.maps.Map 인스턴스라면 getCenter/setCenter 또는 panBy 같은 메서드가 있을 수 있음
+        for (var i = 0; i < candidates.length; i++) {
+            var m = candidates[i];
+            try {
+                // 1) panBy({x,y}) 형태 (라이브러리마다 다름)
+                if (m && typeof m.panBy === 'function') {
+                    m.panBy({ x: dx, y: dy });
+                    return true;
+                }
+                // 2) panBy(x,y) 형태
+                if (m && typeof m.panBy === 'function') {
+                    m.panBy(dx, dy);
+                    return true;
+                }
+                // 3) setCenter/getCenter 기반 (좌표계 변환 필요하면 여기선 어렵고, 보통 panBy가 있음)
+            } catch (e) {}
+        }
+        return false;
+    }
+
+    // (2) 직접 pan이 불가능하면, 밖에서 처리할 수 있도록 이벤트로 위임
+    function emitPanIntent(mapEl, dx, dy, key) {
+        try {
+            var ev = new CustomEvent('map:pan', {
+                bubbles: true,
+                detail: { dx: dx, dy: dy, key: key }
+            });
+            mapEl.dispatchEvent(ev);
+        } catch (e) {}
+    }
+
     function initMapFocusGuard() {
         var $map = $(MAP_SEL).first();
         if (!$map.length) return;
 
         disableInnerFocus($map);
+        // bindArrowKeyFocusNav($map); // 방향키 pan 바인딩 추가
+
+        // 지도 pan: ↑/↓만 사용 (←/→는 focus.js가 Tab처럼 처리하게 둠)
+            $map[0].addEventListener('keydown', function (e) {
+            if (window.__mapBridgeLock) return;
+
+            var key = e.key || e.code;
+            if (key !== 'ArrowUp' && key !== 'ArrowDown') return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            var dy = (key === 'ArrowUp') ? -PAN_STEP : PAN_STEP;
+
+            var ok = tryPanMap(0, dy);
+            if (!ok) emitPanIntent($map[0], 0, dy, key);
+            }, true);
+
 
         // rAF 스로틀 + 짧은 디바운스
         var scheduled = false;
