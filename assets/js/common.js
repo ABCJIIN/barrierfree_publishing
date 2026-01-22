@@ -13,6 +13,7 @@ const TTS_RATE_MAX = 1.6;
 const TTS_RATE_STEP = 0.1;
 let currentRate = TTS_RATE_DEFAULT;
 
+
 $(document).ready(function(){
     currentRate = initRateState();
     currentVolume = initVolumeState();
@@ -107,7 +108,7 @@ $(document).ready(function(){
         }
 
         if (isActiveVoice) {
-            TTS.speak('전체메뉴를 엽니다');
+            TTS.speak('전체메뉴로 이동합니다.');
         }
 
         location.replace("/html/main/category.html");
@@ -143,6 +144,9 @@ $(document).ready(function(){
             $('#lowScreenBtn').focus();
         } else if (isActiveVoice) {
             TTS.speak('모드를 초기화합니다');
+            // 음량, 빠르기 초기화
+            setRateCookie(1);
+            setVolume(50);
             location.replace("/index.html");
         }
     });
@@ -213,6 +217,11 @@ $(document).ready(function(){
 
     window.addEventListener('keydown', (e) => {
 
+        // ←/→ 는 focus.js에게 맡긴다 (Tab/Shift+Tab과 100% 동일 동작 만들기 위해)
+        if (e.keyCode === 37 || e.keyCode === 39) {
+        return; // preventDefault/stopPropagation 절대 하지 않음
+        }
+
         // Tab / Shift+Tab 은 포커스 이동 전용. 여기서 prevent/click 변환 금지
         // if (e.key === 'Tab' || e.keyCode === 9) return;
         
@@ -237,9 +246,10 @@ $(document).ready(function(){
             130, // F19 Repeat
             127, // F16 earphone out
             126, // F15 earphone in
-            37,  // ArrowLeft
+            36,  // Home
+            // 37,  // ArrowLeft
             38,  // ArrowUp
-            39,  // ArrowRight
+            // 39,  // ArrowRight
             40,  // ArrowDown
             13   // Enter
         ];
@@ -336,13 +346,13 @@ $(document).ready(function(){
             /* ===============================
             포커스 이동 (Tab / Shift+Tab)
             =============================== */
-            case 37: // ArrowLeft → prev
-                moveFocus(false);
-                break;
+            // case 37: // ArrowLeft → prev
+            //     moveFocus(false);
+            //     break;
 
-            case 39: // ArrowRight → next
-                moveFocus(true);
-                break;
+            // case 39: // ArrowRight → next
+            //     moveFocus(true);
+            //     break;
 
             /* ===============================
             스크롤
@@ -376,8 +386,14 @@ $(document).ready(function(){
 
                 // 또 하나: disabled면 클릭 금지
                 if (el.matches(':disabled,[aria-disabled="true"]')) break;
-
+                playBeep();
                 el.click();
+                break;
+
+            case 36:
+                TTS.stop();
+                const text = '읽기를 멈췄습니다.';
+                TTS.speak(text);
                 break;
         }
     }, true);
@@ -409,6 +425,26 @@ $(document).ready(function(){
         root.classList.remove('is-keyboard-user');
     });
 })();*/
+
+
+function ttsStop(){
+    TTS.stop();
+}
+
+// Enter 비프음
+const beepAudio = new Audio('/assets/audio/beep.mp3'); 
+beepAudio.preload = 'auto';
+
+function playBeep() {
+  try {
+    beepAudio.pause();
+    beepAudio.currentTime = 0;
+    beepAudio.play();
+  } catch (e) {
+    // autoplay 정책/로드 문제 등으로 실패할 수 있음 (특히 첫 재생)
+    // 필요하면 console.log(e);
+  }
+}
 
 function getSecondLastPath() {
     const segments = location.pathname.replace(/\/$/, '')
@@ -645,8 +681,18 @@ function moveFocus(next = true) {
     
     TTS.stop();
 
+    // 모달이 열려있으면 포커스 탐색 범위를 모달로 제한
+    const activeModal = document.querySelector('.modal.is-active[aria-hidden="false"]');
+    const scope = activeModal ? activeModal : document;
+
+    // const focusables = Array.from(
+    //     document.querySelectorAll(
+    //         'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    //     )
+    // ).filter(el => !el.disabled && el.offsetParent !== null);
+
     const focusables = Array.from(
-        document.querySelectorAll(
+        scope.querySelectorAll(
             'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
         )
     ).filter(el => !el.disabled && el.offsetParent !== null);
@@ -654,10 +700,23 @@ function moveFocus(next = true) {
     if (!focusables.length) return;
 
     const index = focusables.indexOf(document.activeElement);
-    let nextIndex = next ? index + 1 : index - 1;
 
-    if (nextIndex < 0) nextIndex = focusables.length - 1;
-    if (nextIndex >= focusables.length) nextIndex = 0;
+
+    // let nextIndex = next ? index + 1 : index - 1;
+
+    // if (nextIndex < 0) nextIndex = focusables.length - 1;
+    // if (nextIndex >= focusables.length) nextIndex = 0;
+
+
+    // 모달 처음 진입 시, index가 -1일 수 있으니 안전 처리
+    let nextIndex;
+    if (index === -1) {
+        nextIndex = next ? 0 : focusables.length - 1;
+    } else {
+        nextIndex = next ? index + 1 : index - 1;
+        if (nextIndex < 0) nextIndex = focusables.length - 1;
+        if (nextIndex >= focusables.length) nextIndex = 0;
+    }
 
     const target = focusables[nextIndex];
     target.focus();
@@ -683,7 +742,62 @@ function clampVolume(v) {
 function setVolumeCookie(value) {
   document.cookie = `voiceVolume=${value}; path=/; max-age=${60 * 60 * 24}`;
 }
-// TTS 추가
+// TTS 추가 - 구글 TTS(유료)
+/*const TTS = {
+  audio: null,
+  queue: Promise.resolve(),
+
+  isEnabled() {
+    return document.documentElement.classList.contains('mode-voice');
+  },
+
+  speak(text) {
+    if (!this.isEnabled()) return;
+    if (!text) return;
+
+    // 이전 음성 중단
+    this.stop();
+
+    // 큐에 쌓아서 순서 보장
+    this.queue = this.queue.then(() => {
+      return new Promise((resolve) => {
+        fetch('/function/tts_barrier_free.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            text: text,
+            rate: currentRate,        // ← 확장 가능
+            volume: currentVolume     // ← 확장 가능
+          })
+        })
+        .then(res => res.blob())
+        .then(blob => {
+          const audio = new Audio(URL.createObjectURL(blob));
+          this.audio = audio;
+
+          // 볼륨 적용 (0~1)
+          audio.volume = currentVolume / 100;
+
+          audio.onended = resolve;
+          audio.onerror = resolve;
+
+          audio.play();
+        })
+        .catch(() => resolve());
+      });
+    });
+  },
+
+  stop() {
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.currentTime = 0;
+      this.audio = null;
+    }
+    this.queue = Promise.resolve();
+  }
+};*/
+// TTS 추가 - chrome TTS(무료)
 const TTS = {
   synth: window.speechSynthesis,
   utterance: null,
@@ -697,6 +811,9 @@ const TTS = {
     if (!text) return;
 
     this.stop();
+
+    // 메인화면 mp3 일시중지
+    window.BarrierFreeBGM?.pauseNow?.();
 
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'ko-KR';
@@ -725,6 +842,8 @@ const TTS = {
     ''
   ).trim();
 }*/
+
+
 function getReadableLabel(el) {
   if (!el) return '';
 
@@ -839,6 +958,8 @@ function speakPageSummaryOnce() {
 
   if (!document.documentElement.classList.contains('mode-voice')) return;
 
+  TTS.stop();
+
   // 페이지 진입 시마다 초기화
   lastSpokenEl = null;
 
@@ -904,20 +1025,35 @@ function enhanceZebraPaginationA11y() {
                 const has = cls =>
                     li.classList.contains(cls) || a.classList.contains(cls);
 
+                // ✅ 현재 페이지 판별 추가
+                const isCurrent =
+                    a.getAttribute('aria-current') === 'page' ||
+                    li.classList.contains('active') ||
+                    a.classList.contains('current');
+
                 if (has('first')) {
-                    label = '첫 페이지로 이동';
+                    label = '첫 페이지로 이동하는 버튼입니다.';
                 }
                 else if (has('previous')) {
-                    label = '이전 페이지로 이동';
+                    label = '이전 페이지로 이동하는 버튼입니다.';
                 }
                 else if (has('next')) {
-                    label = '다음 페이지로 이동';
+                    label = '다음 페이지로 이동하는 버튼입니다.';
                 }
                 else if (has('last')) {
-                    label = '마지막 페이지로 이동';
+                    label = '마지막 페이지로 이동하는 버튼입니다.';
                 }
                 else if (/^\d+$/.test(a.textContent.trim())) {
-                    label = `${a.textContent.trim()} 페이지로 이동`;
+                    // label = `${a.textContent.trim()} 페이지. 확인버튼을 누르면 해당페이지로 이동합니다.`;
+
+                    const pageNum = a.textContent.trim();
+
+                    if (isCurrent) {
+                        label = ` ${pageNum}페이지, 현재 페이지입니다.`;
+                        a.setAttribute('aria-current', 'page'); // 혹시 빠져있으면 보강
+                    } else {
+                        label = `${pageNum} 페이지, 확인버튼을 누르면 해당페이지로 이동합니다.`;
+                    }
                 }
 
                 if (label) {
@@ -933,48 +1069,6 @@ function enhanceZebraPaginationA11y() {
         });
     });
 }
-
-
-// PC 키보드( Tab 포함 )로 이동해도 포커스 아웃라인 보이게
-(function () {
-  const root = document.documentElement;
-
-  // 키보드 입력이면 아웃라인 ON (PC 환경 포함)
-  window.addEventListener(
-    'keydown',
-    function (e) {
-      // Tab, 방향키, Enter 등 "키보드 탐색" 계열이면 ON
-      if (
-        e.key === 'Tab' ||
-        e.key === 'ArrowUp' ||
-        e.key === 'ArrowDown' ||
-        e.key === 'ArrowLeft' ||
-        e.key === 'ArrowRight' ||
-        e.key === 'Enter'
-      ) {
-        root.classList.add('is-keyboard-user');
-      }
-    },
-    true
-  );
-
-  // 마우스/터치 입력 시에는 OFF (클릭 시 아웃라인 숨김 유지)
-  window.addEventListener(
-    'mousedown',
-    function () {
-      root.classList.remove('is-keyboard-user');
-    },
-    true
-  );
-
-  window.addEventListener(
-    'touchstart',
-    function () {
-      root.classList.remove('is-keyboard-user');
-    },
-    true
-  );
-})();
 
 /* ==============================================
     Input Mode Detection (전역 실행)
@@ -1013,4 +1107,144 @@ function enhanceZebraPaginationA11y() {
     window.addEventListener('touchstart', function () {
         root.classList.remove('is-keyboard-user');
     });
+})();
+
+window.BarrierFreeBGM = (function () {
+  let timerId = null;
+  let started = false;
+  let audio = null;
+
+  let AUDIO_SRC = "";
+  let MIN_DELAY = 60 * 1000;
+  let MAX_DELAY = 120 * 1000;
+
+  function randDelay() {
+    return Math.floor(MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY));
+  }
+
+  function clearTimer() {
+    if (timerId) {
+      clearTimeout(timerId);
+      timerId = null;
+    }
+  }
+
+  function scheduleNext() {
+    clearTimer();
+    timerId = setTimeout(() => {
+      playOnce();
+    }, randDelay());
+  }
+
+  function detachGestureStart(handler) {
+    document.removeEventListener("click", handler, true);
+    document.removeEventListener("keydown", handler, true);
+    document.removeEventListener("touchstart", handler, true);
+  }
+
+  function attachGestureStart() {
+    const handler = () => {
+      detachGestureStart(handler);
+      start();
+    };
+
+    // 중복 등록 방지: 한 번 싹 제거 후 다시 등록
+    detachGestureStart(handler);
+
+    document.addEventListener("click", handler, true);
+    document.addEventListener("keydown", handler, true);
+    document.addEventListener("touchstart", handler, true);
+  }
+
+  async function playOnce() {
+    if (!audio) return;
+
+    try {
+      audio.currentTime = 0;
+      await audio.play(); // autoplay 막히면 catch
+    } catch (e) {
+      started = false;
+      attachGestureStart();
+    }
+  }
+
+  function stop() {
+    started = false;
+    clearTimer();
+    if (audio) audio.pause();
+  }
+
+  function start() {
+    if (!audio || started) return;
+    started = true;
+    clearTimer();
+    playOnce();
+  }
+
+  function pauseNow() {
+    if (audio) audio.pause(); // started/timer 건드리지 않음
+  }
+
+  function bindVisibility() {
+    // 여러 페이지/재초기화에서 중복 바인딩 방지
+    if (bindVisibility._bound) return;
+    bindVisibility._bound = true;
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stop();
+      else start();
+    });
+  }
+
+  /**
+   * @param {Object} opts
+   * @param {string} opts.src 오디오 경로
+   * @param {number} [opts.minDelayMs] 최소 딜레이(ms)
+   * @param {number} [opts.maxDelayMs] 최대 딜레이(ms)
+   * @param {boolean} [opts.stopTts] 시작 전에 ttsStop 호출할지
+   * @param {boolean} [opts.autoStart] 로드 즉시 시작 시도할지
+   */
+  function init(opts) {
+    opts = opts || {};
+
+    AUDIO_SRC = opts.src || AUDIO_SRC;
+    MIN_DELAY = typeof opts.minDelayMs === "number" ? opts.minDelayMs : MIN_DELAY;
+    MAX_DELAY = typeof opts.maxDelayMs === "number" ? opts.maxDelayMs : MAX_DELAY;
+
+    const initialDelayMs = typeof opts.initialDelayMs === "number" ? opts.initialDelayMs : 0;
+
+    if (!AUDIO_SRC) return; // src 없으면 아무것도 안 함
+
+    // 기존 오디오/타이머 정리
+    stop();
+
+    audio = new Audio(AUDIO_SRC);
+    audio.preload = "auto";
+    audio.loop = false;
+    audio.playsInline = true;
+
+    audio.addEventListener("ended", scheduleNext);
+    audio.addEventListener("error", scheduleNext);
+
+    if (opts.stopTts && typeof window.ttsStop === "function") {
+      window.ttsStop();
+    }
+
+    bindVisibility();
+
+    if (opts.autoStart !== false) {
+        clearTimer();
+        timerId = setTimeout(() => {
+        start();
+        }, initialDelayMs);
+    }
+  }
+
+  return {
+    init,
+    start,
+    stop,
+    isStarted: () => started,
+    pauseNow,
+  };
 })();
