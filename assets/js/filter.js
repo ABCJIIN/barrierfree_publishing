@@ -69,6 +69,7 @@ $(function () {
                             var $items2 = $wrap.find(SEL.list).first().children(SEL.item);
                             var $targetBtn = $items2.eq(s2.end).find(SEL.radioBtn);
                             if ($targetBtn.length) $targetBtn.focus();
+                            if (window.speakIfNew) window.speakIfNew(document.activeElement);
                         }, 0);
                     }
                     return;
@@ -85,6 +86,7 @@ $(function () {
                         var $items2 = $wrap.find(SEL.list).first().children(SEL.item);
                         var $targetBtn = $items2.eq(s2.start).find(SEL.radioBtn);
                         if ($targetBtn.length) $targetBtn.focus();
+                        if (window.speakIfNew) window.speakIfNew(document.activeElement);
                     }, 0);
                 }
             });
@@ -119,11 +121,13 @@ $(function () {
                 if (isRight && curVisibleIdx < $visibleItems.length - 1) {
                     e.preventDefault();
                     $visibleItems.eq(curVisibleIdx + 1).find(SEL.radioBtn).focus();
+                    if (window.speakIfNew) window.speakIfNew(document.activeElement);
                     return;
                 }
                 if (isLeft && curVisibleIdx > 0) {
                     e.preventDefault();
                     $visibleItems.eq(curVisibleIdx - 1).find(SEL.radioBtn).focus();
+                    if (window.speakIfNew) window.speakIfNew(document.activeElement);
                     return;
                 }
 
@@ -140,6 +144,7 @@ $(function () {
                             var $items2 = $wrap.find(SEL.list).first().children(SEL.item);
                             var $targetBtn = $items2.eq(s2.start).find(SEL.radioBtn);
                             if ($targetBtn.length) $targetBtn.focus();
+                            if (window.speakIfNew) window.speakIfNew(document.activeElement);
                         }, 0);
                         return;
                     }
@@ -157,6 +162,7 @@ $(function () {
                             var $items2 = $wrap.find(SEL.list).first().children(SEL.item);
                             var $targetBtn = $items2.eq(s2.end).find(SEL.radioBtn);
                             if ($targetBtn.length) $targetBtn.focus();
+                            if (window.speakIfNew) window.speakIfNew(document.activeElement);
                         }, 0);
                         return;
                     }

@@ -56,6 +56,9 @@ function initCustomSelect() {
         if (hasScroll) {
             $scroll.scrollTop(prevTop);
         }
+
+        // 포커스 기반 TTS 트리거 
+        if (window.speakIfNew) { try { window.speakIfNew(el); } catch(e) {} }
     }
 
     /* -----------------------------
