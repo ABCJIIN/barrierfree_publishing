@@ -266,6 +266,31 @@ $(document).ready(function(){
         if (!targetKeyCodes.includes(e.keyCode)) return;
         const hasVoice = document.documentElement.classList.contains('mode-voice');
 
+        // sectionMove: 이전/다음(스크롤 홀드) 버튼이면 common.js는 Enter를 건드리지 않는다
+        // - 안 그러면 stopPropagation 때문에 sectionMove.js의 keydown/keyup이 못 받음
+        if (
+            e.keyCode === 13 &&
+            document.activeElement &&
+            document.activeElement.closest('.floating-btn .sec-move-btn')
+        ) {
+            return;
+        }
+
+        // ✅ [EXCEPTION] 상세페이지 floating 이전/다음(스크롤) 버튼은 "누름 유지"를 sectionMove가 처리
+        const ae = document.activeElement;
+        if (
+        ae &&
+        ae.closest('.floating-btn') &&
+        (
+            ae.matches('.sec-move-btn.prev, .sec-move-btn.next') ||
+            ae.closest('.btn-wrap.prev, .btn-wrap.next')
+        ) &&
+        (e.keyCode === 13 || e.key === 'Enter' || e.keyCode === 32 || e.key === ' ')
+        ) {
+        return; // common.js는 여기서 손 떼기 (preventDefault/stopPropagation/click 변환 금지)
+        }
+
+
         // 모든 대상 키 기본 동작 차단
         e.preventDefault();
         e.stopPropagation();

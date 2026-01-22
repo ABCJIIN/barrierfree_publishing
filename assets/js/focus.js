@@ -120,6 +120,50 @@
         return false;
     }
 
+function handleDetailTitleBridge(e, isPrev) {
+  var active = document.activeElement;
+  if (!active) return false;
+
+  // ✅ 구조가 달라도 잡히게: detail-title을 페이지에서 직접 찾음
+  var titleWrap = document.querySelector('.detail-page .detail-title');
+  if (!titleWrap) return false;
+
+  // prev 버튼이 detail-title 밖에 있어도 대응(둘 다 후보로 잡음)
+  var prevBtn =
+    titleWrap.querySelector('.nav-btn.prev') ||
+    document.querySelector('.detail-page .nav-btn.prev');
+
+  var h3 =
+    titleWrap.querySelector('h3[tabindex="0"]') ||
+    document.querySelector('.detail-page .detail-title h3[tabindex="0"]');
+
+  if (!prevBtn || !h3) return false;
+
+  var isOnPrev = (active === prevBtn) || (active.closest && active.closest('.nav-btn.prev') === prevBtn);
+  var isOnH3   = (active === h3);
+
+  // → : prevBtn -> h3
+  if (!isPrev && isOnPrev) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    h3.focus();
+    return true;
+  }
+
+  // ← : h3 -> prevBtn
+  if (isPrev && isOnH3) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    prevBtn.focus();
+    return true;
+  }
+
+  return false;
+}
+
+
+
+
     /* ==============================
     * Page Tab Controller
     * ============================== */
@@ -189,22 +233,18 @@
             if (e.altKey || e.ctrlKey || e.metaKey) return;
         }
 
-        // [PATCH] 저자세 + 상세페이지: sectionMove.js에게 "완전 양보"
-        // - h3(노들섬) -> scroll-sec 진입 Tab을 focus.js가 먹어버리는 케이스 방지
-        if (document.documentElement.classList.contains('mode-low-posture')) {
-            var isDetail = !!document.querySelector('.detail-page');
-            if (isDetail) {
-            // 상세페이지에서는 sectionMove.js가 Tab 흐름을 관리하게 둔다.
-            // (scroll-sec 내부뿐 아니라, scroll-sec "진입 직전" 요소들도 포함)
-            if (active && (
-                active.closest('.detail-page .scroll-sec') ||
-                active.matches('.detail-page .detail-title h3[tabindex="0"]') ||
-                active.closest('.detail-page .detail-title')
-            )) {
-                return;
-            }
-            }
-        }
+// [PATCH] 저자세 + 상세페이지: scroll-sec 내부만 sectionMove.js에게 양보
+if (document.documentElement.classList.contains('mode-low-posture')) {
+  var isDetail = !!document.querySelector('.detail-page');
+  if (isDetail) {
+    if ((isTab || isLeft || isRight) && active && active.closest('.detail-page .scroll-sec')) {
+      return; // scroll-sec 안은 sectionMove가 전담
+    }
+  }
+}
+
+
+
 
         if (active && active.getAttribute && active.getAttribute('role') === 'option') {
             if (isLeft || isRight) {
@@ -231,11 +271,24 @@
             }
         }
 
-        // 저자세 상세페이지(scroll-sec)는 sectionMove.js가 Tab 흐름 제어 → focus.js는 건드리지 않음
-        if (document.documentElement.classList.contains('mode-low-posture')) {
-            var act = document.activeElement;
-            if (act && act.closest && act.closest('.detail-page .scroll-sec')) return;
-        }
+// 저자세 상세페이지: scroll-sec "진입" 양보는 Tab만 → Tab/←/→로 변경
+if ((isTab || isLeft || isRight) && document.documentElement.classList.contains('mode-low-posture')) {
+  var sc = document.querySelector('.detail-page .scroll-sec');
+
+  if (sc && active && !sc.contains(active)) {
+    var orderedTmp = buildOrderedList(root);
+    var idxTmp = orderedTmp.indexOf(active);
+
+    if (idxTmp !== -1) {
+      var nextTmp = isPrev ? orderedTmp[idxTmp - 1] : orderedTmp[idxTmp + 1];
+      if (nextTmp && sc.contains(nextTmp)) {
+        return; // Tab/←/→ 모두 sectionMove에게 넘김
+      }
+    }
+  }
+}
+
+
 
         // 핵심: 이동 방향 결정
         // - Tab: shiftKey면 이전, 아니면 다음
@@ -245,73 +298,113 @@
         if (isTab) isPrev = !!e.shiftKey;
         else isPrev = isLeft;
 
-        // 저자세 상세페이지: scroll-sec "진입" Tab은 sectionMove.js가 처리하게 양보
-        // ArrowRight/Left도 Tab과 동일한 체인이어야 하므로 같은 로직 적용
-        if (document.documentElement.classList.contains('mode-low-posture')) {
-            var sc = document.querySelector('.detail-page .scroll-sec');
+        // ======================================================
+// [BRIDGE] 저자세 상세: sub-header -> detail prev 버튼 (→/Tab)
+// ======================================================
+if (!isPrev && document.documentElement.classList.contains('mode-low-posture')) {
+  var isDetail = !!document.querySelector('.detail-page');
+  if (isDetail) {
+    var activeEl = document.activeElement;
 
-            // 현재 포커스가 scroll-sec 밖에 있고,
-            // 다음 포커스 후보가 scroll-sec 안에 있는 상황이면 focus.js가 Tab을 먹지 않는다.
-            if (sc && active && !sc.contains(active)) {
-                var orderedTmp = buildOrderedList(root);
-                var idxTmp = orderedTmp.indexOf(active);
+    // "현재 포커스가 sub-header일 때만" (여기가 핵심)
+    var isOnSubHeader =
+      activeEl &&
+      activeEl.classList &&
+      activeEl.classList.contains('sub-header') &&
+      activeEl.getAttribute('tabindex') === '0';
 
-                if (idxTmp !== -1) {
-                    var nextTmp = isPrev ? orderedTmp[idxTmp - 1] : orderedTmp[idxTmp + 1];
-                    if (nextTmp && sc.contains(nextTmp)) {
-                        return; // 여기서 빠지면 sectionMove.js 캡처 핸들러가 이어서 받음
-                    }
-                }
-            }
-        }
+    // prev 버튼 후보
+    var prevBtnFromDetail =
+      document.querySelector('.detail-page .detail-title .nav-btn.prev') ||
+      document.querySelector('.detail-page .nav-btn.prev');
 
-        function handleMapZoomBridge(e, isPrev) {
-            var active = document.activeElement;
-            if (!active) return false;
+    if (isOnSubHeader && prevBtnFromDetail && isVisible(prevBtnFromDetail)) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      prevBtnFromDetail.focus();
+      return;
+    }
+  }
+}
 
-            var mapEl = document.querySelector('#map.map-area, #map');
-            if (!mapEl) return false;
 
-            // 같은 섹션 안에서 zoom 버튼을 찾기(구조가 달라도 안정적)
-            var scope = mapEl.closest('.sec-wrap, .map-wrap, .map-section, section') || document;
 
-            var zin  = scope.querySelector('.map-zoom-in-btn');
-            var zout = scope.querySelector('.map-zoom-out-btn');
+// 저자세 상세페이지: scroll-sec "진입" 양보는 Tab일 때만
+if (isTab && document.documentElement.classList.contains('mode-low-posture')) {
+  var sc = document.querySelector('.detail-page .scroll-sec');
 
-            // 포커스 가능 보정(혹시 tabindex=-1이면 올려서 Tab/Arrow 리스트에도 들어오게)
-            if (zin && zin.getAttribute('tabindex') === '-1') zin.setAttribute('tabindex', '0');
-            if (zout && zout.getAttribute('tabindex') === '-1') zout.setAttribute('tabindex', '0');
+  if (sc && active && !sc.contains(active)) {
+    var orderedTmp = buildOrderedList(root);
+    var idxTmp = orderedTmp.indexOf(active);
 
-            // map/zoom 체인일 때만 처리
-            var inChain =
-                (active === mapEl) ||
-                (zin && active === zin) ||
-                (zout && active === zout);
+    if (idxTmp !== -1) {
+      var nextTmp = isPrev ? orderedTmp[idxTmp - 1] : orderedTmp[idxTmp + 1];
+      if (nextTmp && sc.contains(nextTmp)) {
+        return; // Tab만 sectionMove에게 넘김
+      }
+    }
+  }
+}
 
-            if (!inChain) return false;
 
-            // 체인 규칙을 "Tab/Arrow 공통"으로 고정
-            // next: map -> zoom-in -> zoom-out
-            // prev: zoom-out -> zoom-in -> map
-            if (!isPrev) {
-                if (active === mapEl && zin) {
-                    e.preventDefault(); zin.focus(); return true;
-                }
-                if (zin && active === zin && zout) {
-                    e.preventDefault(); zout.focus(); return true;
-                }
-                // zoom-out의 next는 그냥 기존 ordered list 로직으로 넘기려면 false
-                return false;
-            } else {
-                if (zout && active === zout && zin) {
-                    e.preventDefault(); zin.focus(); return true;
-                }
-                if (zin && active === zin) {
-                    e.preventDefault(); mapEl.focus(); return true;
-                }
-                return false;
-            }
-        }
+function handleMapZoomBridge(e, isPrev) {
+  var active = document.activeElement;
+  if (!active) return false;
+
+  var mapEl = document.querySelector('#map.map-area, #map');
+  if (!mapEl) return false;
+
+  // ✅ 1차: 같은 섹션에서 찾기
+  var scope = mapEl.closest('.sec-wrap, .map-wrap, .map-section, section') || document;
+
+  // ✅ 2차: 섹션에서 못 찾으면 문서 전체 fallback
+  var zin  = scope.querySelector('.map-zoom-in-btn')  || document.querySelector('.map-zoom-in-btn');
+  var zout = scope.querySelector('.map-zoom-out-btn') || document.querySelector('.map-zoom-out-btn');
+
+  // 줌 버튼이 포커스 불가로 떨어져 있으면 살려줌
+  if (zin  && zin.getAttribute('tabindex')  === '-1') zin.setAttribute('tabindex', '0');
+  if (zout && zout.getAttribute('tabindex') === '-1') zout.setAttribute('tabindex', '0');
+
+  // map/zoom 체인인지 판정
+  var inChain =
+    (active === mapEl) ||
+    (zin && active === zin) ||
+    (zout && active === zout);
+
+  if (!inChain) return false;
+
+  // next: map -> zoom-in -> zoom-out
+  // prev: zoom-out -> zoom-in -> map
+  if (!isPrev) {
+    if (active === mapEl && zin) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      zin.focus();
+      return true;
+    }
+    if (zin && active === zin && zout) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      zout.focus();
+      return true;
+    }
+    return false;
+  } else {
+    if (zout && active === zout && zin) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      zin.focus();
+      return true;
+    }
+    if (zin && active === zin) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      mapEl.focus();
+      return true;
+    }
+    return false;
+  }
+}
+
+
+        // detail-title 브릿지 (Tab/Shift+Tab/→/← 동일)
+if (handleDetailTitleBridge(e, isPrev)) return;
 
         // map ↔ zoom 브릿지 (Tab/Shift+Tab/→/← 모두 동일)
         if (handleMapZoomBridge(e, isPrev)) return;
