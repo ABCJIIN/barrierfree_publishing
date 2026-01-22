@@ -546,6 +546,42 @@ function initCustomSelect() {
                 var $all = getOptions($select);
                 var idx = $all.index($opt);
 
+                // ←/→ = Tab/Shift+Tab (옵션 내부 이동), 단 경계에서는 바깥으로 탈출(이벤트 흘려보냄)
+                // ←/→ = Shift+Tab/Tab 처럼 동작
+                // - 옵션 내부 이동은 한 칸씩
+                // - 첫 옵션에서 ← : trigger(select-item)로 올라감 (기존 동작 유지)
+                // - 마지막 옵션에서 → : 바깥(다음 포커스)으로 나가야 하므로 여기서 "흘려보내고" focus.js가 처리하게 둠
+                if (key === "ArrowRight" || key === "ArrowLeft") {
+                    var isPrev = (key === "ArrowLeft");
+
+                    // [Case A] 첫 옵션에서 ← : 트리거로 이동 (닫지 않음)
+                    if (isPrev && idx === 0) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        p.$trigger.focus(); // 기존 동작 유지
+                        return;
+                    }
+
+                    // [Case B] 마지막 옵션에서 → : 바깥으로 탈출
+                    // - 여기서는 막지 않는다 (preventDefault/stopPropagation 금지)
+                    // - focus.js가 전역 "다음 요소"로 보내게 둔다
+                    if (!isPrev && idx === $all.length - 1) {
+                        return;
+                    }
+
+                    // [Case C] 옵션 내부에서 한 칸 이동
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    var nextIdx = isPrev ? (idx - 1) : (idx + 1);
+                    var $t = $all.eq(nextIdx);
+
+                    focusPreventScroll($t, p.$scroll);
+                    revealByOneStep($select, $t, isPrev ? "up" : "down");
+                    updateMoveBtnState($select);
+                    return;
+                }
+
                 if (key === "ArrowDown") {
                     e.preventDefault();
                     var next = idx + 1;
@@ -639,14 +675,21 @@ function initCustomSelect() {
 
         if (!p.$trigger.hasClass("on")) return;
 
-        var activeEl = document.activeElement;
+        // 중요: 이벤트가 "실제로 발생한 요소" 기준으로 판단해야 함
+        // - focus.js가 캡처 단계에서 포커스를 옮긴 뒤(document.activeElement 변경)
+        //   여기서 activeElement 기준으로 판단하면 첫 옵션으로 강제 진입하는 버그가 생김
+        var targetEl = e.target;
+        if (!targetEl) return;
 
-        // 포커스가 셀렉트 바깥이면 전역 트랩은 개입하지 않는다.
-        // (열린 채로 다음/이전 탭 요소로 자연스럽게 이동 가능)
-        if (!$(activeEl).closest($select).length) return;
+        // 키다운이 셀렉트 바깥에서 발생했으면 트랩은 절대 개입하지 않는다.
+        if (!$(targetEl).closest($select).length) return;
+
+        // trigger에서 Tab/Shift+Tab은 "바깥으로 나가는" 게 정상 흐름(포커스 강제진입 금지)
+        // (열려있어도 trigger에서 Tab을 누르면 다음/이전 포커싱 요소로 이동해야 함)
+        if ($(targetEl).is(p.$trigger)) return;
 
         // 옵션 자체에서의 Tab은 옵션 keydown이 처리 중이므로 중복 개입 금지
-        if ($(activeEl).is('button[role="option"]')) return;
+        if ($(targetEl).is('button[role="option"]')) return;
 
         cycleFocusWithinOptions($select, e);
     });
