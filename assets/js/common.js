@@ -219,6 +219,11 @@ $(document).ready(function(){
             if (window.speechSynthesis) {
             speechSynthesis.cancel();
             }
+
+            // 모달 오픈/모달 내부 클릭은 TTS cancel 금지
+            if (target.closest('.modal')) return;
+            if (target.closest('[data-open-modal], .slide-detail-btn, .qr-zoom-btn, .traffic-search-btn, .footer .volume-control-btn, .intro .card-btn.inquiry, .card-link[data-title]')) return;
+
         },
         true
     );
@@ -885,6 +890,8 @@ const TTS = {
   }
 };
 
+window.TTS = TTS;
+
 // 포커스 이동 시 TTS 읽기
 /*function getReadableLabel(el) {
   return (
@@ -938,9 +945,10 @@ function getReadableLabel(el) {
 }
 
 function speakIfNew(el) {
+    if (window.__ttsFocusLock) return;
   if (lastSpokenEl === el) return;
   lastSpokenEl = el;
-  TTS.speak(getReadableLabel(el));
+  window.TTS.speak(getReadableLabel(el));
 }
 // tts rate
 function initRateState() {
@@ -1321,3 +1329,5 @@ window.BarrierFreeBGM = (function () {
     pauseNow,
   };
 })();
+
+window.speakIfNew = window.speakIfNew || speakIfNew;
