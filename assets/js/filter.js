@@ -45,7 +45,7 @@ $(function () {
             * - 마지막 "보이는" 라디오에서 Tab → next 페이지로 넘기고 첫 항목 focus
             * - 첫 "보이는" 라디오에서 Shift+Tab → prev 페이지로 넘기고 마지막 항목 focus (옵션)
             * ======================================================= */
-            $btns.off('keydown.filterPaging').on('keydown.filterPaging', function (e) {
+            $(document).off('keydown.filterPaging', SEL.radioBtn).on('keydown.filterPaging', SEL.radioBtn, function (e) {
                 if (e.key !== 'Tab') return;
 
                 var $btn  = $(this);
@@ -60,40 +60,109 @@ $(function () {
                 // Shift+Tab: (원하면 유지) 첫 보이는 항목에서 이전 페이지로
                 if (e.shiftKey) {
                     if (curIdx === state.start && state.pointer > 0) {
+                        e.preventDefault();
+                        $wrap.find(SEL.prev).trigger('click');
+
+                        setTimeout(function () {
+                            var s2 = $wrap.data(STATE_KEY);
+                            if (!s2) return;
+                            var $items2 = $wrap.find(SEL.list).first().children(SEL.item);
+                            var $targetBtn = $items2.eq(s2.end).find(SEL.radioBtn);
+                            if ($targetBtn.length) $targetBtn.focus();
+                        }, 0);
+                    }
+                    return;
+                }
+
+                if (curIdx === state.end && state.end < state.total - 1) {
                     e.preventDefault();
-                    $wrap.find(SEL.prev).trigger('click');
+                    $wrap.find(SEL.next).trigger('click');
 
                     // prev 처리 후 state 갱신되므로 다음 tick에 새 state 기준 focus
                     setTimeout(function () {
                         var s2 = $wrap.data(STATE_KEY);
                         if (!s2) return;
-                        var $targetBtn = $items.eq(s2.end).find(SEL.radioBtn);
+                        var $items2 = $wrap.find(SEL.list).first().children(SEL.item);
+                        var $targetBtn = $items2.eq(s2.start).find(SEL.radioBtn);
                         if ($targetBtn.length) $targetBtn.focus();
                     }, 0);
-                    }
-                    return; // 기본 Shift+Tab은 그대로(이전 요소로)
                 }
+            });
 
-                // Tab: 마지막 보이는 항목에서 아직 뒤에 더 있으면 다음 페이지로 넘기기
-                if (curIdx === state.end && state.end < state.total - 1) {
+            /* =======================================================
+            * ArrowLeft/ArrowRight도 Tab처럼 동작 + 내부 이동
+            * - 보이는 항목 내에서는 한 칸 이동
+            * - 경계(첫/마지막 보이는 항목)에서는 prev/next 페이지 넘기고 포커스 이동
+            * - 전체 첫/마지막에서는 바깥으로 나가게(= focus.js가 처리) 막지 않음
+            * ======================================================= */
+            $(document).off('keydown.filterArrowPaging', SEL.radioBtn).on('keydown.filterArrowPaging', SEL.radioBtn, function (e) {
+                var key = e.key || e.code;
+                if (key !== 'ArrowLeft' && key !== 'ArrowRight') return;
+
+                var $btn  = $(this);
+                var $wrap = $btn.closest(SEL.wrap);
+                var state = $wrap.data(STATE_KEY);
+                if (!state) return;
+
+                var $items = $wrap.find(SEL.list).first().children(SEL.item);
+                var $visibleItems = $items.filter(':visible');
+                var $curLi = $btn.closest('li');
+
+                var curVisibleIdx = $visibleItems.index($curLi);
+                if (curVisibleIdx < 0) return;
+
+                var isLeft  = (key === 'ArrowLeft');
+                var isRight = (key === 'ArrowRight');
+                var curIdx  = $items.index($curLi);
+
+                // 1) 보이는 목록 내 이동
+                if (isRight && curVisibleIdx < $visibleItems.length - 1) {
                     e.preventDefault();
-                    $wrap.find(SEL.next).trigger('click');
-
-                    setTimeout(function () {
-                    var s2 = $wrap.data(STATE_KEY);
-                    if (!s2) return;
-
-                    // 다음 페이지의 첫 항목으로 포커스 (보통 oldEnd+1 == s2.start)
-                    var $targetBtn = $items.eq(s2.start).find(SEL.radioBtn);
-                    if ($targetBtn.length) $targetBtn.focus();
-                    }, 0);
-
+                    $visibleItems.eq(curVisibleIdx + 1).find(SEL.radioBtn).focus();
+                    return;
+                }
+                if (isLeft && curVisibleIdx > 0) {
+                    e.preventDefault();
+                    $visibleItems.eq(curVisibleIdx - 1).find(SEL.radioBtn).focus();
                     return;
                 }
 
-                // 그 외에는 기본 Tab 흐름 유지
-                // - 진짜 마지막 항목이면 자연스럽게 next 버튼으로 감
+                // 2) 경계에서 페이지 넘김
+                if (isRight) {
+                    if (curIdx === state.end && state.end >= state.total - 1) return; // 전체 마지막이면 바깥으로
+                    if (curIdx === state.end && state.end < state.total - 1) {
+                        e.preventDefault();
+                        $wrap.find(SEL.next).trigger('click');
+
+                        setTimeout(function () {
+                            var s2 = $wrap.data(STATE_KEY);
+                            if (!s2) return;
+                            var $items2 = $wrap.find(SEL.list).first().children(SEL.item);
+                            var $targetBtn = $items2.eq(s2.start).find(SEL.radioBtn);
+                            if ($targetBtn.length) $targetBtn.focus();
+                        }, 0);
+                        return;
+                    }
+                }
+
+                if (isLeft) {
+                    if (curIdx === state.start && state.pointer === 0) return; // 전체 첫번째면 바깥으로
+                    if (curIdx === state.start && state.pointer > 0) {
+                        e.preventDefault();
+                        $wrap.find(SEL.prev).trigger('click');
+
+                        setTimeout(function () {
+                            var s2 = $wrap.data(STATE_KEY);
+                            if (!s2) return;
+                            var $items2 = $wrap.find(SEL.list).first().children(SEL.item);
+                            var $targetBtn = $items2.eq(s2.end).find(SEL.radioBtn);
+                            if ($targetBtn.length) $targetBtn.focus();
+                        }, 0);
+                        return;
+                    }
+                }
             });
+
         });
     }
 
@@ -416,6 +485,7 @@ $(function () {
                     };
 
                     $wrap.data(STATE_KEY, state);
+                    $wrap.attr('data-filter-paging', '1');
                     updateMoveButtons($wrap);
                     found = true;
                     break; // while만 종료
@@ -439,6 +509,7 @@ $(function () {
                 };
 
                 $wrap.data(STATE_KEY, state2);
+                $wrap.attr('data-filter-paging', '1'); 
                 updateMoveButtons($wrap);
             }
         });
