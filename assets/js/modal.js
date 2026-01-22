@@ -279,11 +279,12 @@ $(function () {
         // 버튼 클래스 기준으로 어떤 모달을 열지 결정
         const isGoogle = $btn.hasClass('google');
         const $modal = isGoogle ? $('.modal.qr-zoom.google') : $('.modal.qr-zoom.naver');
+        const add_text = '화면 중앙 Q알코드를 통해 모바일에서도 추가정보를 확인하세요. 화면 하단 닫기 버튼을 누르면, 이제 화면으로 돌아갑니다.';
 
         openModal($modal, $btn, {
             // 필요하면 첫 포커스 위치 지정 가능
             // focusSelector: '.close-btn',
-            tts: isGoogle ? '구글 지도 QR코드 크게보기 화면입니다.' : '네이버 지도 QR코드 크게보기 화면입니다.'
+            tts: isGoogle ? '구글 지도 Q알코드 크게보기 화면입니다. ' + add_text : '네이버 지도 Q알코드 크게보기 화면입니다. ' + add_text
         });
     });
 
@@ -432,6 +433,91 @@ $(function () {
                 }
             }
         }
+
+        // 좌/우 방향키 = 포커스 이동 (볼륨은 내부구간 + 경계 브릿지)
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            if (!$currentModal || $currentModal.attr('aria-hidden') === 'true') return;
+
+            var activeEl = document.activeElement;
+            var step = (e.key === 'ArrowRight') ? 1 : -1;
+
+            // 0) 편집 입력류는 기본 동작 유지 (※ range는 tabindex=-1이라 원래 포커스 안 가는게 정상)
+            var tag = activeEl && activeEl.tagName ? activeEl.tagName.toLowerCase() : '';
+            var type = activeEl && activeEl.type ? String(activeEl.type).toLowerCase() : '';
+            var isEditable =
+                tag === 'input' || tag === 'textarea' || tag === 'select' ||
+                activeEl.isContentEditable ||
+                type === 'range';
+
+            // 단, 버튼/mark는 input이 아니므로 여기 안 걸림
+            if (isEditable) return;
+
+            // 1) 전체 루프(모달 → footer) 목록
+            var $all = getLoopFocusables();
+            if (!$all.length) return;
+
+            // 2) 볼륨 모달이면: "작게→mark들→크게" 내부 이동 + 끝에서만 $all로 이어붙이기
+            if ($currentModal.hasClass('volume-control')) {
+                var $order = $currentModal
+                    .find('.volume-btn.down, .volume-marks .mark, .volume-btn.up')
+                    .filter(':visible')
+                    .filter(function () {
+                        var $el = $(this);
+                        if ($el.is('[disabled]')) return false;
+                        if ($el.attr('aria-hidden') === 'true') return false;
+                        return true;
+                    });
+
+                var idxInOrder = $order.index(activeEl);
+
+                // 볼륨 구간 안에 있을 때만 특수 처리
+                if (idxInOrder >= 0 && $order.length) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // (A) 구간 내부 이동
+                    var isFirst = (idxInOrder === 0);
+                    var isLast  = (idxInOrder === $order.length - 1);
+
+                    if (step === 1 && !isLast) {
+                        $order.eq(idxInOrder + 1).focus();
+                        return;
+                    }
+                    if (step === -1 && !isFirst) {
+                        $order.eq(idxInOrder - 1).focus();
+                        return;
+                    }
+
+                    // (B) 구간 끝이면 래핑 금지 → 전체 리스트에서 다음/이전으로 이동
+                    var idxAll = $all.index(activeEl);
+                    if (idxAll < 0) idxAll = 0;
+
+                    var nextAll = idxAll + step;
+                    // 전체 리스트는 기존처럼 순환(원하면 여기만 순환 빼도 됨)
+                    if (nextAll < 0) nextAll = $all.length - 1;
+                    if (nextAll >= $all.length) nextAll = 0;
+
+                    $all.eq(nextAll).focus();
+                    return;
+                }
+                // 볼륨 모달이라도 "구간 밖(타이틀/닫기/푸터)"이면 아래 공통 로직으로 처리
+            }
+
+            // 3) 공통: 전체 리스트 기준으로 이동 (순환)
+            e.preventDefault();
+            e.stopPropagation();
+
+            var idx = $all.index(activeEl);
+            if (idx < 0) idx = 0;
+
+            var nextIdx = idx + step;
+            if (nextIdx < 0) nextIdx = $all.length - 1;
+            if (nextIdx >= $all.length) nextIdx = 0;
+
+            $all.eq(nextIdx).focus();
+            return;
+        }
+        
     });
 
     // ===============================
@@ -555,9 +641,9 @@ $(function () {
         openModal($modal, $trigger);
 
         // TTS 연동
-        if (window.TTS && TTS.isEnabled()) {
-            TTS.speak(`${title} 상세 정보입니다.`);
-        }
+        // if (window.TTS && TTS.isEnabled()) {
+            TTS.speak(`상세 정보가 열립니다.   , ${title} 상세 정보입니다. 방향키로 내용을 확인해주세요. 하단에는 닫기 버튼이 있습니다.`);
+        // }
     });
 
     window.Modal = {
