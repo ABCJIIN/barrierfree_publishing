@@ -75,9 +75,11 @@
     }
 
     function focusByIndex(list, idx) {
-        if (!list.length) return;
+        if (!list.length) return null;
         var safe = (idx + list.length) % list.length;
-        try { list[safe].focus(); } catch (e) {}
+        var el = list[safe];
+        try { el.focus(); } catch (e) {}
+        return el;
     }
 
     /* ==============================
@@ -107,6 +109,7 @@
         if (active === infoText && !isPrev) {
         e.preventDefault();
         volumeBtn.focus();
+        if (window.speakIfNew) { try { window.speakIfNew(volumeBtn); } catch(e){} }
         return true;
         }
 
@@ -114,6 +117,7 @@
         if (active === volumeBtn && isPrev) {
         e.preventDefault();
         infoText.focus();
+        if (window.speakIfNew) { try { window.speakIfNew(infoText); } catch(e){} }
         return true;
         }
 
@@ -147,6 +151,7 @@ function handleDetailTitleBridge(e, isPrev) {
     e.preventDefault();
     e.stopImmediatePropagation();
     h3.focus();
+    if (window.speakIfNew) { try { window.speakIfNew(h3); } catch(e){} }
     return true;
   }
 
@@ -155,6 +160,7 @@ function handleDetailTitleBridge(e, isPrev) {
     e.preventDefault();
     e.stopImmediatePropagation();
     prevBtn.focus();
+    if (window.speakIfNew) { try { window.speakIfNew(prevBtn); } catch(e){} }
     return true;
   }
 
@@ -322,6 +328,7 @@ if (!isPrev && document.documentElement.classList.contains('mode-low-posture')) 
       e.preventDefault();
       e.stopImmediatePropagation();
       prevBtnFromDetail.focus();
+      if (window.speakIfNew) { try { window.speakIfNew(prevBtnFromDetail); } catch(e){} }
       return;
     }
   }
@@ -379,11 +386,13 @@ function handleMapZoomBridge(e, isPrev) {
     if (active === mapEl && zin) {
       e.preventDefault(); e.stopImmediatePropagation();
       zin.focus();
+      if (window.speakIfNew) { try { window.speakIfNew(zin); } catch(e){} }
       return true;
     }
     if (zin && active === zin && zout) {
       e.preventDefault(); e.stopImmediatePropagation();
       zout.focus();
+      if (window.speakIfNew) { try { window.speakIfNew(zout); } catch(e){} }
       return true;
     }
     return false;
@@ -391,11 +400,13 @@ function handleMapZoomBridge(e, isPrev) {
     if (zout && active === zout && zin) {
       e.preventDefault(); e.stopImmediatePropagation();
       zin.focus();
+      if (window.speakIfNew) { try { window.speakIfNew(zin); } catch(e){} }
       return true;
     }
     if (zin && active === zin) {
       e.preventDefault(); e.stopImmediatePropagation();
       mapEl.focus();
+      if (window.speakIfNew) { try { window.speakIfNew(mapEl); } catch(e){} }
       return true;
     }
     return false;
@@ -427,12 +438,13 @@ if (handleDetailTitleBridge(e, isPrev)) return;
 
         // 기본 동작 방지 후 포커스 이동
         e.preventDefault();
-        if (isPrev) focusByIndex(ordered, idx - 1);
-        else focusByIndex(ordered, idx + 1);
+        var moved = isPrev
+        ? focusByIndex(ordered, idx - 1)
+        : focusByIndex(ordered, idx + 1);
 
-        // common.js와 함께 쓸 때: 포커스 이동 후 TTS도 읽게(있으면)
-        if (window.speakIfNew) {
-            try { window.speakIfNew(document.activeElement); } catch (e2) {}
+        // 포커스 이동 후 TTS
+        if (moved && window.speakIfNew) {
+        try { window.speakIfNew(moved); } catch (e2) {}
         }
     }
 
@@ -613,6 +625,7 @@ if (handleDetailTitleBridge(e, isPrev)) return;
 
             try { t.setAttribute('tabindex', '-1'); } catch(err){}
             mapEl.focus();
+            if (window.speakIfNew) { try { window.speakIfNew(mapEl); } catch(e){} }
         }
         }, true);
 
@@ -663,6 +676,10 @@ if (handleDetailTitleBridge(e, isPrev)) return;
         document.documentElement.classList.add('is-keyboard-user');
         try { el.focus({ preventScroll: true }); }
         catch (e) { try { el.focus(); } catch (e2) {} }
+
+        if (window.speakIfNew) {
+            try { window.speakIfNew(el); } catch (e3) {}
+        }
         return true;
     }
 

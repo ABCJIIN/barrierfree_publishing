@@ -59,6 +59,7 @@
         e.stopImmediatePropagation();
         lockOnce();
         zoomIn.focus();
+        if (window.speakIfNew) { try { window.speakIfNew(zoomIn); } catch(e){} }
         return;
         }
 
@@ -67,6 +68,7 @@
         e.stopImmediatePropagation();
         lockOnce();
         zoomOut.focus();
+        if (window.speakIfNew) { try { window.speakIfNew(zoomOut); } catch(e){} }
         return;
         }
 
@@ -75,6 +77,7 @@
         e.stopImmediatePropagation();
         lockOnce();
         zoomIn.focus();
+        if (window.speakIfNew) { try { window.speakIfNew(zoomIn); } catch(e){} }
         return;
         }
 
@@ -83,6 +86,7 @@
         e.stopImmediatePropagation();
         lockOnce();
         mapEl.focus();
+        if (window.speakIfNew) { try { window.speakIfNew(mapEl); } catch(e){} }
         return;
         }
     }, true);
@@ -105,6 +109,7 @@
 
         try { t.setAttribute('tabindex', '-1'); } catch(err){}
         mapEl.focus();
+        if (window.speakIfNew) { try { window.speakIfNew(mapEl); } catch(e){} }
         }
     }, true);
 
@@ -298,8 +303,14 @@
 
     function focusSafe(el){
         if (!el) return;
+
         try { el.focus({ preventScroll: true }); }
-        catch(e){ el.focus(); }
+        catch(e){ try { el.focus(); } catch(e2){} }
+
+        // 포커스 기반 TTS (항상)
+        if (window.speakIfNew) {
+            try { window.speakIfNew(el); } catch(e3) {}
+        }
     }
 
     function getAvailHeight(){
@@ -492,8 +503,10 @@
 
         if (!prevVisible && prevHadFocus && nextVisible && nextBtn){
         nextBtn.focus();
+        if (window.speakIfNew) { try { window.speakIfNew(nextBtn); } catch(e){} }
         } else if (!nextVisible && nextHadFocus && prevVisible && prevBtn){
         prevBtn.focus();
+        if (window.speakIfNew) { try { window.speakIfNew(prevBtn); } catch(e){} }
         }
 
         if (prevWrap){
