@@ -854,6 +854,30 @@
         stopHoldScroll();
         });
 
+            // ✅ [ADD] 일반모드: Enter 길게 누르면 클릭/터치 홀드와 동일하게 스크롤
+    btn.addEventListener('keydown', function(e){
+        if (isLowPosture) return;
+
+        // Enter 홀드 스크롤
+        var isEnter = (e.key === 'Enter' || e.keyCode === 13);
+        if (!isEnter) return;
+
+        // 버튼 기본 Enter 클릭(자동 click) 방지 + 홀드 스크롤 시작
+        e.preventDefault();
+        startHoldScroll(dir);
+    });
+
+    btn.addEventListener('keyup', function(e){
+        if (isLowPosture) return;
+
+        var isEnter = (e.key === 'Enter' || e.keyCode === 13);
+        if (!isEnter) return;
+
+        e.preventDefault();
+        stopHoldScroll();
+    });
+
+
         btn.addEventListener('blur', function(){
         if (isLowPosture) return;
         stopHoldScroll();
@@ -912,35 +936,130 @@
     return document.querySelector('.detail-page .detail-title h3[tabindex="0"]');
     }
 
-    document.addEventListener('keydown', function(e){
-    if (!isLowPosture) return;
-    if (e.key !== 'Tab') return;
+// ======================================================
+// [LOW POSTURE TAB + ARROW BRIDGE]
+// - Tab        === ArrowRight
+// - Shift+Tab  === ArrowLeft
+// ======================================================
 
+document.addEventListener('keydown', function (e) {
+    if (!isLowPosture) return;
+
+    // 🔥 ADD: Tab + Arrow 키 통합
+    var isTab = (e.key === 'Tab');
+    var isRight = (e.key === 'ArrowRight');
+    var isLeft  = (e.key === 'ArrowLeft');
+
+    if (!(isTab || isRight || isLeft)) return;
+
+    // Arrow 키는 무조건 기본 동작 차단
+    if (!isTab) {
+        e.preventDefault();
+    }
+
+    // Arrow → Tab 변환 규칙
+    var isBackward =
+        e.shiftKey ||
+        isLeft; // ← === Shift+Tab
+
+    // 모달 열려 있으면 패스
     if (document.querySelector('.modal[aria-hidden="false"]')) return;
 
     var a = document.activeElement;
     if (!a) return;
 
-    // 컴포넌트별 예외
+        // ✅ [ADD] 저자세: detail-title(h3) ↔ prev 버튼을 Arrow로도 이동 가능하게
+    // - Shift+Tab은 원래대로 두고, ArrowLeft/ArrowRight에서만 보강
+    if (!isTab) {
+        var titleH3 =
+            document.querySelector('.detail-page .detail-title h3[tabindex="0"]');
+
+        var prevBtn2 =
+            document.querySelector('.detail-page .detail-title .nav-btn.prev') ||
+            document.querySelector('.detail-page .nav-btn.prev');
+
+        if (titleH3 && prevBtn2) {
+            // ← : h3 -> prev 버튼
+            if (isLeft && a === titleH3) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                focusSafe(prevBtn2);
+                return;
+            }
+            // → : prev 버튼 -> h3 (대칭도 같이)
+            if (isRight && a === prevBtn2) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                focusSafe(titleH3);
+                return;
+            }
+        }
+    }
+
+
+    // 컴포넌트 예외 (기존 그대로)
     if (a.getAttribute && a.getAttribute('role') === 'option') return;
     if (a.closest && a.closest('.filter-list-wrap')) return;
     if (a.closest && a.closest('.custom-select')) return;
 
     // ======================================================
-    // ✅[BRIDGE-1] h3(노들섬)에서 Tab → 무조건 1번째 sec-wrap 첫 포커스
+// [BRIDGE] map ↔ zoom (저자세 scroll-sec 내부에서도 동작)
+// - →/Tab: map -> zoomIn -> zoomOut
+// - ←/Shift+Tab: zoomOut -> zoomIn -> map
+// ======================================================
+(function(){
+  var mapEl = document.querySelector('#map.map-area, #map');
+  if (!mapEl) return;
+
+  var scope = mapEl.closest('.sec-wrap, .map-wrap, .map-section, section') || document;
+  var zin  = scope.querySelector('.map-zoom-in-btn')  || document.querySelector('.map-zoom-in-btn');
+  var zout = scope.querySelector('.map-zoom-out-btn') || document.querySelector('.map-zoom-out-btn');
+
+  // map/zoom chain 판정
+  var inChain =
+    (a === mapEl) ||
+    (zin && a === zin) ||
+    (zout && a === zout);
+
+  if (!inChain) return;
+
+  // 포커스가 map/zoom으로 이동될 때 focusin 회수 로직 방해 방지
+  window.__mapBridgeLock = true;
+  setTimeout(function(){ window.__mapBridgeLock = false; }, 0);
+
+  // forward(→/Tab)
+  if (!isBackward) {
+    if (a === mapEl && zin) { focusSafe(zin); return; }
+    if (zin && a === zin && zout) { focusSafe(zout); return; }
+    return;
+  }
+
+  // backward(←/Shift+Tab)
+  if (isBackward) {
+    if (zout && a === zout && zin) { focusSafe(zin); return; }
+    if (zin && a === zin) { focusSafe(mapEl); return; }
+    return;
+  }
+})();
+
+
     // ======================================================
-    var titleEl = getDetailTitleEl();
-    if (!e.shiftKey && titleEl && a === titleEl) {
+    // [BRIDGE-1] detail-title → 첫 sec-wrap
+    // ======================================================
+    var titleEl = (function(){
+        return document.querySelector('.detail-page .detail-title h3[tabindex="0"]');
+    })();
+
+    if (!isBackward && titleEl && a === titleEl) {
         e.preventDefault();
         e.stopImmediatePropagation();
         jumpToFirstWrapFocus();
         return;
     }
 
-    var sc = qs(SEL.scrollSec);
+    var sc = document.querySelector(SEL.scrollSec);
     if (!sc) return;
 
-    // 현재 step 기준 wrap(정확)
     var activeWrap = getWrapByStep();
     if (!activeWrap) return;
 
@@ -950,93 +1069,66 @@
     var allNodes = getAllFocusableInWrap(activeWrap);
     if (!allNodes.length) return;
 
-    var idxAll = allNodes.indexOf(a);
-    if (idxAll === -1) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        focusSafe(e.shiftKey ? allNodes[allNodes.length - 1] : allNodes[0]);
-        return;
-    }
-
-    var isBackward = !!e.shiftKey;
-
-    // ======================================================
-    // ✅[BRIDGE-2] 1번째 sec-wrap "첫 요소"에서 Shift+Tab → 무조건 h3(노들섬)
-    // - 전체 DOM prev 탐색(getPrevFocusableFrom) 타지 않게 고정
-    // ======================================================
-    if (isBackward && idxAll === 0) {
-        var s0 = steps[current];
-        var isFirstStep = (current === 0);
-        var isFirstPage = (s0 && s0.pageIndex === 0);
-
-        if (isFirstStep && isFirstPage && titleEl && isVisible(titleEl)) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        focusSafe(titleEl);
-        return;
-        }
-    }
-
-    // 다음/이전 대상
-    var target = isBackward ? allNodes[idxAll - 1] : allNodes[idxAll + 1];
+    var idx = allNodes.indexOf(a);
 
     e.preventDefault();
     e.stopImmediatePropagation();
 
-    // 1) 같은 wrap 안에서 이동 가능하면 바로 이동
-    if (target) {
-        focusSafe(target);
-        return;
+    // ======================================================
+    // wrap 내부 이동
+    // ======================================================
+    if (idx !== -1) {
+        var target = isBackward ? allNodes[idx - 1] : allNodes[idx + 1];
+        if (target) {
+            focusSafe(target);
+            return;
+        }
     }
 
-    // 2) wrap 끝/처음 → step/page 이동 or 바깥으로 탈출
+    // ======================================================
+    // wrap 경계 처리 (step/page 이동)
+    // ======================================================
     var s = steps[current];
     if (!s) return;
 
-    var isFirstStep2 = (current === 0);
+    var isFirstStep = (current === 0);
     var isLastStep  = (current === steps.length - 1);
-
-    var isFirstPage2 = (s.pageIndex === 0);
+    var isFirstPage = (s.pageIndex === 0);
     var isLastPage  = (s.pageIndex === getMaxPageIndex(s));
 
+    // ▶ 앞으로
     if (!isBackward) {
         if (isLastStep && isLastPage) {
-        var outNext = getNextFocusableFrom(a);
-        if (outNext) { focusSafe(outNext); return; }
-
-        var footerVol = document.querySelector('footer.footer .volume-control-btn');
-        if (footerVol) focusSafe(footerVol);
-        return;
+            var outNext = getNextFocusableFrom(a);
+            if (outNext) focusSafe(outNext);
+            return;
         }
 
         goNext();
-        requestAnimationFrame(function(){
-        focusWrapEdge(false);
+        requestAnimationFrame(function () {
+            focusWrapEdge(false);
         });
         return;
     }
 
-    if (isFirstStep2 && isFirstPage2) {
-        var outPrev = getPrevFocusableFrom(a);
-        if (outPrev) { focusSafe(outPrev); return; }
-
-        var header = document.querySelector('header');
-        if (header) {
-        var hs = Array.prototype.slice.call(header.querySelectorAll(SEL.focusable)).filter(function(el){
-            return isVisible(el) && !(el.closest && el.closest('[aria-hidden="true"]')) && !(el.closest && el.closest('[hidden]'));
-        });
-        if (hs.length) focusSafe(hs[hs.length - 1]);
+    // ◀ 뒤로
+    if (isBackward) {
+        if (isFirstStep && isFirstPage) {
+            if (titleEl && isVisible(titleEl)) {
+                focusSafe(titleEl);
+            }
+            return;
         }
+
+        goPrev();
+        requestAnimationFrame(function () {
+            focusWrapEdge(true);
+        });
         return;
     }
 
-    goPrev();
-    requestAnimationFrame(function(){
-        focusWrapEdge(true);
-    });
-    return;
+}, true);
 
-    }, true);
 
     }
 
