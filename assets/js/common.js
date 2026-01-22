@@ -83,6 +83,8 @@ $(document).ready(function(){
         .addClass("is-active")
         .attr("aria-current", "page");
 
+    applyBottomNavAriaLabels();
+
     // modal (공통)
     // modal.html 안에 volume 모달이 들어오고 나서 다시 초기화
     if (typeof initVolume === 'function') {
@@ -153,6 +155,13 @@ $(document).ready(function(){
 
     $(document).on('click', '#homeBtn', function () {        
         const isActiveVoice = $('html').hasClass('mode-voice');
+
+        try {
+            localStorage.setItem('contrastMode', '0');
+            localStorage.setItem('lowMode', '0');
+            localStorage.setItem('voiceMode', '0');
+            localStorage.setItem('lastMode', 'none');
+        } catch (e) {}
 
         if(isActiveVoice) {
             location.replace("/index_voice.html");
@@ -425,6 +434,25 @@ $(document).ready(function(){
         root.classList.remove('is-keyboard-user');
     });
 })();*/
+
+function applyBottomNavAriaLabels() {
+  document.querySelectorAll('.bottom-nav .nav-btn').forEach((el) => {
+    const label =
+      el.querySelector('.label')?.textContent?.trim() ||
+      el.getAttribute('data-nav') ||
+      '메뉴';
+
+    const isCurrent =
+      el.getAttribute('aria-current') === 'page' ||
+      el.classList.contains('is-active');
+
+    if (isCurrent) {
+      el.setAttribute('aria-label', `${label}, 현재 카테고리입니다.`);
+    } else {
+      el.setAttribute('aria-label', `${label}. 확인 버튼을 누르면 ${label} 카테고리로 이동합니다.`);
+    }
+  });
+}
 
 
 function ttsStop(){
@@ -1072,41 +1100,61 @@ function enhanceZebraPaginationA11y() {
 
 /* ==============================================
     Input Mode Detection (전역 실행)
-    - 키보드/키패드 입력 감지 시: is-keyboard-user 클래스 추가
-    - 마우스/터치 입력 감지 시: is-keyboard-user 클래스 제거
+    - 키보드 입력 감지 시: is-keyboard-user ON
+    - 포인터 입력 감지 시: is-keyboard-user OFF
+    - ※ 캡처 단계에서 잡아서(modal.js 등에서 stopPropagation 해도) 안정적으로 동작
    ============================================== */
 (function () {
-    const root = document.documentElement;
+    'use strict';
 
-    // 키보드(키패드) 사용 감지
-    window.addEventListener('keydown', function (e) {
-        // 모든 키 입력에 대해 반응하거나, 특정 키만 반응하도록 설정
-        // 배리어프리 키오스크의 경우, 키패드의 어떤 키를 눌러도 포커스가 보여야 함
-        
-        // 이미 클래스가 있다면 중복 실행 방지
-        if (root.classList.contains('is-keyboard-user')) return;
+    var root = document.documentElement;
 
-        // (옵션) 특정 키만 반응하게 하려면 아래 조건문 사용
-        /*
-        const focusKeys = [
-            9, 13, 37, 38, 39, 40, // Tab, Enter, Arrows
-            128, 129, 135, 134, 131, 130, 127, 126 // F-Keys (키패드)
-        ];
-        if (!focusKeys.includes(e.keyCode)) return; 
-        */
-
+    function setKeyboardUser() {
+        if (!root.classList.contains('is-keyboard-user')) {
         root.classList.add('is-keyboard-user');
-    });
+        }
+    }
 
-    // 마우스 클릭 시 해제
+    function unsetKeyboardUser() {
+        if (root.classList.contains('is-keyboard-user')) {
+        root.classList.remove('is-keyboard-user');
+        }
+    }
+
+    // “키보드 조작”으로 간주할 키들
+    // (키패드 환경이면 사실상 아무 키든 ON 해도 됨. 그래도 최소한 방향키/탭/엔터/스페이스는 포함)
+    var KEYBOARD_KEYS = {
+        Tab: true,
+        Enter: true,
+        ' ': true,
+        ArrowLeft: true,
+        ArrowRight: true,
+        ArrowUp: true,
+        ArrowDown: true,
+        Home: true,
+        End: true
+    };
+
+    // 키보드 입력 -> ON (캡처 단계)
+    window.addEventListener('keydown', function (e) {
+        // 키패드/키보드 어떤 키든 포커스 링 보여야 하면 아래 if를 제거하고 setKeyboardUser()만 호출해도 됨
+        if (KEYBOARD_KEYS[e.key]) setKeyboardUser();
+    }, true);
+
+    // 포인터 입력 -> OFF (캡처 단계)
+    // pointerdown 하나로 대부분 커버됨(마우스+터치+펜)
+    window.addEventListener('pointerdown', function () {
+        unsetKeyboardUser();
+    }, true);
+
+    // 구형 브라우저/특수 디바이스 대비(있어도 무방)
     window.addEventListener('mousedown', function () {
-        root.classList.remove('is-keyboard-user');
-    });
+        unsetKeyboardUser();
+    }, true);
 
-    // 터치 시작 시 해제
     window.addEventListener('touchstart', function () {
-        root.classList.remove('is-keyboard-user');
-    });
+        unsetKeyboardUser();
+    }, true);
 })();
 
 window.BarrierFreeBGM = (function () {
