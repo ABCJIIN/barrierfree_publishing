@@ -205,12 +205,14 @@ $(function () {
             const $target = $currentModal.find(options.focusSelector);
             if ($target.length) {
                 $target.focus();
+                if (window.speakIfNew) window.speakIfNew(document.activeElement);
                 return;
             }
         }
 
         if ($focusables.length) {
             $focusables.first().focus();
+            if (window.speakIfNew) window.speakIfNew(document.activeElement);
         }
     }
 
@@ -233,6 +235,7 @@ $(function () {
         // 모달 닫을 때 포커스를 원래 버튼으로 돌려줄지 여부
         if (restoreFocus && $lastFocused && $lastFocused.length && typeof $lastFocused.focus === 'function') {
             $lastFocused.focus();
+            if (window.speakIfNew) window.speakIfNew(document.activeElement);
         }
 
         $currentModal = null;
@@ -391,9 +394,13 @@ $(function () {
                 var active = document.activeElement;
 
                 if (e.shiftKey) {
-                    if (active === $first[0]) { e.preventDefault(); $last.focus(); }
+                    if (active === $first[0]) { e.preventDefault(); $last.focus();
+                        if (window.speakIfNew) window.speakIfNew(document.activeElement);
+                     }
                 } else {
-                    if (active === $last[0]) { e.preventDefault(); $first.focus(); }
+                    if (active === $last[0]) { e.preventDefault(); $first.focus();
+                        if (window.speakIfNew) window.speakIfNew(document.activeElement);
+                     }
                 }
                 return;
             }
@@ -409,12 +416,14 @@ $(function () {
                 if (active === $firstModal[0]) {
                     e.preventDefault();
                     $lastFooter.focus();
+                    if (window.speakIfNew) window.speakIfNew(document.activeElement);
                     return;
                 }
                 // 2) footer 첫 요소에서 Shift+Tab → 모달 마지막으로
                 if (active === $firstFooter[0]) {
                     e.preventDefault();
                     $lastModal.focus();
+                    if (window.speakIfNew) window.speakIfNew(document.activeElement);
                     return;
                 }
             } else {
@@ -423,12 +432,14 @@ $(function () {
                 if (active === $lastModal[0]) {
                     e.preventDefault();
                     $firstFooter.focus();
+                    if (window.speakIfNew) window.speakIfNew(document.activeElement);
                     return;
                 }
                 // 2) footer 마지막 요소에서 Tab → 모달 첫 요소로
                 if (active === $lastFooter[0]) {
                     e.preventDefault();
                     $firstModal.focus();
+                    if (window.speakIfNew) window.speakIfNew(document.activeElement);
                     return;
                 }
             }
@@ -481,10 +492,12 @@ $(function () {
 
                     if (step === 1 && !isLast) {
                         $order.eq(idxInOrder + 1).focus();
+                        if (window.speakIfNew) window.speakIfNew(document.activeElement);
                         return;
                     }
                     if (step === -1 && !isFirst) {
                         $order.eq(idxInOrder - 1).focus();
+                        if (window.speakIfNew) window.speakIfNew(document.activeElement);
                         return;
                     }
 
@@ -498,6 +511,7 @@ $(function () {
                     if (nextAll >= $all.length) nextAll = 0;
 
                     $all.eq(nextAll).focus();
+                    if (window.speakIfNew) window.speakIfNew(document.activeElement);
                     return;
                 }
                 // 볼륨 모달이라도 "구간 밖(타이틀/닫기/푸터)"이면 아래 공통 로직으로 처리
@@ -515,6 +529,7 @@ $(function () {
             if (nextIdx >= $all.length) nextIdx = 0;
 
             $all.eq(nextIdx).focus();
+            if (window.speakIfNew) window.speakIfNew(document.activeElement);
             return;
         }
         
