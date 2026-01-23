@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var lastIndex = null;
 
+    function markUserSlideChange() {
+        isUserSlideChange = true;
+    }
+
     function isVoiceMode() {
         return document.documentElement.classList.contains('mode-voice');
     }
@@ -34,7 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleSlideChange(swiper) {
-        if (isVoiceMode() && lastIndex !== null) {
+        // 사용자 조작으로 발생한 slideChange일 때만 안내 TTS
+        if (isVoiceMode() && lastIndex !== null && isUserSlideChange) {
             if (swiper.realIndex > lastIndex) {
                 speakSafe('다음 슬라이드입니다.');
             } else if (swiper.realIndex < lastIndex) {
@@ -44,6 +49,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 항상 갱신 (중요)
         lastIndex = swiper.realIndex;
+
+        // 다음 autoplay/타이머/영상종료 slideNext에는 영향 없도록 즉시 해제
+        isUserSlideChange = false;
 
         clearAutoplayTimer();
         updatePagination(swiper);
@@ -289,8 +297,8 @@ document.addEventListener('DOMContentLoaded', function () {
         swiper.slides.forEach(function (slideEl) {
             var isActive = (slideEl === activeSlide);
 
-            // 1) 슬라이드 자체: 활성 0 / 비활성 -1 (원하는 요구사항)
-            slideEl.setAttribute('tabindex', isActive ? '0' : '-1');
+            // 1) 슬라이드 컨테이너는 포커스 받지 않게
+            slideEl.setAttribute('tabindex', '-1');
 
             // 2) aria-hidden
             if (!isActive) slideEl.setAttribute('aria-hidden', 'true');
@@ -439,6 +447,28 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
+
+    // Prev/Next 버튼 조작(터치/클릭/키보드)일 때만 슬라이드 안내 TTS 나오게 하기
+    (function bindUserNavMarks() {
+        var prevBtn = document.querySelector('.intro-controls .slide-prev');
+        var nextBtn = document.querySelector('.intro-controls .slide-next');
+
+        [prevBtn, nextBtn].forEach(function (btn) {
+            if (!btn) return;
+
+            // 클릭/터치(포인터)로 누른 경우
+            btn.addEventListener('pointerdown', markUserSlideChange, true);
+            btn.addEventListener('click', markUserSlideChange, true);
+
+            // 키보드로 버튼 조작한 경우(Enter/Space)
+            btn.addEventListener('keydown', function (e) {
+                var k = e.key || '';
+                if (k === 'Enter' || k === ' ' || e.keyCode === 13 || e.keyCode === 32) {
+                    markUserSlideChange();
+                }
+            }, true);
+        });
+    })();
 
     // Prev/Next 버튼은 Swiper navigation 모듈로 제어 (추가 로직 필요 없음)
 });
