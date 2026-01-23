@@ -124,14 +124,20 @@ function initVolume() {
         const inputRect = input.getBoundingClientRect();
         const marksRect = marksWrap.getBoundingClientRect();
 
+        // zoom.js에서 publishZoomState()로 올려둔 값 사용 (줌 아니면 1)
+        const zoomState = window.__ZOOM_STATE__ || {};
+        const SCALE_FIX = (zoomState.isZoomed ? (zoomState.scale || 1) : 1) || 1;
+
         const THUMB = 40; // CSS thumb와 동일해야 함
         const radius = THUMB / 2;
 
-        const trackLeft = radius;
-        const trackRight = inputRect.width - radius;
-        const trackWidth = trackRight - trackLeft;
+        // rect는 스케일 반영된 값이라서 "레이아웃 기준"으로 환산
+        const inputW = inputRect.width / SCALE_FIX;
+        const offsetX = (inputRect.left - marksRect.left) / SCALE_FIX;
 
-        const offsetX = inputRect.left - marksRect.left;
+        const trackLeft = radius;
+        const trackRight = inputW - radius; 
+        const trackWidth = trackRight - trackLeft;
 
         marks.forEach((mark) => {
             const v = parseInt(mark.dataset.value, 10);
