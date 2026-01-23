@@ -297,8 +297,8 @@ document.addEventListener('DOMContentLoaded', function () {
         swiper.slides.forEach(function (slideEl) {
             var isActive = (slideEl === activeSlide);
 
-            // 1) 슬라이드 자체: 활성 0 / 비활성 -1 (원하는 요구사항)
-            slideEl.setAttribute('tabindex', isActive ? '0' : '-1');
+            // 1) 슬라이드 컨테이너는 포커스 받지 않게
+            slideEl.setAttribute('tabindex', '-1');
 
             // 2) aria-hidden
             if (!isActive) slideEl.setAttribute('aria-hidden', 'true');
