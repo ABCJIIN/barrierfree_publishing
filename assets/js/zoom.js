@@ -1,5 +1,8 @@
 // 돋보기 버튼 기능
 function initZoom() {
+    if (window.__zoomInited) return;
+    window.__zoomInited = true;
+
     const viewport   = document.querySelector('.zoom-viewport');
     const moveWrap   = document.querySelector('.zoom-move-wrap');
     const canvas     = document.querySelector('.zoom-canvas');
@@ -82,6 +85,7 @@ function initZoom() {
 
         if (!isZoomed) {
             canvas.style.transform = '';
+            publishZoomState();
             return;
         }
 
@@ -469,9 +473,21 @@ function initZoom() {
 
         applyTransform();
         updateEdgeButtons();
+
+        // 볼륨 마크 재레이아웃(줌으로 좌표계가 바뀜)
+        requestAnimationFrame(() => {
+            document.dispatchEvent(new Event('volume-marks-layout'));
+            requestAnimationFrame(() => {
+                document.dispatchEvent(new Event('volume-marks-layout'));
+            });
+        });
+
+        // 컨트롤러 활성 중엔 내부만 포커스
+        activateControllerTrap();
+        focusControllerFirst(); // 켜지자마자 컨트롤러 첫 버튼으로 진입
     };
 
-    const disableZoom = () => {
+    const disableZoom = (returnFocusToZoomBtn) => {
         if (!canvas || !viewport) return;
 
         const isActiveVoice = document.documentElement.classList.contains('mode-voice');
@@ -504,13 +520,160 @@ function initZoom() {
             b.setAttribute('aria-disabled', 'false');
         });
 
+        publishZoomState();
+
         syncMoveWrapSize();
+
+        // 트랩 해제
+        deactivateControllerTrap();
+
+        // 볼륨 마크 재레이아웃(줌 해제로 좌표계 복귀)
+        requestAnimationFrame(() => {
+            document.dispatchEvent(new Event('volume-marks-layout'));
+            requestAnimationFrame(() => {
+                document.dispatchEvent(new Event('volume-marks-layout'));
+            });
+        });
+
+        // DOM 상태 변경 후 footer zoomBtn(close)로 포커스 복귀
+        if (returnFocusToZoomBtn && zoomBtn) {
+            requestAnimationFrame(() => zoomBtn.focus());
+        }
     };
+
+    // ==============================
+    // [FOCUS TRAP] viewport-controller is-active 동안 내부만 포커스
+    // - Tab / Shift+Tab 순환
+    // - 외부로 포커스가 나가면 강제로 첫 요소로 복귀
+    // - focus.js 등 전역 키 핸들러와 충돌 방지(캡처 단계 + stopPropagation)
+    // ==============================
+    const CONTROLLER_FOCUSABLE = [
+    'button:not([tabindex="-1"])',
+    '[tabindex]:not([tabindex="-1"])'
+    ].join(',');
+
+    let controllerTrapOn = false;
+
+    function getControllerItems() {
+        if (!controller) return [];
+        const nodes = Array.prototype.slice.call(
+            controller.querySelectorAll(CONTROLLER_FOCUSABLE)
+        );
+
+        // "disabled" 속성으로 막힌 건 제외
+        // (aria-disabled / .is-disable 은 포커스 유지하는 정책일 수도 있어서 제외하지 않음)
+        return nodes.filter(el => !el.disabled);
+    }
+
+    function focusControllerFirst() {
+        const items = getControllerItems();
+        if (!items.length) return;
+        items[0].focus();
+    }
+
+    function onControllerKeydownCapture(e) {
+        if (!isZoomed) return;
+        if (!controller || !controller.classList.contains('is-active')) return;
+
+        const isTab = (e.key === 'Tab');
+        const isLeft = (e.key === 'ArrowLeft');
+        const isRight = (e.key === 'ArrowRight');
+
+        // 컨트롤러에서는 Tab/←/→만 우리가 전담
+        if (!(isTab || isLeft || isRight)) return;
+
+        // 이미 처리한 이벤트면 패스 (중복방지)
+        if (e.__zoomTrapHandled) return;
+
+        const items = getControllerItems();
+        if (!items.length) return;
+
+        const active = document.activeElement;
+
+        // 여기서 브라우저 기본 + focus.js 같은 전역 키 핸들러를 모두 차단
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        e.__zoomTrapHandled = true;
+
+        // 컨트롤러 바깥에서 키가 눌렸으면 내부로 강제 진입
+        if (!controller.contains(active)) {
+            items[0].focus();
+            return;
+        }
+
+        const idx = items.indexOf(active);
+        const lastIdx = items.length - 1;
+
+        // -----------------------
+        // 1) Tab / Shift+Tab 순환
+        // -----------------------
+        if (isTab) {
+            if (e.shiftKey) {
+            if (idx <= 0) items[lastIdx].focus();
+            else items[idx - 1].focus();
+            } else {
+            if (idx === -1 || idx >= lastIdx) items[0].focus();
+            else items[idx + 1].focus();
+            }
+            return;
+        }
+
+        // -----------------------
+        // 2) ArrowLeft / ArrowRight 순환
+        // - 첫 요소에서 ← : 마지막(돋보기 종료)로
+        // - 마지막에서 → : 첫 요소로
+        // -----------------------
+        if (isLeft) {
+            if (idx <= 0) items[lastIdx].focus();
+            else items[idx - 1].focus();
+            return;
+        }
+
+        if (isRight) {
+            if (idx === -1 || idx >= lastIdx) items[0].focus();
+            else items[idx + 1].focus();
+            return;
+        }
+    }
+
+    function onControllerFocusinCapture(e) {
+        if (!isZoomed) return;
+        if (!controller || !controller.classList.contains('is-active')) return;
+
+        // 포커스가 컨트롤러 밖으로 나가면 즉시 내부로 되돌림
+        if (!controller.contains(e.target)) {
+            // 무한루프 방지: 이미 강제 포커스 중이면 패스
+            // (필요시 플래그 추가 가능. 보통은 아래 한 줄로도 충분)
+            focusControllerFirst();
+        }
+    }
+
+    function activateControllerTrap() {
+        if (controllerTrapOn) return;
+        controllerTrapOn = true;
+
+        window.addEventListener('keydown', onControllerKeydownCapture, true);
+        // window.addEventListener('keyup', onControllerKeyupCapture, true);
+        document.addEventListener('focusin', onControllerFocusinCapture, true);
+
+    }
+
+    function deactivateControllerTrap() {
+    if (!controllerTrapOn) return;
+    controllerTrapOn = false;
+
+    window.removeEventListener('keydown', onControllerKeydownCapture, true);
+    // window.removeEventListener('keyup', onControllerKeyupCapture, true);
+    document.removeEventListener('focusin', onControllerFocusinCapture, true);
+
+    }
+
 
     // ====== 이벤트 바인딩 ======
     if (zoomBtn) {
         zoomBtn.addEventListener('click', () => {
-            if (isZoomed) disableZoom();
+            if (isZoomed) disableZoom(true);
             else enableZoom();
         });
     }
@@ -518,8 +681,7 @@ function initZoom() {
     if (zoomExitBtn) {
         zoomExitBtn.addEventListener('click', () => {
             if (!isZoomed) return;
-            if (zoomBtn) zoomBtn.focus();
-            disableZoom();
+            disableZoom(true); // 종료 후 zoomBtn으로 포커스 복귀
         });
     }
 
