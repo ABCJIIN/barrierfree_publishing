@@ -153,6 +153,12 @@ html.is-keyboard-user .volume-marks .mark:focus-visible::after {
   opacity: 1;
 }
 
+/* 8) wrapper가 포커스일 때만, 활성 슬라이드에 링 표시 */
+html.is-keyboard-user .swiper-wrapper:focus-visible .swiper-slide.swiper-slide-active,
+html.is-keyboard-user .swiper-wrapper:focus .swiper-slide.swiper-slide-active {
+  box-shadow: inset 0 0 0 3px #3B4CCF, inset 0 0 0 5px #FFFFFF;
+}
+
 /* 스크린리더용 클래스 */
 .sr-only {
   position: absolute !important;
